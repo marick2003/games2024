@@ -22,8 +22,8 @@ const simulation = useSimulationStore();
     </nav>
 
     <div class="flex-1 px-5">
-      <div class="mx-auto mt-5 min-w-[300px] max-w-xl drop-shadow-xl md:mt-10 lg:max-w-7xl">
-        <div class="flex flex-col-reverse overflow-hidden rounded-lg lg:w-full lg:flex-row">
+      <div class="mx-auto mt-5 min-w-[300px] max-w-xl drop-shadow-xl md:mt-10">
+        <div class="flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
           <Sidebar />
           <div class="flex-1">
             <template v-if="simulation.isSimulationing">

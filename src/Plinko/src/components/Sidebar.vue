@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-5 bg-slate-700 p-3 lg:max-w-80 w-[320px] h-[590px]">
+    <div class="flex flex-col gap-5 bg-slate-700 p-3">
         <div class="flex gap-1 rounded-full bg-slate-900 p-1">
             <button v-for="item in betModes" :key="item.label" :value="item.value"
                 class='flex-1 rounded-full py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50
@@ -11,6 +11,29 @@
                 {{ item.label }}
             </button>
         </div>
+        <div class="flex justify-between">
+          <SlideSwitcher
+      v-model="currentRowCount"
+      :items="rowCounts"
+      type="vertical"
+      :disabled="hasOutstandingBalls || autoBetInterval !== null"
+    >
+      <template #default="{ currentItem }">
+        <div class="risk-item text-white">{{ currentItem.value }}</div>
+      </template>
+    </SlideSwitcher>
+          <SlideSwitcher
+      v-model="currentRiskLevel"
+      :items="riskLevels"
+      type="horizontal"
+      :disabled="hasOutstandingBalls || autoBetInterval !== null"
+    >
+      <template #default="{ currentItem }">
+        <div class="risk-item text-white">{{ currentItem.label }}</div>
+      </template>
+    </SlideSwitcher>
+        </div>
+      
         <div v-if="!simulation.isSimulationing" class="relative">
             <label for="betAmount" class="text-sm font-medium text-slate-300">Bet Amount</label>
             <div class="flex">
@@ -49,8 +72,7 @@
             </p>
             <p v-else-if="isBetExceedBalance" class="absolute text-xs leading-5 text-red-400">Can't bet more than your balance!</p>
         </div>
-
-        <div v-if="!simulation.isSimulationing" class="flex flex-col">
+        <!-- <div v-if="!simulation.isSimulationing" class="flex flex-col">
             <label for="riskLevel" class="text-sm font-medium text-slate-300 pb-[2px]">Risk</label>
             <select id="riskLevel" v-model="currentRiskLevel" :disabled="hasOutstandingBalls || autoBetInterval !== null" @change="changeRiskLevel">
                 <option v-for="item in riskLevels" :key="item.label" :value="item.value">
@@ -66,7 +88,7 @@
                     {{ item.label }}
                 </option>
             </select>
-        </div>
+        </div> -->
 
         <div v-if="betMode === BetMode.AUTO">
             <div class="flex flex-col gap-1">
@@ -138,7 +160,7 @@ import { PhChartLine, PhGearSix, PhInfinity, PhQuestion } from '@phosphor-icons/
 import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
 import Switch from '../components/UI/Switch.vue';
-
+import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
 const game = useGameStore();
 const simulation = useSimulationStore();
 
@@ -278,6 +300,13 @@ const riskLevels = [
     { value: RiskLevel.HIGH, label: 'High' },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
+
+watch(currentRiskLevel, (newRiskLevel) => {
+    game.setRiskLevel(newRiskLevel);
+});
+watch(currentRowCount, (newRiskLevel) => {
+    game.setRowCount(currentRowCount.value);
+});
 
 const changeRiskLevel = () => {
     game.setRiskLevel(currentRiskLevel.value);

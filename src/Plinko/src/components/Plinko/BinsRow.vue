@@ -9,7 +9,10 @@
         <div v-for="(item, index) in binPayouts[game.rowCount][game.riskLevel]" :key="index"
           class="flex min-w-0 flex-1 items-center justify-center rounded-sm text-[clamp(6px,2.784px+0.87vw,8px)] font-bold text-gray-950 shadow-[0_2px_var(--shadow-color)] lg:rounded-md lg:text-[clamp(10px,-16.944px+2.632vw,12px)] lg:shadow-[0_3px_var(--shadow-color)]"
           :class="{'bounce':game.isBallEnterBins[index]}"
-          :style="{ backgroundColor: binColorsByRowCount[game.rowCount].background[index], '--shadow-color': binColorsByRowCount[game.rowCount].shadow[index] }"
+          :style="{
+            backgroundColor: item <= 0 ? 'transparent' : binColorsByRowCount[game.rowCount].background[index],
+            '--shadow-color': item  <=  0 ? 'transparent' : binColorsByRowCount[game.rowCount].shadow[index]
+          }"
         >
           {{item + (item < 100? 'x' : '')}}
         </div>

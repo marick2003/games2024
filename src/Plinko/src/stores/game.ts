@@ -37,7 +37,7 @@ export const useGameStore = defineStore('game', () => {
     delete betAmountOfExistingBalls.value[ballId];
    }
 
-   const rowCount = ref<RowCount>(16);
+   const rowCount = ref<RowCount>(8);
 
    const setRowCount = (value:RowCount) => {
     rowCount.value = value;

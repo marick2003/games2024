@@ -202,7 +202,7 @@
       //   canvas.value!.width / 2 - ballOffsetRangeX,
       //   canvas.value!.width / 2 + ballOffsetRangeX,
       // ),
-      point,
+      Math.trunc(point),
       0,
       ballRadius,
       {

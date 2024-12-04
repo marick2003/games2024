@@ -24,7 +24,7 @@
 
   const PADDING_X = 52;
   const PADDING_TOP = 36;
-  const PADDING_BOTTOM = 28;
+  const PADDING_BOTTOM = 50; 
 
   const PIN_CATEGORY = 0x0001;
   const BALL_CATEGORY = 0x0002;
@@ -64,25 +64,25 @@
   // create an engine
   const engine = Engine.create({
     timing: {
-      timeScale: 1,
+      timeScale: 3,
     },
-    // gravity: {
-    //   scale: 0.0007,
-    // },
+    gravity: {
+      scale: 0.0007,
+    },
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
     friction: 0.3,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
-      8: 0.02,//0.0395,
-      9: 0.022,//0.041,
-      10: 0.02,//0.038,
-      11: 0.02,//0.0355,
-      12: 0.022,//0.0414,
-      13: 0.02,//0.0437,
-      14: 0.025,//0.0401,
-      15: 0.026,//0.0418,
-      16: 0.025,
+      8: 0.002,//0.0395,
+      9: 0.0022,//0.041,
+      10: 0.002,//0.038,
+      11: 0.002,//0.0355,
+      12: 0.0022,//0.0414,
+      13: 0.002,//0.0437,
+      14: 0.0025,//0.0401,
+      15: 0.0026,//0.0418,
+      16: 0.0025,
     },
   };
 
@@ -104,14 +104,14 @@
 
     sensor.value = Bodies.rectangle(
       canvas.value.width / 2,
-      canvas.value.height,
+      canvas.value.height + 5 ,
       canvas.value.width,
       10,
       {
         isSensor: true,
         isStatic: true,
         render: {
-          visible: false,
+          visible: true,
         },
       },
     );
@@ -191,7 +191,7 @@
       0,
       ballRadius,
       {
-        restitution: 0.8, // Bounciness
+        restitution: 0.5, // Bounciness
         friction,
         frictionAir: frictionAirByRowCount[game.rowCount],
         collisionFilter: {
@@ -365,6 +365,10 @@
           <canvas id="canvas" width={WIDTH} height={HEIGHT} class="absolute inset-0 h-full w-full" />
       </div>
       <BinsRow :binsWidthPercentage="binsWidthPercentage" />
+      <!-- 動畫演出 -->
+       <div class="h-20">
+          
+       </div>
     </div>
     <div class="absolute right-[5%] top-1/2 -translate-y-1/2">
       <div v-for="(value, key) in simulation.outputs" :key="key"

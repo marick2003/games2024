@@ -12,7 +12,7 @@ export const LOCAL_STORAGE_KEY = {
 /**
  * Range of row counts the game supports.
  */
-export const rowCountOptions = [8, 9, 10, 11, 12, 13, 14, 15, 16] as const;
+export const rowCountOptions = [8,  10,  12] as const;
 
 /**
  * Number of rows of pins the game supports.
@@ -51,9 +51,9 @@ export const binProbabilitiesByRowCount: Record<RowCount, number[]> = rowCountOp
  */
 export const binPayouts: Record<RowCount, Record<RiskLevel, number[]>> = {
   8: {
-    [RiskLevel.LOW]: [5.6, 2.1, 1.1, 1, 0.5, 1, 1.1, 2.1, 5.6],
-    [RiskLevel.MEDIUM]: [13, 3, 1.3, 0.7, 0.4, 0.7, 1.3, 3, 13],
-    [RiskLevel.HIGH]: [29, 4, 1.5, 0.3, 0.2, 0.3, 1.5, 4, 29],
+    [RiskLevel.LOW]: [5.3, 2.0, 1.2, 0.9, 0.5, 0.9, 1.2, 2.1, 5.6],
+    [RiskLevel.MEDIUM]: [14, 3.1, 1.4, 0.8, 0.0, 0.8, 1.4, 3, 13],
+    [RiskLevel.HIGH]: [36.4, 4.5, 1.8, 0.0, 0.0, 0.0, 1.8, 4.5, 36.4],
   },
   9: {
     [RiskLevel.LOW]: [5.6, 2, 1.6, 1, 0.7, 0.7, 1, 1.6, 2, 5.6],
@@ -61,9 +61,9 @@ export const binPayouts: Record<RowCount, Record<RiskLevel, number[]>> = {
     [RiskLevel.HIGH]: [43, 7, 2, 0.6, 0.2, 0.2, 0.6, 2, 7, 43],
   },
   10: {
-    [RiskLevel.LOW]: [8.9, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9],
-    [RiskLevel.MEDIUM]: [22, 5, 2, 1.4, 0.6, 0.4, 0.6, 1.4, 2, 5, 22],
-    [RiskLevel.HIGH]: [76, 10, 3, 0.9, 0.3, 0.2, 0.3, 0.9, 3, 10, 76],
+    [RiskLevel.LOW]: [9.0, 3, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 3, 8.9],
+    [RiskLevel.MEDIUM]: [22, 5, 2, 1.4, 0.6, 0.0, 0.6, 1.4, 2, 5, 22],
+    [RiskLevel.HIGH]: [76, 10, 3, 0.9, 0.0, 0.0, 0.0, 0.9, 3, 10, 76],
   },
   11: {
     [RiskLevel.LOW]: [8.4, 3, 1.9, 1.3, 1, 0.7, 0.7, 1, 1.3, 1.9, 3, 8.4],
@@ -71,9 +71,9 @@ export const binPayouts: Record<RowCount, Record<RiskLevel, number[]>> = {
     [RiskLevel.HIGH]: [120, 14, 5.2, 1.4, 0.4, 0.2, 0.2, 0.4, 1.4, 5.2, 14, 120],
   },
   12: {
-    [RiskLevel.LOW]: [10, 3, 1.6, 1.4, 1.1, 1, 0.5, 1, 1.1, 1.4, 1.6, 3, 10],
-    [RiskLevel.MEDIUM]: [33, 11, 4, 2, 1.1, 0.6, 0.3, 0.6, 1.1, 2, 4, 11, 33],
-    [RiskLevel.HIGH]: [170, 24, 8.1, 2, 0.7, 0.2, 0.2, 0.2, 0.7, 2, 8.1, 24, 170],
+    [RiskLevel.LOW]: [10, 3, 1.6, 1.4, 1.1, 0.9, 0.5, 0.9, 1.1, 1.4, 1.6, 3, 10],
+    [RiskLevel.MEDIUM]: [33, 11, 4, 2, 1.1, 0.8, 0.0, 0.8, 1.1, 2, 4, 11, 33],
+    [RiskLevel.HIGH]: [170, 24, 8.1, 2, 0.7, 0.0, 0.0, 0.0, 0.7, 2, 8.1, 24, 170],
   },
   13: {
     [RiskLevel.LOW]: [8.1, 4, 3, 1.9, 1.2, 0.9, 0.7, 0.7, 0.9, 1.2, 1.9, 3, 4, 8.1],

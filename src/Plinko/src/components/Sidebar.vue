@@ -33,9 +33,9 @@
       </template>
     </SlideSwitcher>
         </div>
-      
+
         <div v-if="!simulation.isSimulationing" class="relative">
-            <label for="betAmount" class="text-sm font-medium text-slate-300">Bet Amount</label>
+            <label for="betAmount" class="text-sm font-medium text-slate-300">{{$t('BetAmount')}}</label>
             <div class="flex">
               <div class="relative flex-1">
                 <input
@@ -93,11 +93,11 @@
         <div v-if="betMode === BetMode.AUTO">
             <div class="flex flex-col gap-1">
                 <div class="relative flex items-center">
-                    <label for="autoBetInput" class="text-sm font-medium text-slate-300">Number of Bets</label>
+                    <label for="autoBetInput" class="text-sm font-medium text-slate-300">{{$t('NumberofBets')}}</label>
                     <PhQuestion class="text-slate-300 ml-[6px]" :class="{'cursor-pointer':isMouseEnterNumberBetHint}" weight="bold"
                         @mouseenter="isMouseEnterNumberBetHint = true" @mouseleave="isMouseEnterNumberBetHint = false" />
                     <div v-if="isMouseEnterNumberBetHint" class="absolute top-[24px] left-[18px] z-30 max-w-lg rounded-md bg-white p-3 text-sm font-medium text-gray-950 drop-shadow-xl">
-                        <p>Enter '0' for unlimited bets.</p>
+                        <p>{{$t('NumberofBetsCaption')}}</p>
                         <div class="tooltip-arrow" data-popper-arrow></div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                     <!-- @focusout="handleAutoBetInputFocusOut" -->
                     <PhInfinity v-if="autoBetInput === 0" class="absolute right-3 top-3 size-4 text-slate-400" weight="bold" />
                 </div>
-                <p v-if="isAutoBetInputNegative" class="text-xs leading-5 text-red-400">This must be greater than or equal to 0.</p>
+                <p v-if="isAutoBetInputNegative" class="text-xs leading-5 text-red-400">{{$t('GreaterThanMessage')}}</p>
             </div>
         </div>
 
@@ -129,7 +129,7 @@
             hover:bg-green-400 active:bg-green-600 disabled:bg-neutral-600 disabled:text-neutral-400'
             :class="{ 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-600':autoBetInterval !== null }"
         >
-            {{ betMode === BetMode.MANUAL? 'Drop Ball': autoBetInterval === null? 'Start Autobet': 'Stop Autobet' }}
+            {{ betMode === BetMode.MANUAL? $t('DropBall'): autoBetInterval === null? $t('StartAutobet'): $t('StopAutobet') }}
         </button>
 
         <button
@@ -161,6 +161,8 @@ import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
 import Switch from '../components/UI/Switch.vue';
 import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
+import { useI18n } from 'vue-i18n'
+const { t: $t  } = useI18n()
 const game = useGameStore();
 const simulation = useSimulationStore();
 
@@ -291,13 +293,13 @@ const handleBetClick = () => {
 };
 
 const betModes = [
-    { value: BetMode.MANUAL, label: 'Manual' },
-    { value: BetMode.AUTO, label: 'Auto' },
+    { value: BetMode.MANUAL, label: $t('Manual') },
+    { value: BetMode.AUTO, label: $t('Auto') },
 ];
 const riskLevels = [
-    { value: RiskLevel.LOW, label: 'Low' },
-    { value: RiskLevel.MEDIUM, label: 'Medium' },
-    { value: RiskLevel.HIGH, label: 'High' },
+    { value: RiskLevel.LOW, label: $t('Low') },
+    { value: RiskLevel.MEDIUM, label: $t('Medium') },
+    { value: RiskLevel.HIGH, label: $t('High') },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
 

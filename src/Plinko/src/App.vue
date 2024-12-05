@@ -4,14 +4,21 @@ import PlinkoSimulation from './components/Plinko/PlinkoSimulation.vue';
 import Sidebar from './components/Sidebar.vue';
 import Balance from './components/Balance.vue';
 import logo from './assets/logo.svg';
-
+import { useI18n } from 'vue-i18n'
+const { t: $t  } = useI18n()
 import { useSimulationStore } from './stores/simulation';
+import { useAppStore } from '@/stores/app'
+import Preloader from '@/components/Preloader.vue';
 
 const simulation = useSimulationStore();
+const appStore = useAppStore()
 </script>
 
 <template>
-  <div class="relative flex min-h-dvh w-full flex-col">
+  <transition name="fade">
+    <Preloader v-show='appStore.isLoading.appAssets' />
+  </transition>
+  <div v-show='!appStore.isLoading.appAssets' class="relative flex min-h-dvh w-full flex-col">
     <nav class="sticky top-0 z-10 w-full bg-gray-700 px-5 drop-shadow-lg">
       <div class="mx-auto flex h-14 max-w-7xl items-center justify-between">
         <img :src="logo" alt="logo" class="h-6 sm:h-7" />

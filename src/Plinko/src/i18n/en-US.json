@@ -1,0 +1,26 @@
+{
+  "Loading": "Loading",
+  "Manual": "Manual",
+  "Auto": "Auto",
+  "Low": "Low",
+  "Medium": "Medium",
+  "High": "High",
+  "DropBall": "Drop Ball",
+  "StartAutobet": "Start Autobet",
+  "StopAutobet": "Stop Autobet",
+  "BetAmount": "Bet Amount",
+  "NumberofBets": "Number of Bets",
+  "NumberofBetsCaption": "Enter '0' for unlimited bets",
+  "GreaterThanMessage": "This must be greater than or equal to 0.",
+  "Message": "Message",
+  "Validation": {
+    "Min": "This must be greater than or equal to {min}",
+    "Max": "Can't bet more than your balance!",
+    "Number": "Please enter number!"
+  },
+  "Error": {
+    "400": "The server cannot process the request, please try again later",
+    "404": "The server cannot process the request, please try again later",
+    "500": "The server encountered an error and could not complete your request. Please try again later."
+  }
+}

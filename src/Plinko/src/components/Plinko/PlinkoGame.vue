@@ -10,7 +10,7 @@
   import Matter, { type IBodyDefinition } from 'matter-js';
   import { v4 as uuidv4 } from 'uuid';
   import axios from 'axios';
-
+  import { BallPostionList } from '../../test'
   type BallFrictionsByRowCount = {
     friction: NonNullable<IBodyDefinition['friction']>;
     frictionAirByRowCount: Record<RowCount, NonNullable<IBodyDefinition['frictionAir']>>;
@@ -66,9 +66,9 @@
     timing: {
       timeScale: 3, // 1 正常  3 加入3倍
     },
-    // gravity: {
-    //   scale: 0.0007,
-    // },
+    gravity: {
+      scale: 0.0007,
+    },
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
@@ -84,17 +84,6 @@
       15: 0.026,//0.0418,
       16: 0.025,
     },
-    // frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
-    //   8: 0.0395,
-    //   9: 0.041,
-    //   10: 0.038,
-    //   11: 0.0355,
-    //   12: 0.0414,
-    //   13: 0.0437,
-    //   14: 0.0401,
-    //   15: 0.0418,
-    //   16: 0.025,
-    // },
   };
   const pinsState = ref<{ id: number; x: number; y: number; isGlowing: boolean }[]>([]);
 
@@ -421,9 +410,9 @@
        
             
       </div>
-      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[29%]" />
-        <div class="w-full mt-[-75px]">
-              <img class="w-full" src="../../assets/images/closemouth.svg"/>
+      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[34%]" />
+        <div class="w-full h-[210px] mt-[-45px] crocodileBg">
+              <!-- <img class="w-full" src="../../assets/images/crocodile_bg.png"/> -->
         </div>
     </div>
     <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
@@ -444,6 +433,10 @@
 
 .pin.glowing {
   box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+}
+.crocodileBg{
+  background: url(../../assets/images/crocodile_bg.png) no-repeat;
+  background-size: contain;
 }
 
 </style>

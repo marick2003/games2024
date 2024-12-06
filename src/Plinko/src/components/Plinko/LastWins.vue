@@ -1,8 +1,7 @@
 <template>
+   <!-- :style="{ aspectRatio: 1 / winCount }" -->
   <div
-    class="flex w-[clamp(1.5rem,0.893rem+2.857vw,2rem)] flex-col  rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 lg:text-sm"
-    :style="{ aspectRatio: 1 / winCount }"
-  >
+    class="flex w-[clamp(1.5rem,0.893rem+2.857vw,2rem)] flex-col  rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 lg:text-sm">
     <div
       v-for="item in lastWins"
       :key="item.id"

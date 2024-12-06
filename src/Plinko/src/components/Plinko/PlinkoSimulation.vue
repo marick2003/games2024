@@ -18,17 +18,15 @@
 
   const game = useGameStore();
   const simulation = useSimulationStore();
-
-  const WIDTH = 760;
+  const WIDTH = 750;
   const HEIGHT = 570;
 
-  const PADDING_X = 52;
+  const PADDING_X = 20;
   const PADDING_TOP = 36;
-  const PADDING_BOTTOM = 50; 
+  const PADDING_BOTTOM = 28;
 
   const PIN_CATEGORY = 0x0001;
   const BALL_CATEGORY = 0x0002;
-
   // module aliases
   const Engine = Matter.Engine,
       Events = Matter.Events,
@@ -74,18 +72,17 @@
   const ballFrictions: BallFrictionsByRowCount = {
     friction: 0.5,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
-      8: 0.002,//0.0395,
-      9: 0.0022,//0.041,
-      10: 0.002,//0.038,
-      11: 0.002,//0.0355,
-      12: 0.0022,//0.0414,
-      13: 0.002,//0.0437,
-      14: 0.0025,//0.0401,
-      15: 0.0026,//0.0418,
-      16: 0.0025,
+      8: 0.03,//0.0395,
+      9: 0.032,//0.041,
+      10: 0.03,//0.038,
+      11: 0.03,//0.0355,
+      12: 0.032,//0.0414,
+      13: 0.03,//0.0437,
+      14: 0.025,//0.0401,
+      15: 0.026,//0.0418,
+      16: 0.025,
     },
   };
-
   onMounted(() => {
     // create a renderer
     canvas.value = document.getElementById("canvas") as HTMLCanvasElement;
@@ -179,14 +176,15 @@
   );
 
   const dropABall = () => {
-    const ballOffsetRangeX = pinDistanceX.value;// * 0.8;
+    console.log(`output->pinDistanceX.value`,pinDistanceX.value)
+    const ballOffsetRangeX = pinDistanceX.value * 1.2;// * 0.8;
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
 
     const ball = Bodies.circle(
       getRandomBetween(
-        canvas.value!.width / 2 - ballOffsetRangeX,
-        canvas.value!.width / 2 + ballOffsetRangeX,
+        canvas.value!.width / 2 - 200,
+        canvas.value!.width / 2 + 200,
       ),
       0,
       ballRadius,

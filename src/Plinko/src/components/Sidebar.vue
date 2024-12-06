@@ -34,13 +34,11 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-3 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-              <button class="minBtn"></button>
               <button class="halfBtn"></button>
               <button class="reduceBtn"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">Bet Amount</label>
-                <p class="bg-transparent border-0 text-[#00F320] text-xs font-bold">0.00001</p>
-                
+                <input v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
               </div>
               <button class="addBtn"></button>
               <button class="towxBtn"></button>
@@ -91,7 +89,7 @@
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
                 </template>
               </SlideSwitcher>
-                <p class=" text-[#45698C] text-xs font-bold py-1">Rows</p>
+              <p class=" text-[#45698C] text-xs font-bold py-1">Rows</p>
           </div>
           <div class="rounded-md px-[14px] pt-2 border border-[#45698C] text-center ">
                 <SlideSwitcher
@@ -120,7 +118,7 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto hidden">
+        <div v-if="env === 'development'" class="mt-auto ">
           <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
@@ -128,6 +126,7 @@
             </div>
           </div>
         </div>
+        
     </div>
 </template>
 

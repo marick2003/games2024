@@ -15,7 +15,7 @@ import { countValueOccurrences } from '../utils/numbers';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
 
-   const betAmount = ref<number>(1);
+   const betAmount = ref<number>(0.000001);
 
    const setBetAmount = (value: number) => {
     betAmount.value = value;

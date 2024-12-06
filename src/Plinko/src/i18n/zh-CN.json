@@ -1,0 +1,26 @@
+{
+  "Loading": "加载中",
+  "Manual": "手动",
+  "Auto": "自动",
+  "Low": "低",
+  "Medium": "中",
+  "High": "高",
+  "DropBall": "落球",
+  "StartAutobet": "开始自动投注",
+  "StopAutobet": "停止自动下注",
+  "BetAmount": "下注金额",
+  "NumberofBets": "注数",
+  "NumberofBetsCaption": "输入“0”即可无限投注",
+  "GreaterThanMessage": "该值必须大于或等于 0。",
+  "Message": "信息",
+  "Validation": {
+    "Min": "必须大于或等于{min}",
+    "Max": "下注金额不能超过您的余额!",
+    "Number": "请输入数字!"
+  },
+  "Error": {
+    "400": "服务器无法理解用户的请求",
+    "404": "服务器无法理解用户的请求",
+    "500": "服务器端发生错误，请稍后再尝试"
+  }
+}

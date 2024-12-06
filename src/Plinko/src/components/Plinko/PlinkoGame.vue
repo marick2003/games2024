@@ -18,7 +18,7 @@
 
   const game = useGameStore();
 
-  const WIDTH = 760;
+  const WIDTH = 750;
   const HEIGHT = 570;
 
   const PADDING_X = 20;
@@ -72,14 +72,14 @@
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
-    friction: 0.3,// range (0, 1) 0.5
+    friction: 0.5,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
-      8: 0.02,//0.0395,
-      9: 0.022,//0.041,
-      10: 0.02,//0.038,
-      11: 0.02,//0.0355,
-      12: 0.022,//0.0414,
-      13: 0.02,//0.0437,
+      8: 0.03,//0.0395,
+      9: 0.032,//0.041,
+      10: 0.03,//0.038,
+      11: 0.03,//0.0355,
+      12: 0.032,//0.0414,
+      13: 0.03,//0.0437,
       14: 0.025,//0.0401,
       15: 0.026,//0.0418,
       16: 0.025,
@@ -285,11 +285,12 @@
       Composite.remove(engine.world, walls.value);
       walls.value = [];
     }
+    const bottomMargin = 60; // 與底部的間距
 
     for (let row = 0; row < game.rowCount; ++row) {
       const rowY =
         PADDING_TOP +
-        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM) / (game.rowCount - 1)) * row;
+        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM- bottomMargin ) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
       const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
@@ -314,8 +315,8 @@
         pins.value.push(pin);
         pinsState.value.push({
           id: pin.id,
-          x:colX/2,
-          y:rowY/2,
+          x: colX/2,
+          y: rowY/2,
           isGlowing: false,
         });
         if (row === game.rowCount - 1) {
@@ -408,7 +409,7 @@
 <template>
   <div class="relative ">
     <div class="mx-auto flex h-full flex-col" :style="{maxWidth: WIDTH +'px'}">
-      <div class="relative w-full mt-[62px]" :style="{aspectRatio: WIDTH / HEIGHT}">
+      <div class="relative w-full mt-[62px] z-[2]" :style="{aspectRatio: WIDTH / HEIGHT}">
           <!-- <div v-if="game.plinkoEngine === null" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <PhCircleNotch class="size-20 animate-spin text-slate-600" weight="bold" />
           </div> -->
@@ -420,12 +421,12 @@
        
             
       </div>
-      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1]" />
-        <div class="h-[130px] w-full mt-[-50px]">
+      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[29%]" />
+        <div class="w-full mt-[-75px]">
               <img class="w-full" src="../../assets/images/closemouth.svg"/>
         </div>
     </div>
-    <div class="absolute left-[5%] top-1/4 -translate-y-1/2">
+    <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
       <LastWins />
     </div>
   </div>
@@ -436,7 +437,7 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  background: gray;
+  /* background: gray; */
   border-radius: 50%;
   transition: box-shadow 0.3s;
 }

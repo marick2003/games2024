@@ -8,7 +8,6 @@ interface loadingInterface {
 export const useAppStore = defineStore('App', () => {
     const assetLoaded: Ref<boolean> = ref<boolean>(false)
     const gameLoaded: Ref<boolean> = ref<boolean>(false)
-
     const isLoading: Ref<loadingInterface> = ref({
         appAssets: ref(false),
     })

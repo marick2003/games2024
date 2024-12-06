@@ -29,9 +29,9 @@ const appStore = useAppStore()
     </nav> -->
 
     <div class="flex-1 ">
-      <div class="mx-auto min-w-[300px] max-w-[375px] drop-shadow-xl">
+      <div class="mx-auto min-w-[375px] max-w-[375px] drop-shadow-xl">
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
-          <Sidebar class="z-[1]" />
+          <Sidebar class="z-[1] mt-[-75px]   md:mt-[-62px]" />
           <div class="flex-1">
             <template v-if="simulation.isSimulationing">
               <PlinkoSimulation />

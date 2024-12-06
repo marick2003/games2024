@@ -25,23 +25,20 @@ export function getBinColors(rowCount: RowCount) {
   {
     const binCount = rowCount + 1;
     const isBinsEven = binCount % 2 === 0;
-    const redToYellowLength = Math.ceil(binCount / 2);
-
-    const redToYellowBg = interpolateRgbColors(
-      { r: 255, g: 0, b: 63 }, // rgb(255, 0, 63)
-      { r: 255, g: 192, b: 0 }, // rgb(255, 192, 0)
-      redToYellowLength,
-    ).map(({ r, g, b }) => `rgb(${r}, ${g}, ${b})`);
-
-    const redToYellowShadow = interpolateRgbColors(
-      { r: 166, g: 0, b: 4 }, // rgb(166, 0, 4)
-      { r: 171, g: 121, b: 0 }, // rgb(171, 121, 0)
-      redToYellowLength,
-    ).map(({ r, g, b }) => `rgb(${r}, ${g}, ${b})`);
-
+    
+    let binColorsList={
+      8:['rgb(229, 255, 0)','rgb(189, 255, 7)','rgb(189, 255, 7)','rgb(122, 243, 0)','rgb(0, 243, 32)'],
+      10: ['rgb(229, 255, 0)','rgb(229, 255, 0)','rgb(189, 255, 7)','rgb(189, 255, 7)' ,'rgb(122, 243, 0)','rgb(0, 243, 32)'],
+      12: ['rgb(255, 211, 13)','rgb(229, 255, 0)','rgb(229, 255, 0)','rgb(189, 255, 7)','rgb(189, 255, 7)' ,'rgb(122, 243, 0)','rgb(0, 243, 32)']
+    }
+    let binColorsShadowList={
+      8:['rgb(137, 152, 0)','rgb(125, 170, 0)','rgb(125, 170, 0)','rgb(86, 171, 0)','rgb(0, 172, 23)'],
+      10: ['rgb(137, 152, 0)','rgb(137, 152, 0)','rgb(125, 170, 0)','rgb(125, 170, 0)' ,'rgb(86, 171, 0)','rgb(0, 172, 23)'],
+      12: ['rgb(188, 145, 0)','rgb(137, 152, 0)','rgb(137, 152, 0)','rgb(125, 170, 0)','rgb(125, 170, 0)' ,'rgb(86, 171, 0)','rgb(0, 172, 23)']
+    }
     return {
-      background: [...redToYellowBg, ...redToYellowBg.reverse().slice(isBinsEven ? 0 : 1)],
-      shadow: [...redToYellowShadow, ...redToYellowShadow.reverse().slice(isBinsEven ? 0 : 1)],
+      background: [...binColorsList[rowCount], ...binColorsList[rowCount].reverse().slice(isBinsEven ? 0 : 1)],
+      shadow: [...binColorsShadowList[rowCount], ...binColorsShadowList[rowCount].reverse().slice(isBinsEven ? 0 : 1)],
     };
   }
 }

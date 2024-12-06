@@ -3,10 +3,12 @@
       <button
         @click="!disabled && prev()"
         class="btn prev"
-        :class="{ disabled: disabled }"
+        :class="[
+          disabled ? 'disabled' : '',
+          props.type,
+        ]"
         :disabled="disabled"
       >
-        ←
       </button>
       <div class="content">
         <Transition :name="transitionName" mode="out-in">
@@ -18,10 +20,12 @@
       <button
         @click="!disabled && next()"
         class="btn next"
-        :class="{ disabled: disabled }"
+        :class="[
+          disabled ? 'disabled' : '',
+          props.type,
+        ]"
         :disabled="disabled"
       >
-        →
       </button>
     </div>
   </template>
@@ -88,7 +92,7 @@
   };
   </script>
   
-  <style scoped>
+  <style scoped lang="scss">
   .slide-switcher {
     display: flex;
     align-items: center;
@@ -96,11 +100,9 @@
   }
   
   .content {
-    margin: 0 10px;
-    font-size: 1.5em;
     overflow: hidden;
     width: auto;
-    height: 50px;
+    padding: 7px 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -117,24 +119,52 @@
   
   .btn {
     cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
-  .btn:active {
-    background-color: #0056b3;
-  }
-  
-  .btn.disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+
+    &.vertical{
+      width: 30px;
+      height: 30px;
+      padding: 13px 0px 0px 0px;
+      border-radius: 20px;
+      &.prev{
+        background: url(../../assets/images/arrowBtn.png);
+        &:active{
+          background: url(../../assets/images/arrowBtn_pass.png);     
+        }
+        &.disabled{
+          background: url(../../assets/images/arrowBtn_disabled.png);
+          cursor: not-allowed; 
+        }
+      }
+      
+      &.next{
+        background: url(../../assets/images/arrowBtn_down.png);
+        &:active{
+          background: url(../../assets/images/arrowBtn_down_pass.png);     
+        }
+        &.disabled{
+          background: url(../../assets/images/arrowBtn_down_disabled.png);
+          cursor: not-allowed; 
+        }
+      }
+    }
+    &.horizontal{
+      width: 12px;
+      height: 7px;
+      background: url(../../assets/images/arrow.svg) no-repeat;
+      background-size: cover;
+      &.prev{
+        transform: rotate(270deg);
+      }
+      &.next{
+        transform: rotate(90deg);
+      }
+    }
+    
   }
   
   .slide-horizontal-enter-active,
   .slide-horizontal-leave-active {
-    transition: transform 0.5s ease;
+    transition: transform 0.3s ease;
   }
   .slide-horizontal-enter-from {
     transform: translateX(100%);
@@ -145,7 +175,7 @@
   
   .slide-vertical-enter-active,
   .slide-vertical-leave-active {
-    transition: transform 0.5s ease;
+    transition: transform 0.3s ease;
   }
   .slide-vertical-enter-from {
     transform: translateY(100%);

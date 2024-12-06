@@ -1,4 +1,4 @@
-import { RiskLevel } from '../types';
+import { BallType, RiskLevel } from '../types';
 import { getBinColors } from '../utils/colors';
 import { computeBinProbabilities } from '../utils/numbers';
 
@@ -107,3 +107,4 @@ export const binColor = {
     yellow: { r: 171, g: 121, b: 0 }, // rgb(171, 121, 0)
   },
 } as const;
+

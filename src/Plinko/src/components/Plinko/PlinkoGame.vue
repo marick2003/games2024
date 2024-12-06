@@ -3,7 +3,7 @@
   // import { PhCircleNotch } from '@phosphor-icons/vue';
   import BinsRow from './BinsRow.vue';
   import LastWins from './LastWins.vue';
-  import type { RowCount } from '../../types';
+  import { BallType, type RowCount } from '../../types';
   import { getRandomBetween } from '../../utils/numbers';
   import { binPayouts } from '../../constants/game';
   import { onMounted, onUnmounted, ref, computed, watch } from 'vue';
@@ -21,7 +21,7 @@
   const WIDTH = 760;
   const HEIGHT = 570;
 
-  const PADDING_X = 52;
+  const PADDING_X = 20;
   const PADDING_TOP = 36;
   const PADDING_BOTTOM = 28;
 
@@ -35,6 +35,7 @@
       Runner = Matter.Runner,
       Bodies = Matter.Bodies,
       Composite = Matter.Composite;
+
 
   /**
    * Every pin of the game.
@@ -63,7 +64,7 @@
   // create an engine
   const engine = Engine.create({
     timing: {
-      timeScale: 1,
+      timeScale: 3, // 1 正常  3 加入3倍
     },
     // gravity: {
     //   scale: 0.0007,
@@ -95,6 +96,7 @@
     //   16: 0.025,
     // },
   };
+  const pinsState = ref<{ id: number; x: number; y: number; isGlowing: boolean }[]>([]);
 
   onMounted(() => {
     // create a renderer
@@ -105,8 +107,9 @@
       options: {
         width: WIDTH,
         height: HEIGHT,
-        background: '#0f1728',
+        background: null,
         wireframes: false,
+       
       },
     });
 
@@ -132,6 +135,8 @@
           handleBallEnterBin(bodyB);
         } else if (bodyB === sensor.value) {
           handleBallEnterBin(bodyA);
+        }else {
+          handlePinCollision(bodyA, bodyB);
         }
       });
     });
@@ -145,6 +150,16 @@
     // Render.stop(render);
     Runner.stop(runner);
   });
+  const handlePinCollision = (bodyA: Matter.Body, bodyB: Matter.Body) => {
+    const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
+    if (pin) {
+      const pinState = pinsState.value.find((p) => p.id === pin.id);
+      if (pinState) {
+        pinState.isGlowing = true;
+        setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
+      }
+    }
+  };
 
   const binsWidthPercentage = computed<number>(() => {
     const lastPinX = pinsLastRowXCoords.value[pinsLastRowXCoords.value.length - 1];
@@ -193,6 +208,9 @@
   };
 
   const dropABall = (point: number) => {
+
+    const ballTexture = new Image();
+    ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
     // const ballOffsetRangeX = pinDistanceX.value;// * 0.8;
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
@@ -214,7 +232,12 @@
           mask: PIN_CATEGORY, // Collide with pins only, but not other balls
         },
         render: {
-          fillStyle: '#ff0000',
+          sprite: {
+            texture: ballTexture.src,
+            xScale: 2,
+            yScale: 2,  
+
+          }
         },
       }
     );
@@ -244,6 +267,10 @@
   }
 
   const placePinsAndWalls = () => {
+    console.log(`output->pinRadius.value`,pinRadius.value)
+    pinsState.value=[];
+    const pinTexture = new Image();
+    pinTexture.src = new URL(`../../assets/images/pin.png`, import.meta.url).href; // 確保圖片路徑正確
     if (pins.value.length > 0) {
       Composite.remove(engine.world, pins.value);
       pins.value = [];
@@ -266,13 +293,18 @@
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
       const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
-
+     
       for (let col = 0; col < 3 + row; ++col) {
         const colX = rowPaddingX + ((canvas.value!.width - rowPaddingX * 2) / (3 + row - 1)) * col;
         const pin = Bodies.circle(colX, rowY, pinRadius.value, {
           isStatic: true,
           render: {
-            fillStyle: '#ffffff',
+            sprite: {
+              texture: pinTexture.src,
+              xScale: 2.2,
+              yScale: 2.2,  
+              
+            }
           },
           collisionFilter: {
             category: PIN_CATEGORY,
@@ -280,7 +312,12 @@
           },
         });
         pins.value.push(pin);
-
+        pinsState.value.push({
+          id: pin.id,
+          x:colX/2,
+          y:rowY/2,
+          isGlowing: false,
+        });
         if (row === game.rowCount - 1) {
           pinsLastRowXCoords.value.push(colX);
         }
@@ -360,22 +397,52 @@
     Composite.remove(engine.world, ball);
     game.deleteItemFromBetAmountOfExistingBalls(ball.id);
   }
+
+
+  const getPinStyle = (pin: { x: number; y: number }) => ({
+  left: `${pin.x - 4}px`,
+  top: `${pin.y - 4}px`,
+});
 </script>
 
 <template>
-  <div class="relative bg-gray-900">
-    <div class="mx-auto flex h-full flex-col px-4 pb-4" :style="{maxWidth: WIDTH +'px'}">
-      <div class="relative w-full" :style="{aspectRatio: WIDTH / HEIGHT}">
+  <div class="relative ">
+    <div class="mx-auto flex h-full flex-col" :style="{maxWidth: WIDTH +'px'}">
+      <div class="relative w-full mt-[62px]" :style="{aspectRatio: WIDTH / HEIGHT}">
           <!-- <div v-if="game.plinkoEngine === null" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <PhCircleNotch class="size-20 animate-spin text-slate-600" weight="bold" />
           </div> -->
           <canvas id="canvas" width={WIDTH} height={HEIGHT} class="absolute inset-0 h-full w-full" />
+          
+            <div v-for="pin in pinsState" :key="pin.id" class="pin" :class="{ glowing: pin.isGlowing }" 
+            :style="getPinStyle(pin)">
+            </div>
+       
+            
       </div>
-      <BinsRow :binsWidthPercentage="binsWidthPercentage" />
+      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1]" />
+        <div class="h-[130px] w-full mt-[-50px]">
+              <img class="w-full" src="../../assets/images/closemouth.svg"/>
+        </div>
     </div>
-    <div class="absolute right-[5%] top-1/2 -translate-y-1/2">
+    <div class="absolute left-[5%] top-1/4 -translate-y-1/2">
       <LastWins />
     </div>
   </div>
 </template>
 
+<style scoped>
+.pin {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: gray;
+  border-radius: 50%;
+  transition: box-shadow 0.3s;
+}
+
+.pin.glowing {
+  box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+}
+
+</style>

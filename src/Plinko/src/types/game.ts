@@ -15,6 +15,11 @@ export enum RiskLevel {
   HIGH = 'HIGH',
 }
 
+
+export enum BallType {
+  RED='RED',
+  COLOR='COLOR',
+}
 /**
  * A record of the bet amount associated to every existing ball in the game
  * that is still in motion.

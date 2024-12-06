@@ -72,7 +72,7 @@
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
-    friction: 0.3,// range (0, 1) 0.5
+    friction: 0.5,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
       8: 0.002,//0.0395,
       9: 0.0022,//0.041,
@@ -191,7 +191,7 @@
       0,
       ballRadius,
       {
-        restitution: 0.5, // Bounciness
+        restitution: 0.8, // Bounciness
         friction,
         frictionAir: frictionAirByRowCount[game.rowCount],
         collisionFilter: {

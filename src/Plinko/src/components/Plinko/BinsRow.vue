@@ -14,7 +14,7 @@
             '--shadow-color': item  <=  0 ? 'transparent' : binColorsByRowCount[game.rowCount].shadow[index]
           }"
         >
-          {{item + (item < 100? 'x' : '')}}
+          {{ item > 0  ? item + (item < 100? 'x' : '' ): ''}}
         </div>
       </div>
 </div>

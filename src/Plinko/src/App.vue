@@ -12,19 +12,19 @@ const simulation = useSimulationStore();
 
 <template>
   <div class="relative flex min-h-dvh w-full flex-col">
-    <nav class="sticky top-0 z-10 w-full bg-gray-700 px-5 drop-shadow-lg">
+    <!-- <nav class="sticky top-0 z-10 w-full bg-gray-700 px-5 drop-shadow-lg">
       <div class="mx-auto flex h-14 max-w-7xl items-center justify-between">
         <img :src="logo" alt="logo" class="h-6 sm:h-7" />
         <div v-if="!simulation.isSimulationing" class="mx-auto relative">
           <Balance />
         </div>
       </div>
-    </nav>
+    </nav> -->
 
-    <div class="flex-1 px-5">
-      <div class="mx-auto mt-5 min-w-[300px] max-w-xl drop-shadow-xl md:mt-10">
-        <div class="flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
-          <Sidebar />
+    <div class="flex-1 ">
+      <div class="mx-auto min-w-[300px] max-w-[375px] drop-shadow-xl">
+        <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
+          <Sidebar class="z-[1]" />
           <div class="flex-1">
             <template v-if="simulation.isSimulationing">
               <PlinkoSimulation />
@@ -40,7 +40,7 @@ const simulation = useSimulationStore();
     <!-- <SettingsWindow />
     <LiveStatsWindow /> -->
 
-    <footer class="px-5 pb-4 pt-16">
+    <!-- <footer class="px-5 pb-4 pt-16">
       <div class="mx-auto max-w-[40rem]">
         <div aria-hidden="true" class="h-[1px] bg-slate-700" />
         <div class="flex items-center justify-center p-2">
@@ -49,12 +49,16 @@ const simulation = useSimulationStore();
           </p>
         </div>
       </div>
-    </footer>
+    </footer> -->
   </div>
 </template>
 
 <style scoped>
   :global(body) {
     @apply bg-gray-800;
+  }
+  .gamebg{
+    background: url(./assets/images/background.png) no-repeat;
+    background-size: cover;
   }
 </style>

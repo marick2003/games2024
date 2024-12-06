@@ -4,6 +4,7 @@ import { defineStore } from 'pinia'
 import { binColor } from '../constants/game';
 import {
   RiskLevel,
+  BallType,
   type BetAmountOfExistingBalls,
   type RowCount,
   type WinRecord,
@@ -44,11 +45,15 @@ export const useGameStore = defineStore('game', () => {
    }
 
    const riskLevel = ref<RiskLevel>(RiskLevel.MEDIUM);
-
+ 
    const setRiskLevel = (value: RiskLevel) => {
     riskLevel.value = value;
    }
-
+   
+   const ballType = ref<BallType>(BallType.RED);
+   const setBallType = (value: BallType) => {
+    ballType.value = value;
+   }
    const winRecords = ref<WinRecord[]>([]);
 
    const updateWinRecords = (value:WinRecord) => {
@@ -142,6 +147,8 @@ const binProbabilities = computed<{ [binIndex: number]: number }>(() => {
     binProbabilities,
     isDropBall,
     isBallEnterBins,
+    ballType,
+    setBallType,
     setDropBall,
     setBetAmount,
     setRiskLevel,

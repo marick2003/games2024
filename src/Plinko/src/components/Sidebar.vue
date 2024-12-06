@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col gap-5 bg-slate-700 p-3">
-        <div class="flex gap-1 rounded-full bg-slate-900 p-1">
+    <div class="flex flex-col gap-2 p-3">
+        <!-- <div class="flex gap-1 rounded-full bg-slate-900 p-1">
             <button v-for="item in betModes" :key="item.label" :value="item.value"
                 class='flex-1 rounded-full py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50
                 hover:[&:not(:disabled)]:bg-slate-600 active:[&:not(:disabled)]:bg-slate-500'
@@ -10,89 +10,47 @@
             >
                 {{ item.label }}
             </button>
-        </div>
-        <div class="flex justify-between">
-          <SlideSwitcher
-      v-model="currentRowCount"
-      :items="rowCounts"
-      type="vertical"
-      :disabled="hasOutstandingBalls || autoBetInterval !== null"
-    >
-      <template #default="{ currentItem }">
-        <div class="risk-item text-white">{{ currentItem.value }}</div>
-      </template>
-    </SlideSwitcher>
-          <SlideSwitcher
-      v-model="currentRiskLevel"
-      :items="riskLevels"
-      type="horizontal"
-      :disabled="hasOutstandingBalls || autoBetInterval !== null"
-    >
-      <template #default="{ currentItem }">
-        <div class="risk-item text-white">{{ currentItem.label }}</div>
-      </template>
-    </SlideSwitcher>
-        </div>
-      
-        <div v-if="!simulation.isSimulationing" class="relative">
-            <label for="betAmount" class="text-sm font-medium text-slate-300">Bet Amount</label>
-            <div class="flex">
-              <div class="relative flex-1">
-                <input
-                  id="betAmount"
-                  v-model="currentBetAmount"
-                  on:focusout={handleBetAmountFocusOut}
-                  :disabled="autoBetInterval !== null"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  inputmode="decimal"
-                  class='w-full rounded-l-md border-2 border-slate-600 bg-slate-900 py-2 pl-7 pr-2 text-sm text-white transition:}colors hover:cursor-pointer focus:border-slate-500 focus:outline-none disabled:cursor-not-allowed  disabled:opacity-50 hover:[&:not(:disabled)]:border-slate-500'
-                  :class="{'border-red-500 focus:border-red-400 hover:[&:not(:disabled)]:border-red-400':isBetAmountNegative || isBetExceedBalance}"
-                />
-                <div class="absolute left-3 top-2 select-none text-slate-500" aria-hidden>$</div>
-              </div>
-              <button
-                :disabled="autoBetInterval !== null"
-                @click="changeBetAmount(parseFloat((currentBetAmount / 2).toFixed(2)))"
-                class="touch-manipulation bg-slate-600 px-4 font-bold diagonal-fractions text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:[&:not(:disabled)]:bg-slate-500 active:[&:not(:disabled)]:bg-slate-400"
+        </div> -->
+        
+        <div class="flex items-center justify-between flex-row gap-2">
+         
+            <button @click="" class="autoBtn rounded-full  mx-2">
+              
+            </button>
+            <div class="flex justify-end items-center">
+                <button
+                  @click="handleBetClick(BallType.RED)"
+                  :disabled="isDropBallDisabled"
+                  class='dropBallBtn redBall mr-2'
               >
-                1/2
-              </button>
-              <button
-                :disabled="autoBetInterval !== null"
-                @click="changeBetAmount(parseFloat((currentBetAmount * 2).toFixed(2)))"
-                class="relative touch-manipulation rounded-r-md bg-slate-600 px-4 text-sm font-bold text-white transition-colors after:absolute after:left-0 after:inline-block after:h-1/2 after:w-[2px] after:bg-slate-800 after:content-[''] disabled:cursor-not-allowed disabled:opacity-50 hover:[&:not(:disabled)]:bg-slate-500 active:[&:not(:disabled)]:bg-slate-400"
-              >
-                2×
+                          </button>
+                <button
+                    @click="handleBetClick(BallType.COLOR)"
+                    :disabled="isDropBallDisabled"
+                    class="dropBallBtn colorBall"
+                >
               </button>
             </div>
-            <p v-if="isBetAmountNegative" class="absolute text-xs leading-5 text-red-400">
-              This must be greater than or equal to 0.
-            </p>
-            <p v-else-if="isBetExceedBalance" class="absolute text-xs leading-5 text-red-400">Can't bet more than your balance!</p>
         </div>
-        <!-- <div v-if="!simulation.isSimulationing" class="flex flex-col">
-            <label for="riskLevel" class="text-sm font-medium text-slate-300 pb-[2px]">Risk</label>
-            <select id="riskLevel" v-model="currentRiskLevel" :disabled="hasOutstandingBalls || autoBetInterval !== null" @change="changeRiskLevel">
-                <option v-for="item in riskLevels" :key="item.label" :value="item.value">
-                    {{ item.label }}
-                </option>
-            </select>
+        <div v-if="!simulation.isSimulationing" class="relative rounded-md px-3 py-1 border border-[#45698C] text-center">
+          <div class="flex justify-between items-center betContent">
+              <button class="minBtn"></button>
+              <button class="halfBtn"></button>
+              <button class="reduceBtn"></button>
+              <div class="flex flex-col mt-[-10px]">
+                <label for="betAmount" class="text-xs text-[#45698C] font-medium">Bet Amount</label>
+                <p class="bg-transparent border-0 text-[#00F320] text-xs font-bold">0.00001</p>
+                
+              </div>
+              <button class="addBtn"></button>
+              <button class="towxBtn"></button>
+              <button class="maxBtn"></button>
+          </div>
+          
         </div>
-
-        <div class="flex flex-col">
-            <label for="rowCount" class="text-sm font-medium text-slate-300 pb-[2px]">Rows</label>
-            <select id="rowCount" v-model="currentRowCount" :disabled="hasOutstandingBalls || autoBetInterval !== null" @change="changeRowCount">
-                <option v-for="item in rowCounts" :key="item.label" :value="item.value">
-                    {{ item.label }}
-                </option>
-            </select>
-        </div> -->
-
         <div v-if="betMode === BetMode.AUTO">
             <div class="flex flex-col gap-1">
-                <div class="relative flex items-center">
+                <div class="relative flex items-center mt-[-10px]">
                     <label for="autoBetInput" class="text-sm font-medium text-slate-300">Number of Bets</label>
                     <PhQuestion class="text-slate-300 ml-[6px]" :class="{'cursor-pointer':isMouseEnterNumberBetHint}" weight="bold"
                         @mouseenter="isMouseEnterNumberBetHint = true" @mouseleave="isMouseEnterNumberBetHint = false" />
@@ -121,17 +79,36 @@
                 <p v-if="isAutoBetInputNegative" class="text-xs leading-5 text-red-400">This must be greater than or equal to 0.</p>
             </div>
         </div>
-
-        <button
-            @click="handleBetClick"
-            :disabled="isDropBallDisabled"
-            class='touch-manipulation rounded-md bg-green-500 py-3 font-semibold text-slate-900 transition-colors
-            hover:bg-green-400 active:bg-green-600 disabled:bg-neutral-600 disabled:text-neutral-400'
-            :class="{ 'bg-yellow-500 hover:bg-yellow-400 active:bg-yellow-600':autoBetInterval !== null }"
-        >
-            {{ betMode === BetMode.MANUAL? 'Drop Ball': autoBetInterval === null? 'Start Autobet': 'Stop Autobet' }}
-        </button>
-
+        <div class="flex justify-between">
+          <div class="rounded-md px-[14px] pt-2 border border-[#45698C] text-center">
+                <SlideSwitcher
+                v-model="currentRowCount"
+                :items="rowCounts"
+                type="vertical"
+                :disabled="hasOutstandingBalls || autoBetInterval !== null"
+              >
+                <template #default="{ currentItem }">
+                  <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
+                </template>
+              </SlideSwitcher>
+                <p class=" text-[#45698C] text-xs py-1">Rows</p>
+          </div>
+          <div class="rounded-md px-[14px] pt-2 border border-[#45698C] text-center ">
+                <SlideSwitcher
+                  class=" bg-[#305171] rounded-xl px-3"
+                  v-model="currentRiskLevel"
+                  :items="riskLevels"
+                  type="horizontal"
+                  :disabled="hasOutstandingBalls || autoBetInterval !== null"
+                >
+                  <template #default="{ currentItem }">
+                    <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
+                  </template>
+                </SlideSwitcher>
+                  <p class=" text-[#45698C] text-xs py-1">Mouth Size</p>
+              </div>
+        </div>
+      
         <button
             v-if="simulation.isSimulationing"
             @click="simulation.exportToJsonFile"
@@ -141,7 +118,7 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto pt-5">
+        <div v-if="env === 'development'" class="mt-auto hidden">
           <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
@@ -155,7 +132,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { autoBetIntervalMs, rowCountOptions } from '../constants/game';
-import { BetMode, RiskLevel, type RowCount } from '../types';
+import { BetMode, RiskLevel , BallType, type RowCount } from '../types';
 import { PhChartLine, PhGearSix, PhInfinity, PhQuestion } from '@phosphor-icons/vue';
 import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
@@ -278,7 +255,8 @@ const autoBetDropBall = () => {
 //     }
 // };
 
-const handleBetClick = () => {
+const handleBetClick = (ballType:BallType) => {
+    game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");
         game.setDropBall(true);
@@ -295,9 +273,9 @@ const betModes = [
     { value: BetMode.AUTO, label: 'Auto' },
 ];
 const riskLevels = [
-    { value: RiskLevel.LOW, label: 'Low' },
-    { value: RiskLevel.MEDIUM, label: 'Medium' },
-    { value: RiskLevel.HIGH, label: 'High' },
+    { value: RiskLevel.LOW, label: 'Close Mouth' },
+    { value: RiskLevel.MEDIUM, label: 'Small Mouth' },
+    { value: RiskLevel.HIGH, label: 'Big Mouth' },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
 
@@ -322,7 +300,7 @@ const changeBetAmount = (value: number) => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 select {
   padding: 8px 2px 8px 2px;
   background-color: #0f172a;
@@ -333,5 +311,71 @@ select option {
   background-color: #0f172a;
   color: #fff;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+.autoBtn{
+    background: url(../assets/images/auto_btn.png) no-repeat;
+    background-size: cover;
+    width: 55px;
+    height: 55px;
+}
+.dropBallBtn{
+  width: 120px;
+  height: 63px;
+  border-radius: 20px;
+  &.redBall{
+    background: url(../assets/images/redBtn.png) no-repeat;
+    background-size: cover;
+        &:active{
+          background: url(../assets/images/redBtn_pass.png) no-repeat;   
+          background-size: contain;  
+        }
+  }
+  &.colorBall{
+    background: url(../assets/images/colorBtn.png) no-repeat;
+    background-size: cover;
+    &:active{
+          background: url(../assets/images/colorBtn_pass.png) no-repeat; 
+          background-size: contain;    
+        }
+  }
+  
+}
+.betContent{
+      .minBtn{
+         width: 36px;
+         height: 36px;
+         background: url(../assets/images/minBtn.png) no-repeat;
+         background-size: contain;
+      }
+      .halfBtn{
+         width: 36px;
+         height:36px;
+         background: url(../assets/images/halfBtn.png) no-repeat;
+         background-size: contain;
+      }
+      .reduceBtn{
+         width: 26px;
+         height: 26px;
+         background: url(../assets/images/reduceBtn.png) no-repeat;
+         background-size: contain;
+      }
+      .addBtn{
+         width: 26px;
+         height: 26px;
+         background: url(../assets/images/addBtn.png) no-repeat;
+         background-size: contain;
+      }
+      .towxBtn{
+         width: 36px;
+         height:36px;
+         background: url(../assets/images/2xBtn.png) no-repeat;
+         background-size: contain;
+      }
+      .maxBtn{
+         width: 36px;
+         height: 36px;
+         background: url(../assets/images/maxBtn.png) no-repeat;
+         background-size: contain;
+      }
 }
 </style>

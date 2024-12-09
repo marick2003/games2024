@@ -34,13 +34,11 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-3 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-              <button class="minBtn"></button>
               <button class="halfBtn"></button>
               <button class="reduceBtn"></button>
               <div class="flex flex-col mt-[-10px]">
-                <label for="betAmount" class="text-xs text-[#45698C] font-medium">{{$t('BetAmount')}}</label>
-                <p class="bg-transparent border-0 text-[#00F320] text-xs font-bold">0.00001</p>
-
+                <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
+                <input v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
               </div>
               <button class="addBtn"></button>
               <button class="towxBtn"></button>
@@ -50,7 +48,7 @@
         </div>
         <div v-if="betMode === BetMode.AUTO">
             <div class="flex flex-col gap-1">
-                <div class="relative flex items-center mt-[-10px]">
+                <div class="relative flex items-center mt-[-5px]">
                     <label for="autoBetInput" class="text-sm font-medium text-slate-300">{{$t('NumberofBets')}}</label>
                     <PhQuestion class="text-slate-300 ml-[6px]" :class="{'cursor-pointer':isMouseEnterNumberBetHint}" weight="bold"
                         @mouseenter="isMouseEnterNumberBetHint = true" @mouseleave="isMouseEnterNumberBetHint = false" />
@@ -91,7 +89,7 @@
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
                 </template>
               </SlideSwitcher>
-                <p class=" text-[#45698C] text-xs py-1">Rows</p>
+              <p class=" text-[#45698C] text-xs font-bold py-1">Rows</p>
           </div>
           <div class="rounded-md px-[14px] pt-2 border border-[#45698C] text-center ">
                 <SlideSwitcher
@@ -105,7 +103,7 @@
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
                   </template>
                 </SlideSwitcher>
-                  <p class=" text-[#45698C] text-xs py-1">Mouth Size</p>
+                  <p class=" text-[#45698C] text-xs font-bold py-1">Mouth Size</p>
               </div>
         </div>
 
@@ -120,7 +118,7 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto hidden">
+        <div v-if="env === 'development'" class="mt-auto ">
           <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
@@ -128,6 +126,7 @@
             </div>
           </div>
         </div>
+        
     </div>
 </template>
 

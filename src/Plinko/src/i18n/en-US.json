@@ -22,5 +22,10 @@
     "400": "The server cannot process the request, please try again later",
     "404": "The server cannot process the request, please try again later",
     "500": "The server encountered an error and could not complete your request. Please try again later."
-  }
+  },
+  "Sound": "Sound",
+  "BetLimit": "Bet Limit",
+  "GameRule": "Game Rule",
+  "BetHistory": "Bet History",
+  "Fairness": "Fairness"
 }

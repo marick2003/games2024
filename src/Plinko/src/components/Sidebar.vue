@@ -11,11 +11,11 @@
                 {{ item.label }}
             </button>
         </div> -->
-        
+
         <div class="flex items-center justify-between flex-row gap-2">
-         
+
             <button @click="" class="autoBtn rounded-full  mx-2">
-              
+
             </button>
             <div class="flex justify-end items-center">
                 <button
@@ -38,15 +38,15 @@
               <button class="halfBtn"></button>
               <button class="reduceBtn"></button>
               <div class="flex flex-col mt-[-10px]">
-                <label for="betAmount" class="text-xs text-[#45698C] font-medium">Bet Amount</label>
+                <label for="betAmount" class="text-xs text-[#45698C] font-medium">{{$t('BetAmount')}}</label>
                 <p class="bg-transparent border-0 text-[#00F320] text-xs font-bold">0.00001</p>
-                
+
               </div>
               <button class="addBtn"></button>
               <button class="towxBtn"></button>
               <button class="maxBtn"></button>
           </div>
-          
+
         </div>
         <div v-if="betMode === BetMode.AUTO">
             <div class="flex flex-col gap-1">
@@ -108,8 +108,8 @@
                   <p class=" text-[#45698C] text-xs py-1">Mouth Size</p>
               </div>
         </div>
-      
-    
+
+
 
         <button
             v-if="simulation.isSimulationing"
@@ -330,19 +330,19 @@ select option {
     background: url(../assets/images/redBtn.png) no-repeat;
     background-size: cover;
         &:active{
-          background: url(../assets/images/redBtn_pass.png) no-repeat;   
-          background-size: contain;  
+          background: url(../assets/images/redBtn_pass.png) no-repeat;
+          background-size: contain;
         }
   }
   &.colorBall{
     background: url(../assets/images/colorBtn.png) no-repeat;
     background-size: cover;
     &:active{
-          background: url(../assets/images/colorBtn_pass.png) no-repeat; 
-          background-size: contain;    
+          background: url(../assets/images/colorBtn_pass.png) no-repeat;
+          background-size: contain;
         }
   }
-  
+
 }
 .betContent{
       .minBtn{

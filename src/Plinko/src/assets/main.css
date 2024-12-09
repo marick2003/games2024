@@ -3,6 +3,10 @@
 #app {
   background-color: #1f2937;
 }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #4646467d #ffffff82;
+}
 
 /* #app {
   max-width: 1280px;

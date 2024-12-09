@@ -1,15 +1,24 @@
 import { ref, computed } from 'vue';
 import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
+import type { BetHistoryResponseList } from '@/types/ResponseType';
+import { serviceBetHistory } from '@/stores/service';
 
 interface loadingInterface {
     appAssets: boolean
+    getBetHistory: boolean
+}
+
+interface PaginationInterface {
+    PageIndex: number
+    PageSize: number
 }
 export const useAppStore = defineStore('App', () => {
     const assetLoaded: Ref<boolean> = ref<boolean>(false)
     const gameLoaded: Ref<boolean> = ref<boolean>(false)
     const isLoading: Ref<loadingInterface> = ref({
         appAssets: ref(false),
+        getBetHistory: ref(false),
     })
 
     const showError:Ref<{visible: boolean, message: string}> = ref({
@@ -64,6 +73,17 @@ export const useAppStore = defineStore('App', () => {
         ico_sound:  new URL('@/assets/images/ico_sound.svg', import.meta.url).href,
     }
 
+    const getBetHistory = async(formData:PaginationInterface): Promise<BetHistoryResponseList> => {
+        const { isFetching, data, execute } = serviceBetHistory(formData)
+        console.log(isFetching)
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getBetHistory = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as BetHistoryResponseList
+    }
+
   return {
       showError,
       isMute,
@@ -72,5 +92,6 @@ export const useAppStore = defineStore('App', () => {
       isLoading,
       assetLoaded,
       gameLoaded,
+      getBetHistory,
    }
 })

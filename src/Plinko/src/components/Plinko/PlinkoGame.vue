@@ -428,11 +428,11 @@
   height: 8px;
   /* background: gray; */
   border-radius: 50%;
-  transition: box-shadow 0.3s;
+  transition: box-shadow 0.2s;
 }
 
 .pin.glowing {
-  box-shadow: 0 0 15px rgba(255, 255, 0, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 0, 1);
 }
 .crocodileBg{
   background: url(../../assets/images/crocodile_bg.png) no-repeat;

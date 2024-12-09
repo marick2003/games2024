@@ -126,23 +126,23 @@
       padding: 13px 0px 0px 0px;
       border-radius: 20px;
       &.prev{
-        background: url(../../assets/images/arrowBtn.png);
+        background: url(../../assets/images/svg/arrowBtn.svg);
         &:active{
-          background: url(../../assets/images/arrowBtn_pass.png);     
+          background: url(../../assets/images/svg/arrowBtn_pass.svg);     
         }
         &.disabled{
-          background: url(../../assets/images/arrowBtn_disabled.png);
+          background: url(../../assets/images/svg/arrowBtn_disabled.svg);
           cursor: not-allowed; 
         }
       }
       
       &.next{
-        background: url(../../assets/images/arrowBtn_down.png);
+        background: url(../../assets/images/svg/arrowBtn_down.svg);
         &:active{
-          background: url(../../assets/images/arrowBtn_down_pass.png);     
+          background: url(../../assets/images/svg/arrowBtn_down_pass.svg);     
         }
         &.disabled{
-          background: url(../../assets/images/arrowBtn_down_disabled.png);
+          background: url(../../assets/images/svg/arrowBtn_down_disabled.svg);
           cursor: not-allowed; 
         }
       }
@@ -150,7 +150,7 @@
     &.horizontal{
       width: 12px;
       height: 7px;
-      background: url(../../assets/images/arrow.svg) no-repeat;
+      background: url(../../assets/images/svg/arrow.svg) no-repeat;
       background-size: cover;
       &.prev{
         transform: rotate(270deg);

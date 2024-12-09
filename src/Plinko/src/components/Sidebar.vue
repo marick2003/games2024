@@ -126,7 +126,7 @@
             </div>
           </div>
         </div>
-        
+
     </div>
 </template>
 
@@ -347,37 +347,37 @@ select option {
       .minBtn{
          width: 36px;
          height: 36px;
-         background: url(../assets/images/minBtn.png) no-repeat;
+         background: url(../assets/images/svg/minBtn.svg) no-repeat;
          background-size: contain;
       }
       .halfBtn{
          width: 36px;
          height:36px;
-         background: url(../assets/images/halfBtn.png) no-repeat;
+         background: url(../assets/images/svg/halfBtn.svg) no-repeat;
          background-size: contain;
       }
       .reduceBtn{
          width: 26px;
          height: 26px;
-         background: url(../assets/images/reduceBtn.png) no-repeat;
+         background: url(../assets/images/svg/reduceBtn.svg) no-repeat;
          background-size: contain;
       }
       .addBtn{
          width: 26px;
          height: 26px;
-         background: url(../assets/images/addBtn.png) no-repeat;
+         background: url(../assets/images/svg/addBtn.svg) no-repeat;
          background-size: contain;
       }
       .towxBtn{
          width: 36px;
          height:36px;
-         background: url(../assets/images/2xBtn.png) no-repeat;
+         background: url(../assets/images/svg/2xBtn.svg) no-repeat;
          background-size: contain;
       }
       .maxBtn{
          width: 36px;
          height: 36px;
-         background: url(../assets/images/maxBtn.png) no-repeat;
+         background: url(../assets/images/svg/maxBtn.svg) no-repeat;
          background-size: contain;
       }
 }

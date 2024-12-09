@@ -45,6 +45,7 @@
       if (simulation.isSimulationing) return;
       const lastWinBinIndex = newWinRecords[newWinRecords.length - 1].binIndex;
       // active animation boolean
+      
       game.setIsBallEnterBins(lastWinBinIndex, true);
       setTimeout(() => {
         game.setIsBallEnterBins(lastWinBinIndex, false);

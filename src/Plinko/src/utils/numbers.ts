@@ -99,3 +99,11 @@ export function formatCurrency(value: number): string {
 export function getRandomBetween(min: number, max: number): number {
   return min + Math.random() * (max - min);
 }
+
+export const getRandomElement = (array) => {
+  if (!array || typeof array.length !== 'number' || array.length === 0) {
+    throw new Error("Invalid array provided");
+  }
+  const randomIndex = Math.floor(Math.random() * array.length);
+  return array[randomIndex];
+};

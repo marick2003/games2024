@@ -3,14 +3,14 @@
   // import { PhCircleNotch } from '@phosphor-icons/vue';
   import BinsRow from './BinsRow.vue';
   import LastWins from './LastWins.vue';
-  import { BallType, type RowCount } from '../../types';
-  import { getRandomBetween } from '../../utils/numbers';
-  import { binPayouts } from '../../constants/game';
-  import { onMounted, onUnmounted, ref, computed, watch } from 'vue';
+  import { onMounted, onUnmounted, ref, computed, watch,defineExpose  } from 'vue';
   import Matter, { type IBodyDefinition } from 'matter-js';
   import { v4 as uuidv4 } from 'uuid';
   import axios from 'axios';
-  import { BallPostionList } from '../../test'
+  import { BallPostionList } from '@/test';
+  import { getRandomElement } from '@/utils/numbers';
+  import { BetMode, RiskLevel , BallType } from '@/types';
+import { RowCount,rowCountOptions } from '../../constants/game';
   type BallFrictionsByRowCount = {
     friction: NonNullable<IBodyDefinition['friction']>;
     frictionAirByRowCount: Record<RowCount, NonNullable<IBodyDefinition['frictionAir']>>;
@@ -66,13 +66,13 @@
     timing: {
       timeScale: 3, // 1 正常  3 加入3倍
     },
-    gravity: {
-      scale: 0.0007,
-    },
+    // gravity: {
+    //   scale: 0.0007,
+    // },
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
-    friction: 0.5,// range (0, 1) 0.5
+    friction: 0.2,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
       8: 0.03,//0.0395,
       9: 0.032,//0.041,
@@ -179,23 +179,31 @@
     }
   );
 
-  watch(
-    () => game.isDropBall,
-    (newVal) => {
-      if (newVal) {
-        callToDrop();
-      }
-    }
-  );
 
   const callToDrop = async () => {
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/game`, {
-      rowCount: game.rowCount,
-    });
-    dropABall(response.data.point);
-    game.setDropBall(false);  // Reset `isDropBall` after handling
+    // const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/game`, {
+    //   rowCount: game.rowCount,
+    // });
+    console.log(`output->game.isDropBall`,'newVal')
+    const response :any = await game.doBet({
+        Currency: game.currency,
+        BetMoney: game.betAmount,
+        Rows: rowCountOptions.indexOf(game.rowCount),
+        Risk: Object.values(RiskLevel).indexOf(game.riskLevel),
+        BallType: Object.values(BallType).indexOf(game.ballType)
+      })
+    if(response.IsSuccess){
+      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
+      console.log(`output->point`,point)
+      await dropABall(point);
+      
+      game.setDropBall(false);  // Reset `isDropBall` after handling
+    }
+    
   };
-
+  defineExpose({
+    callToDrop,
+});
   const dropABall = (point: number) => {
 
     const ballTexture = new Image();
@@ -209,7 +217,7 @@
       //   canvas.value!.width / 2 - ballOffsetRangeX,
       //   canvas.value!.width / 2 + ballOffsetRangeX,
       // ),
-      Math.trunc(point),
+      point,
       0,
       ballRadius,
       {
@@ -365,15 +373,15 @@
 
     if (binIndex !== -1 && binIndex < pinsLastRowXCoords.value.length - 1) {
       const betAmount = game.betAmountOfExistingBalls[ball.id] ?? 0;
-      const multiplier = binPayouts[game.rowCount][game.riskLevel][binIndex];
+      const multiplier = game.binPayouts[game.rowCount][game.riskLevel][binIndex];
       const payoutValue = betAmount * multiplier;
       const profit = payoutValue - betAmount;
-
       game.updateWinRecords({
         id: uuidv4(),
         betAmount,
         rowCount: game.rowCount,
         binIndex,
+        ballType: game.ballType,
         payout: {
           multiplier,
           value: payoutValue,
@@ -426,7 +434,7 @@
   position: absolute;
   width: 8px;
   height: 8px;
-  /* background: gray; */
+  /* background: gray;  */
   border-radius: 50%;
   transition: box-shadow 0.2s;
 }

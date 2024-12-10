@@ -14,7 +14,7 @@
 
         <div class="flex items-center justify-between flex-row gap-2">
 
-            <button @click="" class="autoBtn rounded-full  mx-2">
+            <button @click="game.autoSettingDialog.visible = true " class="autoBtn rounded-full  mx-2">
 
             </button>
             <div class="flex justify-end items-center">
@@ -34,49 +34,19 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-3 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-              <button class="halfBtn"></button>
-              <button class="reduceBtn"></button>
+              <button class="halfBtn" @click="handleHalfBet"></button>
+              <button class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
-                <input v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
               </div>
-              <button class="addBtn"></button>
-              <button class="towxBtn"></button>
-              <button class="maxBtn"></button>
+              <button class="addBtn" @click="handleAddBet"></button>
+              <button class="towxBtn" @click="handleDoubleBet"></button>
+              <button class="maxBtn" @click="handleMaxBet"></button>
           </div>
 
         </div>
-        <div v-if="betMode === BetMode.AUTO">
-            <div class="flex flex-col gap-1">
-                <div class="relative flex items-center mt-[-5px]">
-                    <label for="autoBetInput" class="text-sm font-medium text-slate-300">{{$t('NumberofBets')}}</label>
-                    <PhQuestion class="text-slate-300 ml-[6px]" :class="{'cursor-pointer':isMouseEnterNumberBetHint}" weight="bold"
-                        @mouseenter="isMouseEnterNumberBetHint = true" @mouseleave="isMouseEnterNumberBetHint = false" />
-                    <div v-if="isMouseEnterNumberBetHint" class="absolute top-[24px] left-[18px] z-30 max-w-lg rounded-md bg-white p-3 text-sm font-medium text-gray-950 drop-shadow-xl">
-                        <p>{{$t('NumberofBetsCaption')}}</p>
-                        <div class="tooltip-arrow" data-popper-arrow></div>
-                    </div>
-                </div>
 
-                <div class="relative">
-                    <input
-                        id="autoBetInput"
-                        v-model="autoBetInputValue"
-                        :disabled="autoBetInterval !== null"
-                        type="number"
-                        min="0"
-                        inputmode="numeric"
-                        class='w-full rounded-md border-2 border-slate-600 bg-slate-900 py-2 pl-3 pr-8 text-sm text-white
-                        transition-colors hover:cursor-pointer focus:border-slate-500 focus:outline-none disabled:cursor-not-allowed
-                        disabled:opacity-50 hover:[&:not(:disabled)]:border-slate-500'
-                        :class="{ 'border-red-500 hover:border-red-400 focus:border-red-400':isAutoBetInputNegative }"
-                    />
-                    <!-- @focusout="handleAutoBetInputFocusOut" -->
-                    <PhInfinity v-if="autoBetInput === 0" class="absolute right-3 top-3 size-4 text-slate-400" weight="bold" />
-                </div>
-                <p v-if="isAutoBetInputNegative" class="text-xs leading-5 text-red-400">{{$t('GreaterThanMessage')}}</p>
-            </div>
-        </div>
         <div class="flex justify-between">
           <div class="rounded-md px-[14px] pt-2 border border-[#45698C] text-center">
                 <SlideSwitcher
@@ -106,9 +76,6 @@
                   <p class=" text-[#45698C] text-xs font-bold py-1">Mouth Size</p>
               </div>
         </div>
-
-
-
         <button
             v-if="simulation.isSimulationing"
             @click="simulation.exportToJsonFile"
@@ -126,8 +93,8 @@
             </div>
           </div>
         </div>
-
     </div>
+    <AutoSettingDialog v-if="game.autoSettingDialog.visible" />
 </template>
 
 <script setup lang="ts">
@@ -139,6 +106,7 @@ import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
 import Switch from '../components/UI/Switch.vue';
 import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
+import AutoSettingDialog from './AutoSettingDialog.vue';
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 const game = useGameStore();
@@ -259,6 +227,7 @@ const autoBetDropBall = () => {
 // };
 
 const handleBetClick = (ballType:BallType) => {
+  
     game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");
@@ -276,9 +245,9 @@ const betModes = [
     { value: BetMode.AUTO, label: $t('Auto') },
 ];
 const riskLevels = [
-    { value: RiskLevel.LOW, label: 'Close Mouth' },
-    { value: RiskLevel.MEDIUM, label: 'Small Mouth' },
-    { value: RiskLevel.HIGH, label: 'Big Mouth' },
+    { value: RiskLevel.SwimmingMultipliers, label: 'Close Mouth' },
+    { value: RiskLevel.SmallMouthMultipliers, label: 'Small Mouth' },
+    { value: RiskLevel.BigMouthMultipliers, label: 'Big Mouth' },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
 
@@ -289,18 +258,38 @@ watch(currentRowCount, (newRiskLevel) => {
     game.setRowCount(currentRowCount.value);
 });
 
-const changeRiskLevel = () => {
-    game.setRiskLevel(currentRiskLevel.value);
-}
+const handleHalfBet = () => {
+  const newBetAmount = Math.max(game.minBetAmount / 2, game.minBetAmount);
+  game.setBetAmount(newBetAmount);
+};
 
-const changeRowCount = () => {
-    game.setRowCount(currentRowCount.value);
-}
+const handleReduceBet = () => {
+  const newBetAmount = Math.max(game.betAmount - 1, game.minBetAmount);
+  game.setBetAmount(newBetAmount);
+};
 
-const changeBetAmount = (value: number) => {
-  currentBetAmount.value = value;
-  game.setBetAmount(currentBetAmount.value);
-}
+const handleAddBet = () => {
+  const newBetAmount = Math.min(game.betAmount + 1, game.maxBetAmount);
+  game.setBetAmount(newBetAmount);
+};
+
+const handleDoubleBet = () => {
+  const newBetAmount = Math.min(game.betAmount * 2, game.maxBetAmount);
+  game.setBetAmount(newBetAmount);
+};
+
+const handleMaxBet = () => {
+  game.setBetAmount(game.maxBetAmount);
+};
+
+const validateBetAmount = () => {
+  if (game.betAmount < game.minBetAmount) {
+    game.setBetAmount(game.minBetAmount);
+  } else if (game.betAmount > game.maxBetAmount) {
+    game.setBetAmount(game.maxBetAmount);
+  }
+};
+
 </script>
 
 <style scoped lang="scss">
@@ -322,22 +311,22 @@ select option {
     height: 55px;
 }
 .dropBallBtn{
-  width: 120px;
-  height: 63px;
+  width: 128px;
+  height: 58px;
   border-radius: 20px;
   &.redBall{
-    background: url(../assets/images/redBtn.png) no-repeat;
+    background: url(../assets/images/svg/redBtn.svg) no-repeat;
     background-size: cover;
         &:active{
-          background: url(../assets/images/redBtn_pass.png) no-repeat;
+          background: url(../assets/images/svg/redBtn_pass.svg) no-repeat;
           background-size: contain;
         }
   }
   &.colorBall{
-    background: url(../assets/images/colorBtn.png) no-repeat;
+    background: url(../assets/images/svg/colorBtn.svg) no-repeat;
     background-size: cover;
     &:active{
-          background: url(../assets/images/colorBtn_pass.png) no-repeat;
+          background: url(../assets/images/svg/colorBtn_pass.svg) no-repeat;
           background-size: contain;
         }
   }

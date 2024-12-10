@@ -10,9 +10,9 @@ export enum BetMode {
  * Game's risk level, which controls the volatility of payout.
  */
 export enum RiskLevel {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
+  SwimmingMultipliers = 'SwimmingMultipliers',
+  SmallMouthMultipliers = 'SmallMouthMultipliers',
+  BigMouthMultipliers = 'BigMouthMultipliers',
 }
 
 
@@ -46,6 +46,8 @@ export type WinRecord = {
   /**
    * Zero-based index of which bin the ball fell into (leftmost bin is 0).
    */
+  ballType: BallType ;
+
   binIndex: number;
   payout: {
     /**
@@ -62,3 +64,25 @@ export type WinRecord = {
    */
   profit: number;
 };
+
+export type AutoBetSetting={
+  betAmount: number;      // 初始下注金額
+  ballType: BallType;     // 投注球類型
+  autoBetCount: number;   // 自動投注
+  loseAdjustmentPercentage: number; // 若輸，金額增加 10%
+  winAdjustmentPercentage: number;  // 若贏，金額減少 5%
+  isSingleBetProfitLimit: boolean;  // 是否單注止盈
+  singleBetProfitLimit: number;     // 單注止盈
+  isCumulativeStopLoss: boolean;    // 是否累積止損
+  cumulativeStopLoss: number;       // 累積止損
+  iscumulativeStopWin:boolean;      // 是否累積止盈
+  cumulativeStopWin: number;        // 累積止盈
+}
+
+export type DoBet={
+  Currency:string;
+  BetMoney:number;
+  Rows: number;
+  Risk: number;
+  BallType: number;
+}

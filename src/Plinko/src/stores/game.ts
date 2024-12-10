@@ -1,26 +1,27 @@
 import { ref, computed } from 'vue';
+import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
 // import PlinkoEngine from '../components/Plinko/PlinkoEngine';
 import { binColor } from '../constants/game';
 import {
   RiskLevel,
   BallType,
+  type DoBet,
+  type AutoBetSetting,
   type BetAmountOfExistingBalls,
   type RowCount,
   type WinRecord,
 } from '../types';
 import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
-
+import { serviceInit,serviceDoBet } from '@/stores/service';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
 
    const betAmount = ref<number>(0.000001);
-
    const setBetAmount = (value: number) => {
     betAmount.value = value;
    }
-
    const betAmountOfExistingBalls = ref<BetAmountOfExistingBalls>({});
 
    const updateBetAmountOfExistingBalls = (ballId:number) => {
@@ -37,19 +38,28 @@ export const useGameStore = defineStore('game', () => {
     // betAmountOfExistingBalls.value = {...newValue};
     delete betAmountOfExistingBalls.value[ballId];
    }
-
+   
    const rowCount = ref<RowCount>(8);
-
    const setRowCount = (value:RowCount) => {
     rowCount.value = value;
    }
-
-   const riskLevel = ref<RiskLevel>(RiskLevel.MEDIUM);
+   const maxBetAmount=ref<number>(0);
+   const setmaxBetAmount = (value: number) => {
+    maxBetAmount.value = value;
+   }
+   const minBetAmount=ref<number>(0);
+   const setminBetAmount = (value: number) => {
+    minBetAmount.value = value;
+   }
+   const riskLevel = ref<RiskLevel>(RiskLevel.SwimmingMultipliers);
  
    const setRiskLevel = (value: RiskLevel) => {
     riskLevel.value = value;
    }
-   
+   const currency= ref<string>('1');
+   const setCurrency = (value: string) => {
+    currency.value = value;
+   }
    const ballType = ref<BallType>(BallType.RED);
    const setBallType = (value: BallType) => {
     ballType.value = value;
@@ -59,7 +69,10 @@ export const useGameStore = defineStore('game', () => {
    const updateWinRecords = (value:WinRecord) => {
     winRecords.value.push(value);
    }
-
+   const autoBetSetting= ref<AutoBetSetting[]>([]);
+   const updateAutoBetSetting = (value:AutoBetSetting) => {
+    autoBetSetting.value.push(value);
+   }
    const isDropBall = ref<boolean>(false);
 
    const setDropBall = (value: boolean) => {
@@ -72,7 +85,6 @@ export const useGameStore = defineStore('game', () => {
     if (isBallEnterBins.value.length > 0)
       isBallEnterBins.value[index] = value;
    }
-
 /**
  * History of total profits. Should be updated whenever a new win record is pushed
  * to `winRecords` store.
@@ -133,6 +145,52 @@ const binProbabilities = computed<{ [binIndex: number]: number }>(() => {
   }
   return probabilities;
 });
+const binPayouts = ref<Record<number, Record<string, number[]>>>({});
+const updateBinPayouts = (newBinPayouts: Record<number, Record<string, number[]>>) => {
+  binPayouts.value = newBinPayouts;
+};
+
+const autoSettingDialog:Ref<{visible: boolean, section: string}> = ref({
+  visible: ref(false),
+  section: ref(''),
+})
+const doBet =async(betData:DoBet)=>{
+  const { data, execute } = serviceDoBet(betData)
+  await execute()
+  return data.value
+}
+// Initialize
+const getInitialization = async() => {
+
+  const { data, execute } = serviceInit({})
+  await execute()
+  const responseData:any = data.value
+
+  setmaxBetAmount(responseData.Data.MaxBetAmount)
+  setminBetAmount(responseData.Data.MinBetAmount)
+  setCurrency(String(responseData.Data.Currency))
+  // 組合成目標格式
+  const formattedBinPayouts: Record<number, Record<string, number[]>> = {};
+  updateBinPayouts(formattedBinPayouts)
+  const { SwimmingMultipliers, SmallMouthMultipliers, BigMouthMultipliers } = responseData.Data;
+
+  SwimmingMultipliers.forEach(({ Row, Multipliers }) => {
+    if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
+    formattedBinPayouts[Row]['SwimmingMultipliers'] = Multipliers;
+  });
+
+  SmallMouthMultipliers.forEach(({ Row, Multipliers }) => {
+    if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
+    formattedBinPayouts[Row]['SmallMouthMultipliers'] = Multipliers;
+  });
+
+  BigMouthMultipliers.forEach(({ Row, Multipliers }) => {
+    if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
+    formattedBinPayouts[Row]['BigMouthMultipliers'] = Multipliers;
+  });
+  return formattedBinPayouts;
+};
+
 
   return {
     // plinkoEngine,
@@ -160,5 +218,14 @@ const binProbabilities = computed<{ [binIndex: number]: number }>(() => {
     updateWinRecords,
     updateTotalProfitHistory,
     updateBetAmountOfExistingBalls,
+    getInitialization,
+    binPayouts,
+    maxBetAmount,
+    minBetAmount,
+    autoBetSetting,
+    updateAutoBetSetting,
+    autoSettingDialog,
+    doBet,
+    currency,
    }
 })

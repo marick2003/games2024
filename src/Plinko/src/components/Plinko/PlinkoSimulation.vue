@@ -6,7 +6,6 @@
   import LastWins from './LastWins.vue';
   import type { RowCount } from '../../types';
   import { getRandomBetween } from '../../utils/numbers';
-  import { binPayouts } from '../../constants/game';
   import { onMounted, onUnmounted, ref, computed, watch } from 'vue';
   import Matter, { type IBodyDefinition } from 'matter-js';
   import { v4 as uuidv4 } from 'uuid';
@@ -64,13 +63,13 @@
     timing: {
       timeScale: 3,
     },
-    gravity: {
-      scale: 0.0007,
-    },
+    // gravity: {
+    //   scale: 0.0007,
+    // },
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
-    friction: 0.5,// range (0, 1) 0.5
+    friction: 0.2,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
       8: 0.03,//0.0395,
       9: 0.032,//0.041,
@@ -101,7 +100,7 @@
 
     sensor.value = Bodies.rectangle(
       canvas.value.width / 2,
-      canvas.value.height + 5 ,
+      canvas.value.height  ,
       canvas.value.width,
       10,
       {
@@ -176,6 +175,8 @@
   );
 
   const dropABall = () => {
+    const ballTexture = new Image();
+    ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
     console.log(`output->pinDistanceX.value`,pinDistanceX.value)
     const ballOffsetRangeX = pinDistanceX.value * 1.2;// * 0.8;
     const ballRadius = pinRadius.value * 2;
@@ -183,8 +184,8 @@
 
     const ball = Bodies.circle(
       getRandomBetween(
-        canvas.value!.width / 2 - 200,
-        canvas.value!.width / 2 + 200,
+        canvas.value!.width / 2 - 150,
+        canvas.value!.width / 2 + 150,
       ),
       0,
       ballRadius,
@@ -197,7 +198,12 @@
           mask: PIN_CATEGORY, // Collide with pins only, but not other balls
         },
         render: {
-          fillStyle: '#ff0000',
+          sprite: {
+            texture: ballTexture.src,
+            xScale: 2,
+            yScale: 2,  
+
+          }
         },
       }
     );
@@ -243,11 +249,11 @@
       Composite.remove(engine.world, walls.value);
       walls.value = [];
     }
-
+    const bottomMargin = 60; // 與底部的間距
     for (let row = 0; row < game.rowCount; ++row) {
       const rowY =
         PADDING_TOP +
-        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM) / (game.rowCount - 1)) * row;
+        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM - bottomMargin) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
       const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
@@ -325,7 +331,7 @@
 
     if (binIndex !== -1 && binIndex < pinsLastRowXCoords.value.length - 1) {
       const betAmount = game.betAmountOfExistingBalls[ball.id] ?? 0;
-      const multiplier = binPayouts[game.rowCount][game.riskLevel][binIndex];
+      const multiplier = game.binPayouts[game.rowCount][game.riskLevel][binIndex];
       const payoutValue = betAmount * multiplier;
       const profit = payoutValue - betAmount;
 
@@ -338,6 +344,7 @@
         betAmount,
         rowCount: game.rowCount,
         binIndex,
+        ballType: game.ballType,
         payout: {
           multiplier,
           value: payoutValue,
@@ -355,20 +362,20 @@
 
 <template>
   <div class="relative bg-gray-900">
-    <div class="mx-auto flex h-full flex-col px-4 pb-4" :style="{maxWidth: WIDTH +'px'}">
-      <div class="relative w-full" :style="{aspectRatio: WIDTH / HEIGHT}">
+    <div class="mx-auto flex h-full flex-col" :style="{maxWidth: WIDTH +'px'}">
+      <div class="relative w-full  mt-[62px] z-[2]" :style="{aspectRatio: WIDTH / HEIGHT}">
           <!-- <div v-if="game.plinkoEngine === null" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <PhCircleNotch class="size-20 animate-spin text-slate-600" weight="bold" />
           </div> -->
           <canvas id="canvas" width={WIDTH} height={HEIGHT} class="absolute inset-0 h-full w-full" />
       </div>
-      <BinsRow :binsWidthPercentage="binsWidthPercentage" />
+      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[3] absolute bottom-[34%]" />
       <!-- 動畫演出 -->
-       <div class="h-20">
-          
-       </div>
+      <div class="w-full h-[210px] mt-[-45px] crocodileBg">
+              <!-- <img class="w-full" src="../../assets/images/crocodile_bg.png"/> -->
+        </div>
     </div>
-    <div class="absolute right-[5%] top-1/2 -translate-y-1/2">
+    <div class="absolute right-[5%] top-1/2 -translate-y-1/2 z-[3]" >
       <div v-for="(value, key) in simulation.outputs" :key="key"
         class="text-[white] text-[10px] border-[white] border-[2px] w-[60px] h-[25px] flex items-center justify-center">
         {{key + ':' + value.length}}

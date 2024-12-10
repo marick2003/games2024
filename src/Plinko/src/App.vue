@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Plinko from './components/Plinko/PlinkoGame.vue';
+import { onMounted, onUnmounted, ref, computed, watch } from 'vue';
 import PlinkoSimulation from './components/Plinko/PlinkoSimulation.vue';
 import Sidebar from './components/Sidebar.vue';
 import Balance from './components/Balance.vue';
@@ -8,16 +9,30 @@ import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useSimulationStore } from './stores/simulation';
 import { useAppStore } from '@/stores/app'
+import { useGameStore } from '@/stores/game'
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
 
 const simulation = useSimulationStore();
 const appStore = useAppStore()
+const game=useGameStore();
 const showSetting = () => {
   appStore.settingDialog.visible = true
   appStore.settingDialog.section = 'main'
 }
-
+const childRef = ref(null);
+//初始資料
+game.getInitialization();
+watch(
+    () => game.isDropBall,
+    async(newVal) => {
+     
+      if (newVal) {
+        console.log(`output->game.isDropBall`,newVal)
+        childRef.value.callToDrop()
+      }
+    }
+  );
 </script>
 
 <template>
@@ -46,15 +61,15 @@ const showSetting = () => {
           <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">
         </button>
       </div>
-      <div class="mx-auto min-w-[300px] max-w-[375px] drop-shadow-xl">
+      <div class="mx-auto w-[375px]  drop-shadow-xl">
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
           <Sidebar class="z-[1] mt-[-75px]   md:mt-[-62px]" />
           <div class="flex-1">
             <template v-if="simulation.isSimulationing">
-              <PlinkoSimulation />
+              <PlinkoSimulation ref="childRef"/>
             </template>
             <template v-else>
-              <Plinko />
+              <Plinko ref="childRef" />
             </template>
           </div>
         </div>

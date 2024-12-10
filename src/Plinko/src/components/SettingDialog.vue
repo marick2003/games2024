@@ -3,33 +3,41 @@ import {ref, computed, watch, type Ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useAppStore } from '@/stores/app'
-import type {BetHistoryResponseList} from '@/types/ResponseType';
+import type {BetHistoryResponseList, BetHistoryResponse} from '@/types/ResponseType';
 const appStore = useAppStore()
-import { useIntersectionObserver } from '@vueuse/core'
-const target = ref(null)
-const targetIsVisible = ref(false)
+import { vIntersectionObserver } from '@vueuse/components'
+const root = ref(null)
+const isVisible = ref(false)
 
-const betHistoryResult: Ref<BetHistoryResponseList | {}> = ref({})
+const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
+const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
 
-const { stop } = useIntersectionObserver(
-  target,
-  ([entry], observerElement) => {
-    targetIsVisible.value = entry?.isIntersecting || false
-  },
-)
+const pageIndex:Ref<number> = ref(1)
+function onIntersectionObserver([{ isIntersecting }]) {
+  if (isIntersecting){
+    console.log((betHistoryResponseList ))
+    if (betHistoryResponseList.value.Data.PageCount > betHistoryResponseList.value.Data.PageIndex){
+      pageIndex.value= pageIndex.value + 1
+      getBetHistory(pageIndex.value)
+    }
+  }
+}
 
-const getBetHistory = async(index:number = 0) => {
+const getBetHistory = async(index:number = 1) => {
   const response = await appStore.getBetHistory({ PageIndex: index, PageSize: 2 })
   if (response.IsSuccess){
-    betHistoryResult.value = response
+    betHistoryResponseList.value = response
+    betHistoryResult.value = [...betHistoryResult.value, ...response.Data.Items]
+    console.log(betHistoryResult.value)
   }
 }
 
 
 watch(()=> appStore.settingDialog.section,(val)=>{
-  console.log(val)
+
   if (val === 'history'){
-    getBetHistory(0)
+    pageIndex.value = 1
+    getBetHistory(1)
   }
 })
 </script>
@@ -58,15 +66,18 @@ watch(()=> appStore.settingDialog.section,(val)=>{
 
       </div>
       <div class='modal-content mx-auto text-left pt-1 mt-4 pb-6 h-[100%] overflow-hidden'>
-        <div class="flex flex-col gap-5 h-[530px] overflow-y-auto">
-        <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.Data.Items && betHistoryResult.Data.Items.length > 0">
-          <div v-for="history in betHistoryResult.Data?.Items"  ref="target" :key="history.Id">
+        <div class="flex flex-col gap-5 h-[530px] overflow-y-auto"  ref="root">
+        <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length > 0">
+          <div v-for="(history, index) in betHistoryResult" :key="history.Id">
+            <h1>{{index}}</h1>
             Name Crocodile Plinko <br>
             ID: {{history.Id}}<br>
             amount: {{history.Amount}} {{history.Currency}}<br>
             PayoutMultiplier: {{history.PayoutMultiplier}}<br>
             Payout: {{history.Payout}}<br>
             DateTime: {{history.Time}}
+            <div v-if='index === (betHistoryResult.length - 1)' v-intersection-observer="onIntersectionObserver">last and fetch</div>
+
           </div>
         </template>
         </div>

@@ -106,14 +106,14 @@ import { RowCount,rowCountOptions } from '../../constants/game';
 
     sensor.value = Bodies.rectangle(
       canvas.value.width / 2,
-      canvas.value.height,
+      canvas.value.height + 80,
       canvas.value.width,
-      10,
+      1,
       {
         isSensor: true,
         isStatic: true,
         render: {
-          visible: false,
+          visible: true,
         },
       },
     );
@@ -143,9 +143,21 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
     if (pin) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
+       // 檢查是否與彩球碰撞
+       const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
+       const isColorBall = ball && ball.render.sprite?.texture.includes("color"); // 假設 "color" 表示彩球的紋理
+
+
       if (pinState) {
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
+      }
+      console.log(`output->ball`,ball.isExplosion)
+       // 如果是彩球，有一定機率觸發爆炸
+       if (isColorBall && ball.isExplosion &&  Math.random() < 0.2) { // 20% 機率爆炸
+        console.log(`Color ball exploded at pin: ${pin.id}`);
+        // 移除彩球
+        Composite.remove(engine.world, ball);
       }
     }
   };
@@ -195,7 +207,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
       console.log(`output->point`,point)
-      await dropABall(point);
+      await dropABall(282.0662525523998);
       
       game.setDropBall(false);  // Reset `isDropBall` after handling
     }
@@ -221,6 +233,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       0,
       ballRadius,
       {
+        isExplosion: false,
         restitution: 0.8, // Bounciness
         friction,
         frictionAir: frictionAirByRowCount[game.rowCount],
@@ -323,52 +336,9 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       game.isBallEnterBins.push(false);
     }
     Composite.add(engine.world, pins.value);
-
-    // setting wall rectangle
-    // // const firstPinX = pins.value[0].position.x;
-    // const leftWallAngle = Math.atan2(
-    //   //firstPinX - pinsLastRowXCoords.value[0],
-    //   0,
-    //   canvas.value!.height - PADDING_TOP - PADDING_BOTTOM,
-    // );
-    // // const leftWallX = firstPinX - (firstPinX - pinsLastRowXCoords.value[0]) / 2 - pinDistanceX.value * 0.25;
-    // const leftWallX = pinsLastRowXCoords.value[0] - pinDistanceX.value * 0.5;
-
-    // const leftWall = Matter.Bodies.rectangle(
-    //   leftWallX,
-    //   canvas.value!.height / 2,
-    //   10,
-    //   canvas.value!.height,
-    //   {
-    //     isStatic: true,
-    //     angle: leftWallAngle,
-    //     render: { fillStyle: '#ffffff', visible: true },
-    //   },
-    // );
-    // const rightWall = Matter.Bodies.rectangle(
-    //   canvas.value!.width - leftWallX,
-    //   canvas.value!.height / 2,
-    //   10,
-    //   canvas.value!.height,
-    //   {
-    //     isStatic: true,
-    //     angle: -leftWallAngle,
-    //     render: { fillStyle: '#ffffff', visible: true },
-    //   },
-    // );
-    // walls.value.push(leftWall, rightWall);
-    // Composite.add(engine.world, walls.value);
   }
 
   const handleBallEnterBin = (ball: Matter.Body) => {
-    // let binIndex = -1;
-    // for (let i = pinsLastRowXCoords.value.length - 1; i>=0; i--) {
-    //   if (pinsLastRowXCoords.value[i] < ball.position.x) {
-    //     binIndex = i;
-    //     break;
-    //   }
-    // }
-
     const binIndex = pinsLastRowXCoords.value.findLastIndex((pinX) => pinX < ball.position.x);
 
     if (binIndex !== -1 && binIndex < pinsLastRowXCoords.value.length - 1) {
@@ -390,8 +360,19 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       });
       game.updateTotalProfitHistory(profit);
       game.updateBalance(payoutValue);
+       // 判斷 bin 的數字是否為 0，切換鱷魚圖
+        if (multiplier <= 0) {
+          if (game.riskLevel === RiskLevel.SmallMouthMultipliers) {
+            crocodileStep.value = 'step2'; // 如果是小嘴風險，顯示 step2
+          } else if (game.riskLevel === RiskLevel.BigMouthMultipliers) {
+            crocodileStep.value = 'step3'; // 如果是大嘴風險，顯示 step3
+          }
+          setTimeout(() => {
+            crocodileStep.value = 'step1'; // 0.2 秒後重置為 step1
+          }, 200);
+        }
     }
-
+    
     Composite.remove(engine.world, ball);
     game.deleteItemFromBetAmountOfExistingBalls(ball.id);
   }
@@ -401,6 +382,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   left: `${pin.x - 4}px`,
   top: `${pin.y - 4}px`,
 });
+const crocodileStep = ref('step1'); // 默認顯示 step1
+
 </script>
 
 <template>
@@ -419,10 +402,19 @@ import { RowCount,rowCountOptions } from '../../constants/game';
             
       </div>
       <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[34%]" />
-        <div class="w-full h-[210px] mt-[-45px] crocodileBg">
-              <!-- <img class="w-full" src="../../assets/images/crocodile_bg.png"/> -->
+      <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
+        <div v-if="crocodileStep === 'step2'" class="absolute top-[20px] left-[142px]">
+          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step2.svg" />
         </div>
-    </div>
+        <div v-else-if="crocodileStep === 'step3'" class="absolute top-[20px] left-[120px]">
+          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step3.svg" />
+        </div>
+        <div v-else class="absolute top-[65px] left-[80px] animate-move">
+          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step1.svg" />
+        </div>
+      </div>
+
+      </div>
     <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
       <LastWins />
     </div>
@@ -446,5 +438,19 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   background: url(../../assets/images/crocodile_bg.png) no-repeat;
   background-size: contain;
 }
+@keyframes moveSideways {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px); /* 可調整移動距離 */
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
 
+.animate-move {
+  animation: moveSideways 5s ease-in-out infinite; /* 每2秒完成一次動畫，平滑往返 */
+}
 </style>

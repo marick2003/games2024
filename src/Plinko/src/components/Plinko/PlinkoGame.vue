@@ -107,7 +107,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         isSensor: true,
         isStatic: true,
         render: {
-          visible: true,
+          visible: false,
         },
       },
     );
@@ -135,18 +135,42 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   });
   const handlePinCollision = (bodyA: Matter.Body, bodyB: Matter.Body) => {
     const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
-    if (pin) {
+    const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
+    console.log(`output->ball`,ball)
+    if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞
-       const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
        const isColorBall = ball && ball.render.sprite?.texture.includes("color"); // 假設 "color" 表示彩球的紋理
-
-
       if (pinState) {
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      
+      ball.collisionCount = (ball.collisionCount || 0) - 1;
+      if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
+        console.log(`output->pinState`,pinState)
+        const explosionX = pinState.x;
+        const explosionY = pinState.y + 46;
+        console.log(`Explosion at -> x: ${explosionX}, y: ${explosionY}`);
+
+        const explosionImg = document.createElement("img");
+        explosionImg.src = '/src/assets/images/boom.gif';
+        explosionImg.style.position = "absolute";
+        explosionImg.style.width = "50px";
+        explosionImg.style.height = "50px";
+        explosionImg.style.left = `${explosionX - 25}px`;
+        explosionImg.style.top = `${explosionY - 25}px`;
+        explosionImg.style.zIndex = "10";
+        explosionImg.style.mixBlendMode = "color-dodge";
+        // 將爆炸特效添加到畫布容器中
+          canvas.value!.parentElement!.parentElement!.appendChild(explosionImg);
+
+          // 在2秒後移除爆炸特效
+          setTimeout(() => {
+            explosionImg.remove();
+          }, 1000);
+          Composite.remove(engine.world, ball);
+          game.deleteItemFromBetAmountOfExistingBalls(ball.id);
+      }
     }
   };
 
@@ -192,10 +216,11 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         Risk: Object.values(RiskLevel).indexOf(game.riskLevel),
         BallType: Object.values(BallType).indexOf(game.ballType)
       })
+      
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
-       // 20% 機率爆炸
-      await dropABall(point,(game.ballType === BallType.COLOR ? Math.random() < 0.8 : false));
+       // response.Data.ColorMultiplier 0 爆炸  1 正常
+      await dropABall(point,(game.ballType === BallType.COLOR && !response.Data.ColorMultiplier));
       game.setDropBall(false);  // Reset `isDropBall` after handling
     }
     
@@ -203,90 +228,63 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   defineExpose({
     callToDrop,
 });
-  const dropABall = (point: number,isExplosion: boolean) => {
-    console.log(`output->isExplosion`,isExplosion)
+const dropABall = (point: number, isExplosion: boolean) => {
+    console.log(`output->isExplosion`, isExplosion);
+
+    // 初始化圖片
     const ballTexture = new Image();
     ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
-    // const ballOffsetRangeX = pinDistanceX.value;// * 0.8;
+
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
 
-    const ball = Bodies.circle(
-      // getRandomBetween(
-      //   canvas.value!.width / 2 - ballOffsetRangeX,
-      //   canvas.value!.width / 2 + ballOffsetRangeX,
-      // ),
-      point,
-      0,
-      ballRadius,
-      {
-        restitution: 0.8, // Bounciness
-        friction,
-        frictionAir: frictionAirByRowCount[game.rowCount],
-        collisionFilter: {
-          category: BALL_CATEGORY,
-          mask: PIN_CATEGORY, // Collide with pins only, but not other balls
-        },
-        render: {
-          sprite: {
-            texture: ballTexture.src,
-            xScale: 2,
-            yScale: 2,  
+    // 處理圖片加載完成後再添加球體
+    ballTexture.onload = () => {
+        const ball = Bodies.circle(
+            point,
+            0,
+            ballRadius,
+            {
+                isExplosion, // 是否爆炸
+                collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
+                restitution: 0.8, // 彈性
+                friction,
+                frictionAir: frictionAirByRowCount[game.rowCount],
+                collisionFilter: {
+                    category: BALL_CATEGORY,
+                    mask: PIN_CATEGORY, // 只與 PIN 碰撞
+                },
+                render: {
+                    sprite: {
+                        texture: ballTexture.src,
+                        xScale: 2,
+                        yScale: 2,
+                    },
+                },
+            }
+        );
 
-          }
-        },
-      }
-    );
-    Composite.add(engine.world, ball);
+        // 添加到引擎中
+        Composite.add(engine.world, ball);
 
-       // 如果是彩球，有一定機率觸發爆炸
-      if (isExplosion) {
-        // 初始動畫參數
-        const animationDuration = 1000; // 動畫總時長（毫秒）
-        // 在動畫結束後移除球
-        setTimeout(() => {
-          Composite.remove(engine.world, ball); // 移除球
-            console.log(`output->ball`,ball)
+        // 更新遊戲狀態
+        game.updateBetAmountOfExistingBalls(ball.id);
+        game.updateBalance(-game.betAmount);
+    };
 
-             // 獲取球的最終位置
-            const finalX = ball.position.x;
-            const finalY = ball.position.y;
-            console.log(`Final position -> x: ${finalX}, y: ${finalY}`);
-            // 創建爆炸特效的div
-            const explosionImg = document.createElement("img");
-            explosionImg.src = '/src/assets/images/boom.gif';
-            explosionImg.style.position = "absolute";
-            explosionImg.style.width = "50px";
-            explosionImg.style.height = "50px";
-            explosionImg.style.left = `${ finalX}px`; // 調整爆炸特效的x位置
-            explosionImg.style.top = `${ finalY}px`; // 調整爆炸特效的y位置
-            explosionImg.style.zIndex = "10";
-            explosionImg.style.mixBlendMode = "color-dodge"; // 新增混合模式
-
-            // 將爆炸特效添加到畫布容器中
-            canvas.value!.parentElement!.parentElement!.appendChild(explosionImg);
-
-            // 在2秒後移除爆炸特效
-            setTimeout(() => {
-             // explosionImg.remove();
-            }, 2000);
-        }, animationDuration);
-
-
-        
-      }
-
-    game.updateBetAmountOfExistingBalls(ball.id);
-    game.updateBalance(-game.betAmount);
-  }
+    ballTexture.onerror = () => {
+        console.error("Failed to load ball texture", ballTexture.src);
+    };
+};
 
   const updateRowCount = (currentRowCount:RowCount) => {
     // if (currentRowCount === game.rowCount) {
     //   return;
     // }
-    removeAllBalls();
+     removeAllBalls();
 
     game.setRowCount(currentRowCount);
+    console.log(`output->game.row`,game.rowCount)
     placePinsAndWalls();
   }
 
@@ -323,13 +321,13 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     for (let row = 0; row < game.rowCount; ++row) {
       const rowY =
         PADDING_TOP +
-        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM- bottomMargin ) / (game.rowCount - 1)) * row;
+        ((canvas.value!?.height - PADDING_TOP - PADDING_BOTTOM - bottomMargin ) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
       const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
      
       for (let col = 0; col < 3 + row; ++col) {
-        const colX = rowPaddingX + ((canvas.value!.width - rowPaddingX * 2) / (3 + row - 1)) * col;
+        const colX = rowPaddingX + ((canvas.value!?.width - rowPaddingX * 2) / (3 + row - 1)) * col;
         const pin = Bodies.circle(colX, rowY, pinRadius.value, {
           isStatic: true,
           render: {

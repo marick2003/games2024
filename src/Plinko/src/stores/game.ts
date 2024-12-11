@@ -17,8 +17,11 @@ import { countValueOccurrences } from '../utils/numbers';
 import { serviceInit,serviceDoBet } from '@/stores/service';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
-
-   const betAmount = ref<number>(0.000001);
+  const  oneBetAmount=ref<number>(0.00001)
+   const setOneBetAmount = (value: number) => {
+    oneBetAmount.value = value;
+   }
+   const betAmount = ref<number>(oneBetAmount.value);
    const setBetAmount = (value: number) => {
     betAmount.value = value;
    }
@@ -255,5 +258,7 @@ const getInitialization = async() => {
     setAutoSettingDialog,
     doBet,
     currency,
+    oneBetAmount,
+    setOneBetAmount,
    }
 })

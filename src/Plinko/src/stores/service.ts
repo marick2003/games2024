@@ -46,3 +46,10 @@ export const serviceUpdateSeed = (body: UpdateSeedRequest) => {
 
   return useFetchApi({ url, httpMethod, body })
 }
+
+export const serviceGetSeedInfo = (body: any) => {
+  const url = `/Plinko/GetSeedInfo`
+  const httpMethod = 'post'
+
+  return useFetchApi({ url, httpMethod, body })
+}

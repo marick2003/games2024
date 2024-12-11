@@ -34,5 +34,7 @@
   "ClientSeed": "Client Seed",
   "NewClientSeed": "New Client Seed",
   "ServerSeedHashing": "Server Seed(Hashing)",
-  "Nonce": "Nonce"
+  "Nonce": "Nonce",
+  "BetDetail": "Bet Detail"
+
 }

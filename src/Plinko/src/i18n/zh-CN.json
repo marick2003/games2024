@@ -34,5 +34,6 @@
   "ClientSeed": "用户种子",
   "NewClientSeed": "新用户种子",
   "ServerSeedHashing": "服务器种子(加密中)",
-  "Nonce": "使用种子下注次数"
+  "Nonce": "使用种子下注次数",
+  "BetDetail": "注单详情"
 }

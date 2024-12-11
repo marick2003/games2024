@@ -1,14 +1,29 @@
 import { ref, computed } from 'vue';
 import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type {BetHistoryResponseList, BetRecordSeedResponse, GeneralResponse} from '@/types/ResponseType';
+import type {
+    BetHistoryResponseList,
+    BetRecordSeedResponse,
+    GeneralResponse,
+    SeedInfoResponse
+} from '@/types/ResponseType';
 import type {BetRecordSeedRequest, RefreshSeedRequest, UpdateSeedRequest} from '../types'
 
-import {serviceBetHistory, serviceGetBetRecordSeed, serviceGetRefreshSeed, serviceUpdateSeed} from '@/stores/service';
+import {
+    serviceBetHistory,
+    serviceGetBetRecordSeed,
+    serviceGetRefreshSeed,
+    serviceGetSeedInfo,
+    serviceUpdateSeed
+} from '@/stores/service';
 
 interface loadingInterface {
     appAssets: boolean
     getBetHistory: boolean
+    getBetRecordSeed: boolean
+    getSeedInfo: boolean
+    getRefreshSeed: boolean
+    updateSeed: boolean
 }
 interface PaginationInterface {
     PageIndex: number
@@ -21,6 +36,10 @@ export const useAppStore = defineStore('App', () => {
     const isLoading: Ref<loadingInterface> = ref({
         appAssets: ref(false),
         getBetHistory: ref(false),
+        getBetRecordSeed: ref(false),
+        getSeedInfo: ref(false),
+        getRefreshSeed: ref(false),
+        updateSeed: ref(false),
     })
 
     const showError:Ref<{visible: boolean, message: string}> = ref({
@@ -95,6 +114,16 @@ export const useAppStore = defineStore('App', () => {
         return responseData as BetRecordSeedResponse
     }
 
+    const getSeedInfo = async(): Promise<SeedInfoResponse> => {
+        const { isFetching, data, execute } = serviceGetSeedInfo({})
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getSeedInfo = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as SeedInfoResponse
+    }
+
     const getRefreshSeed = async(formData:RefreshSeedRequest):Promise<BetRecordSeedResponse> => {
         const { isFetching, data, execute } = serviceGetRefreshSeed(formData)
         if (typeof isFetching === "boolean") {
@@ -125,6 +154,7 @@ export const useAppStore = defineStore('App', () => {
       gameLoaded,
       getBetHistory,
       getBetRecordSeed,
+      getSeedInfo,
       getRefreshSeed,
       updateSeed
    }

@@ -36,3 +36,12 @@ export interface BetRecordSeedResponse extends GeneralResponse {
         Nonce: string
     }
 }
+
+
+export interface SeedInfoResponse extends GeneralResponse {
+    Data: {
+        ServerSeed: string
+        ClientSeed: string
+        Nonce: string
+    }
+}

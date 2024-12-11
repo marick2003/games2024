@@ -11,7 +11,7 @@ const loading: Ref<boolean> = ref<boolean>(true)
 function preloadAssets(assetUrls: Record<string, string>) {
   const loadAssets = async (src: string) => {
     return new Promise<HTMLImageElement | HTMLAudioElement>((resolve, reject) => {
-      if (/(jpg|png|svg)$/.test(src)) {
+      if (/(jpg|png|svg|gif)$/.test(src)) {
         const img = new Image()
         img.src = src
         img.decode().then(() => {

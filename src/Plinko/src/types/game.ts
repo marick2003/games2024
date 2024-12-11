@@ -66,7 +66,7 @@ export type WinRecord = {
 
 export type AutoBetSetting={
   betAmount: number;      // 初始下注金額
-  ballType: BallType;     // 投注球類型
+  ballType: string[];     // 投注球類型
   autoBetCount: number;   // 自動投注
   loseAdjustmentPercentage: number; // 若輸，金額增加 10%
   winAdjustmentPercentage: number;  // 若贏，金額減少 5%

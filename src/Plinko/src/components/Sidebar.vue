@@ -94,7 +94,7 @@
           </div>
         </div>
     </div>
-    <AutoSettingDialog v-if="game.autoSettingDialog.visible" />
+   
 </template>
 
 <script setup lang="ts">

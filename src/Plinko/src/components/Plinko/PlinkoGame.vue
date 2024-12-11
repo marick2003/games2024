@@ -75,14 +75,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     friction: 0.2,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
       8: 0.03,//0.0395,
-      9: 0.032,//0.041,
       10: 0.03,//0.038,
-      11: 0.03,//0.0355,
       12: 0.032,//0.0414,
-      13: 0.03,//0.0437,
-      14: 0.025,//0.0401,
-      15: 0.026,//0.0418,
-      16: 0.025,
     },
   };
   const pinsState = ref<{ id: number; x: number; y: number; isGlowing: boolean }[]>([]);
@@ -152,13 +146,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      console.log(`output->ball`,ball.isExplosion)
-       // 如果是彩球，有一定機率觸發爆炸
-       if (isColorBall && ball.isExplosion &&  Math.random() < 0.2) { // 20% 機率爆炸
-        console.log(`Color ball exploded at pin: ${pin.id}`);
-        // 移除彩球
-        Composite.remove(engine.world, ball);
-      }
+      
     }
   };
 
@@ -206,9 +194,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       })
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
-      console.log(`output->point`,point)
-      await dropABall(282.0662525523998);
-      
+       // 20% 機率爆炸
+      await dropABall(point,(game.ballType === BallType.COLOR ? Math.random() < 0.8 : false));
       game.setDropBall(false);  // Reset `isDropBall` after handling
     }
     
@@ -216,8 +203,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   defineExpose({
     callToDrop,
 });
-  const dropABall = (point: number) => {
-
+  const dropABall = (point: number,isExplosion: boolean) => {
+    console.log(`output->isExplosion`,isExplosion)
     const ballTexture = new Image();
     ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
     // const ballOffsetRangeX = pinDistanceX.value;// * 0.8;
@@ -233,7 +220,6 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       0,
       ballRadius,
       {
-        isExplosion: false,
         restitution: 0.8, // Bounciness
         friction,
         frictionAir: frictionAirByRowCount[game.rowCount],
@@ -252,6 +238,43 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       }
     );
     Composite.add(engine.world, ball);
+
+       // 如果是彩球，有一定機率觸發爆炸
+      if (isExplosion) {
+        // 初始動畫參數
+        const animationDuration = 1000; // 動畫總時長（毫秒）
+        // 在動畫結束後移除球
+        setTimeout(() => {
+          Composite.remove(engine.world, ball); // 移除球
+            console.log(`output->ball`,ball)
+
+             // 獲取球的最終位置
+            const finalX = ball.position.x;
+            const finalY = ball.position.y;
+            console.log(`Final position -> x: ${finalX}, y: ${finalY}`);
+            // 創建爆炸特效的div
+            const explosionImg = document.createElement("img");
+            explosionImg.src = '/src/assets/images/boom.gif';
+            explosionImg.style.position = "absolute";
+            explosionImg.style.width = "50px";
+            explosionImg.style.height = "50px";
+            explosionImg.style.left = `${ finalX}px`; // 調整爆炸特效的x位置
+            explosionImg.style.top = `${ finalY}px`; // 調整爆炸特效的y位置
+            explosionImg.style.zIndex = "10";
+            explosionImg.style.mixBlendMode = "color-dodge"; // 新增混合模式
+
+            // 將爆炸特效添加到畫布容器中
+            canvas.value!.parentElement!.parentElement!.appendChild(explosionImg);
+
+            // 在2秒後移除爆炸特效
+            setTimeout(() => {
+             // explosionImg.remove();
+            }, 2000);
+        }, animationDuration);
+
+
+        
+      }
 
     game.updateBetAmountOfExistingBalls(ball.id);
     game.updateBalance(-game.betAmount);
@@ -418,6 +441,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
     <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
       <LastWins />
     </div>
+   
   </div>
 </template>
 

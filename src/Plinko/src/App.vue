@@ -12,7 +12,7 @@ import { useAppStore } from '@/stores/app'
 import { useGameStore } from '@/stores/game'
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
-
+import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
 const simulation = useSimulationStore();
 const appStore = useAppStore()
 const game=useGameStore();
@@ -90,7 +90,7 @@ watch(
       </div>
     </footer> -->
       <SettingDialog />
-
+      <AutoSettingDialog class="z-1" v-if="game.autoSettingDialog.visible" />
   </div>
   </transition>
 

@@ -12,7 +12,7 @@ import { useAppStore } from '@/stores/app'
 import { useGameStore } from '@/stores/game'
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
-
+import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
 const simulation = useSimulationStore();
 const appStore = useAppStore()
 const game=useGameStore();
@@ -63,7 +63,7 @@ watch(
       </div>
       <div class="mx-auto w-[375px]  drop-shadow-xl">
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
-          <Sidebar class="z-[1] mt-[-75px]   md:mt-[-62px]" />
+          <Sidebar  />
           <div class="flex-1">
             <template v-if="simulation.isSimulationing">
               <PlinkoSimulation ref="childRef"/>
@@ -90,7 +90,7 @@ watch(
       </div>
     </footer> -->
       <SettingDialog />
-
+      <AutoSettingDialog class="z-1" v-if="game.autoSettingDialog.visible" />
   </div>
   </transition>
 

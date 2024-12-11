@@ -11,7 +11,8 @@ export const useFetchApi = ({ url, httpMethod, body }) => {
     immediate: false,
     beforeFetch({ options }) {
       options.headers = {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'token':'G4JaSpQhBXLOiDn6t5P1MfijJfARQhCZXYdY1jbJ7pV/cAqQn21sy+KGrhokuZeX'
       }
       return {
         options

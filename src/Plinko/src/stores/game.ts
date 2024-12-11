@@ -154,6 +154,9 @@ const autoSettingDialog:Ref<{visible: boolean, section: string}> = ref({
   visible: ref(false),
   section: ref(''),
 })
+const setAutoSettingDialog= (visible: boolean)=>{
+  autoSettingDialog.value.visible= visible;
+}
 const doBet =async(betData:DoBet)=>{
   const { data, execute } = serviceDoBet(betData)
   await execute()
@@ -163,8 +166,32 @@ const doBet =async(betData:DoBet)=>{
 const getInitialization = async() => {
 
   const { data, execute } = serviceInit({})
+
   await execute()
-  const responseData:any = data.value
+  const fakeResponse = {
+    IsSuccess: true,
+    Data: {
+      SwimmingMultipliers: [
+        { Row: 8, Multipliers: [5.3, 2, 1.2, 0.9, 0.5, 0.9, 1.2, 2, 5.3] },
+        { Row: 10, Multipliers: [9, 3.5, 1.4, 1.1, 0.9, 0.5, 0.9, 1.1, 1.4, 3.5, 9] },
+        { Row: 12, Multipliers: [10, 4, 2, 1.3, 1.1, 0.9, 0.5, 0.9, 1.1, 1.3, 2, 4, 10] },
+      ],
+      SmallMouthMultipliers: [
+        { Row: 8, Multipliers: [14, 3.1, 1.4, 0.8, 0, 0.8, 1.4, 3.1, 14] },
+        { Row: 10, Multipliers: [24, 5, 2, 1.5, 0.7, 0, 0.7, 1.5, 2, 5, 24] },
+        { Row: 12, Multipliers: [37, 12, 4, 2, 0.9, 0.8, 0, 0.8, 0.9, 2, 4, 12, 37] },
+      ],
+      BigMouthMultipliers: [
+        { Row: 8, Multipliers: [36.4, 4.5, 1.8, 0, 0, 0, 1.8, 4.5, 36.4] },
+        { Row: 10, Multipliers: [80, 11.1, 3.2, 1.3, 0, 0, 0, 1.3, 3.2, 11.1, 80] },
+        { Row: 12, Multipliers: [175, 30, 9, 2, 0.8, 0, 0, 0, 0.8, 2, 9, 30, 175] },
+      ],
+      Currency: 1,
+      MaxBetAmount: 1000,
+      MinBetAmount: 10,
+    },
+  };
+  const responseData:any = data.value.IsSuccess ? data.value : fakeResponse
 
   setmaxBetAmount(responseData.Data.MaxBetAmount)
   setminBetAmount(responseData.Data.MinBetAmount)
@@ -225,6 +252,7 @@ const getInitialization = async() => {
     autoBetSetting,
     updateAutoBetSetting,
     autoSettingDialog,
+    setAutoSettingDialog,
     doBet,
     currency,
    }

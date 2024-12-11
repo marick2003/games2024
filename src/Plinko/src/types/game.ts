@@ -79,10 +79,18 @@ export type AutoBetSetting={
   cumulativeStopWin: number;        // 累積止盈
 }
 
-export type DoBet={
+export type DoBet = {
   Currency:string;
   BetMoney:number;
   Rows: number;
   Risk: number;
   BallType: number;
+}
+
+export type BetRecordSeedRequest = {
+  Id: string
+}
+
+export type RefreshSeedRequest = {
+  SeedType: string
 }

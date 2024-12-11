@@ -1,21 +1,36 @@
 <script setup lang="ts">
-import {ref, computed, watch, type Ref } from 'vue'
+import {ref, reactive, computed, watch, type Ref } from 'vue'
+import { useClipboard } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useAppStore } from '@/stores/app'
 import type {BetHistoryResponseList, BetHistoryResponse} from '@/types/ResponseType';
 const appStore = useAppStore()
 import { vIntersectionObserver } from '@vueuse/components'
+import randomize from 'randomatic';
+import { useForm, Field, ErrorMessage, useField } from 'vee-validate';
+import * as yup from 'yup';
 const root = ref(null)
 const isVisible = ref(false)
+const seedData = reactive({
+  ServerSeed: '',
+  ServerSeedHash: '',
+  ClientSeed: '',
+  Nonce: ''
+})
+
+const updateSeedDate = reactive({
+  NewClientSeed: '',
+  NewServiceSeed: ''
+})
 
 const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
 const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
-
 const pageIndex:Ref<number> = ref(1)
+const source = ref('')
+const { text, copy, copied, isSupported } = useClipboard({source})
 function onIntersectionObserver([{ isIntersecting }]) {
   if (isIntersecting){
-    console.log((betHistoryResponseList ))
     if (betHistoryResponseList.value.Data.PageCount > betHistoryResponseList.value.Data.PageIndex){
       pageIndex.value= pageIndex.value + 1
       getBetHistory(pageIndex.value)
@@ -28,16 +43,43 @@ const getBetHistory = async(index:number = 1) => {
   if (response.IsSuccess){
     betHistoryResponseList.value = response
     betHistoryResult.value = [...betHistoryResult.value, ...response.Data.Items]
-    console.log(betHistoryResult.value)
   }
 }
 
+const getBetRecordSeed = async() => {
+  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: '1'})
+  if (IsSuccess){
+    Object.assign(seedData, Data)
+  }
+}
+const getServerdSeedHash = async() => {
+  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: '1'})
+  if (IsSuccess){
+    Object.assign(seedData, Data)
+  }
+}
+
+const { values, errors, handleSubmit,  defineField } = useForm({
+  validationSchema: yup.object({
+  }),
+  initialValues: {
+  }
+});
+const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
+
+const onSubmit = handleSubmit(async(values)=> {
+
+})
 
 watch(()=> appStore.settingDialog.section,(val)=>{
-
+  betHistoryResult.value = []
+  betHistoryResponseList.value = {}
   if (val === 'history'){
     pageIndex.value = 1
     getBetHistory(1)
+  }
+  if (val === 'fairness'){
+    getBetRecordSeed()
   }
 })
 </script>
@@ -53,7 +95,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
         <button><img src="@/assets/images/ico_limit.svg" />{{$t('BetLimit')}}</button>
         <button><img src="@/assets/images/ico_game_rules.svg" />{{$t('GameRule')}}</button>
         <button @click.prevent="appStore.settingDialog.section='history'"><img src="@/assets/images/ico_history.svg" />{{$t('BetHistory')}}</button>
-        <button><img src="@/assets/images/ico_fairness.svg" />{{$t('Fairness')}}</button>
+        <button @click.prevent="appStore.settingDialog.section='fairness'"><img src="@/assets/images/ico_fairness.svg" />{{$t('Fairness')}}</button>
       </div>
     </div>
 
@@ -63,28 +105,97 @@ watch(()=> appStore.settingDialog.section,(val)=>{
       <div class="relative modal-header px-3">
         {{$t('BetHistory')}}
         <button class='absolute right-0 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'">back</button>
-
       </div>
       <div class='modal-content mx-auto text-left pt-1 mt-4 pb-6 h-[100%] overflow-hidden'>
         <div class="flex flex-col gap-5 h-[530px] overflow-y-auto"  ref="root">
-        <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length > 0">
-          <div v-for="(history, index) in betHistoryResult" :key="history.Id">
-            <h1>{{index}}</h1>
-            Name Crocodile Plinko <br>
-            ID: {{history.Id}}<br>
-            amount: {{history.Amount}} {{history.Currency}}<br>
-            PayoutMultiplier: {{history.PayoutMultiplier}}<br>
-            Payout: {{history.Payout}}<br>
-            DateTime: {{history.Time}}
-            <div v-if='index === (betHistoryResult.length - 1)' v-intersection-observer="onIntersectionObserver">last and fetch</div>
-
-          </div>
-        </template>
+          <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length > 0">
+            <div v-for="(history, index) in betHistoryResult" :key="history.Id">
+              <h1>{{index}}</h1>
+              Name Crocodile Plinko <br>
+              ID: {{history.Id}}<br>
+              amount: {{history.Amount}} {{history.Currency}}<br>
+              PayoutMultiplier: {{history.PayoutMultiplier}}<br>
+              Payout: {{history.Payout}}<br>
+              DateTime: {{history.Time}}
+              <div v-if='appStore.isLoading.getBetHistory'>loading</div>
+              <div v-if='index === (betHistoryResult.length - 1)' v-intersection-observer="onIntersectionObserver">last and fetch</div>
+            </div>
+          </template>
         </div>
-
-
       </div>
     </div>
+
+    <div
+      :class="[appStore.settingDialog.section === 'fairness' ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      class='modal-container pt-3 pb-8 z-50 text-red-800 h-[600px]'>
+      <div class="relative modal-header px-3">
+        {{$t('Fairness')}}
+        <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
+        <button class='absolute right-0 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'">back</button>
+      </div>
+      <div class='modal-content mx-auto text-left pt-1 px-4 mt-2 pb-6 h-[100%] overflow-hidden'>
+        <h1 class="text-center">{{$t('CurrentSeed')}}</h1>
+        <div class="mb-4">
+          <div class="font-bold">{{$t('ClientSeed')}}</div>
+          <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+          <div class="relative">
+            <template v-if="isSupported ">
+              <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
+                      <span v-if="source===seedData.ClientSeed">
+                        copied
+                      </span>
+                <span v-else>
+                        copy
+                      </span>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="font-bold">{{ $t('ServerSeedHashing') }}</div>
+          <input type="text" readonly :value="seedData.ServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+          <div class="relative">
+            <template v-if="isSupported ">
+              <button @click="()=>{source=seedData.ServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
+                      <span v-if="source===seedData.ServerSeedHash">
+                        copied
+                      </span>
+                <span v-else>
+                        copy
+                      </span>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <div class="my-4">
+          <div class="font-bold">{{ $t('Nonce') }}</div>
+          <input type="text" readonly :value="seedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+        </div>
+        <h1 class="text-center mt-6 mb-2">{{$t('UpdateSeed')}}</h1>
+        <form @submit.prevent='onSubmit' class='flex flex-col'>
+          <div class="mb-10">
+            <div class="font-bold">{{$t('NewClientSeed')}}</div>
+            <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative">
+              <template v-if="isSupported ">
+                <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
+                      <span v-if="source===seedData.ClientSeed">
+                        copied
+                      </span>
+                  <span v-else>
+                        copy
+                      </span>
+                </button>
+              </template>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
   </div>
 </template>
 

@@ -155,10 +155,10 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         const explosionImg = document.createElement("img");
         explosionImg.src = '/src/assets/images/boom.gif';
         explosionImg.style.position = "absolute";
-        explosionImg.style.width = "50px";
-        explosionImg.style.height = "50px";
-        explosionImg.style.left = `${explosionX - 25}px`;
-        explosionImg.style.top = `${explosionY - 25}px`;
+        explosionImg.style.width = "80px";
+        explosionImg.style.height = "80px";
+        explosionImg.style.left = `${explosionX - 40}px`;
+        explosionImg.style.top = `${explosionY - 40}px`;
         explosionImg.style.zIndex = "10";
         explosionImg.style.mixBlendMode = "color-dodge";
         // 將爆炸特效添加到畫布容器中
@@ -233,7 +233,6 @@ const dropABall = (point: number, isExplosion: boolean) => {
 
     // 初始化圖片
     const ballTexture = new Image();
-    ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
 
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
@@ -275,6 +274,9 @@ const dropABall = (point: number, isExplosion: boolean) => {
     ballTexture.onerror = () => {
         console.error("Failed to load ball texture", ballTexture.src);
     };
+    ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
+
+
 };
 
   const updateRowCount = (currentRowCount:RowCount) => {

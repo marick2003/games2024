@@ -1,18 +1,20 @@
 import { ref, computed } from 'vue';
 import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { BetHistoryResponseList } from '@/types/ResponseType';
-import { serviceBetHistory } from '@/stores/service';
+import type {BetHistoryResponseList, BetRecordSeedResponse, GeneralResponse} from '@/types/ResponseType';
+import type {BetRecordSeedRequest, RefreshSeedRequest, UpdateSeedRequest} from '../types'
+
+import {serviceBetHistory, serviceGetBetRecordSeed, serviceGetRefreshSeed, serviceUpdateSeed} from '@/stores/service';
 
 interface loadingInterface {
     appAssets: boolean
     getBetHistory: boolean
 }
-
 interface PaginationInterface {
     PageIndex: number
     PageSize: number
 }
+
 export const useAppStore = defineStore('App', () => {
     const assetLoaded: Ref<boolean> = ref<boolean>(false)
     const gameLoaded: Ref<boolean> = ref<boolean>(false)
@@ -83,6 +85,36 @@ export const useAppStore = defineStore('App', () => {
         return responseData as BetHistoryResponseList
     }
 
+    const getBetRecordSeed = async(formData:BetRecordSeedRequest): Promise<BetRecordSeedResponse> => {
+        const { isFetching, data, execute } = serviceGetBetRecordSeed(formData)
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getBetHistory = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as BetRecordSeedResponse
+    }
+
+    const getRefreshSeed = async(formData:RefreshSeedRequest):Promise<BetRecordSeedResponse> => {
+        const { isFetching, data, execute } = serviceGetRefreshSeed(formData)
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getBetHistory = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as BetRecordSeedResponse
+    }
+
+    const updateSeed = async(formData:UpdateSeedRequest):Promise<GeneralResponse> => {
+        const { isFetching, data, execute } = serviceUpdateSeed(formData)
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getBetHistory = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as GeneralResponse
+    }
+
   return {
       showError,
       isMute,
@@ -92,5 +124,8 @@ export const useAppStore = defineStore('App', () => {
       assetLoaded,
       gameLoaded,
       getBetHistory,
+      getBetRecordSeed,
+      getRefreshSeed,
+      updateSeed
    }
 })

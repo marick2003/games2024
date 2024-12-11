@@ -27,5 +27,12 @@
   "BetLimit": "Bet Limit",
   "GameRule": "Game Rule",
   "BetHistory": "Bet History",
-  "Fairness": "Fairness"
+  "Fairness": "Fairness",
+  "FairnessCaption": "FairnessCaption",
+  "CurrentSeed": "Current Seed",
+  "UpdateSeed": "Update Seed",
+  "ClientSeed": "Client Seed",
+  "NewClientSeed": "New Client Seed",
+  "ServerSeedHashing": "Server Seed(Hashing)",
+  "Nonce": "Nonce"
 }

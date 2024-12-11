@@ -136,7 +136,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   const handlePinCollision = (bodyA: Matter.Body, bodyB: Matter.Body) => {
     const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
     const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
-
+    console.log(`output->ball`,ball)
     if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞
@@ -145,8 +145,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      const randomExplosionChance = Math.random() < 0.2; // 20% 隨機爆炸概率
-      if (isColorBall && randomExplosionChance) {
+      ball.collisionCount = (ball.collisionCount || 0) - 1;
+      if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
         console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;
@@ -216,10 +216,11 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         Risk: Object.values(RiskLevel).indexOf(game.riskLevel),
         BallType: Object.values(BallType).indexOf(game.ballType)
       })
+      
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
-       // 20% 機率爆炸
-      await dropABall(point,(game.ballType === BallType.COLOR ? Math.random() < 0.8 : false));
+       // response.Data.ColorMultiplier 0 爆炸  1 正常
+      await dropABall(point,(game.ballType === BallType.COLOR && !response.Data.ColorMultiplier));
       game.setDropBall(false);  // Reset `isDropBall` after handling
     }
     
@@ -227,52 +228,60 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   defineExpose({
     callToDrop,
 });
-  const dropABall = (point: number,isExplosion: boolean) => {
-    console.log(`output->isExplosion`,isExplosion)
+const dropABall = (point: number, isExplosion: boolean) => {
+    console.log(`output->isExplosion`, isExplosion);
+
+    // 初始化圖片
     const ballTexture = new Image();
     ballTexture.src = new URL(`../../assets/images/${game.ballType.toLowerCase()}.png`, import.meta.url).href; // 確保圖片路徑正確
-    // const ballOffsetRangeX = pinDistanceX.value;// * 0.8;
+
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
 
-    const ball = Bodies.circle(
-      // getRandomBetween(
-      //   canvas.value!.width / 2 - ballOffsetRangeX,
-      //   canvas.value!.width / 2 + ballOffsetRangeX,
-      // ),
-      point,
-      0,
-      ballRadius,
-      {
-        restitution: 0.8, // Bounciness
-        friction,
-        frictionAir: frictionAirByRowCount[game.rowCount],
-        collisionFilter: {
-          category: BALL_CATEGORY,
-          mask: PIN_CATEGORY, // Collide with pins only, but not other balls
-        },
-        render: {
-          sprite: {
-            texture: ballTexture.src,
-            xScale: 2,
-            yScale: 2,  
+    // 處理圖片加載完成後再添加球體
+    ballTexture.onload = () => {
+        const ball = Bodies.circle(
+            point,
+            0,
+            ballRadius,
+            {
+                isExplosion, // 是否爆炸
+                collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
+                restitution: 0.8, // 彈性
+                friction,
+                frictionAir: frictionAirByRowCount[game.rowCount],
+                collisionFilter: {
+                    category: BALL_CATEGORY,
+                    mask: PIN_CATEGORY, // 只與 PIN 碰撞
+                },
+                render: {
+                    sprite: {
+                        texture: ballTexture.src,
+                        xScale: 2,
+                        yScale: 2,
+                    },
+                },
+            }
+        );
 
-          }
-        },
-      }
-    );
-    Composite.add(engine.world, ball);
+        // 添加到引擎中
+        Composite.add(engine.world, ball);
 
+        // 更新遊戲狀態
+        game.updateBetAmountOfExistingBalls(ball.id);
+        game.updateBalance(-game.betAmount);
+    };
 
-    game.updateBetAmountOfExistingBalls(ball.id);
-    game.updateBalance(-game.betAmount);
-  }
+    ballTexture.onerror = () => {
+        console.error("Failed to load ball texture", ballTexture.src);
+    };
+};
 
   const updateRowCount = (currentRowCount:RowCount) => {
     // if (currentRowCount === game.rowCount) {
     //   return;
     // }
-   // removeAllBalls();
+     removeAllBalls();
 
     game.setRowCount(currentRowCount);
     console.log(`output->game.row`,game.rowCount)

@@ -260,7 +260,7 @@ watch(currentRowCount, (newRowCount) => {
 });
 
 const handleHalfBet = () => {
-  const newBetAmount = Math.max((game.minBetAmount / 2), game.minBetAmount);
+  const newBetAmount = Math.max((game.betAmount / 2), game.minBetAmount);
   game.setBetAmount(newBetAmount);
 };
 

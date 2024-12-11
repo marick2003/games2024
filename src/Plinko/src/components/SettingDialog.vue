@@ -22,12 +22,20 @@ const updateSeedData = reactive({
   NewServerSeed: '',
   NewServerSeedHash: ''
 })
+
+const betDetailSeedData = reactive({
+  ClientSeed: '',
+  Nonce: '',
+  ServerSeed: '',
+  ServerSeedHash: ''
+})
 const seedType = ref('')
 const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
 const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
 const pageIndex:Ref<number> = ref(1)
 const source:Ref<string> = ref('')
 const isShowBetDetail:Ref<boolean> = ref(false)
+const isShowGameFairness:Ref<boolean> = ref(false)
 const selectedBetDetail:Ref<BetHistoryResponse | null> = ref(null)
 
 const { text, copy, copied, isSupported } = useClipboard({source})
@@ -97,13 +105,12 @@ const onSubmit = handleSubmit(async(values)=> {
     getSeedInfo()
   }
 })
-const betRecordDetail = async(item) => {
+const betRecordDetail = async(item:BetHistoryResponse) => {
   const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: item.Id, Time: getCurrentDateTimeWithTimezone(item.Time)})
   if (IsSuccess){
     isShowBetDetail.value = true
     selectedBetDetail.value = item
-    console.log(selectedBetDetail.value)
-
+    Object.assign(betDetailSeedData, Data)
   }
 }
 
@@ -180,8 +187,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
           <div class="relative">
             <template v-if="isSupported ">
-              <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
-                <span v-if="source===seedData.ClientSeed && source !==''">copied</span>
+              <button @click="()=>{source = seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
+                <span v-if="source === seedData.ClientSeed && source !==''">copied</span>
                 <span v-else>copy</span>
               </button>
             </template>
@@ -193,8 +200,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           <input type="text" readonly :value="seedData.ServerSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
           <div class="relative">
             <template v-if="isSupported ">
-              <button @click="()=>{source=seedData.ServerSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
-                <span v-if="source===seedData.ServerSeed && source !==''">copied</span>
+              <button @click="()=>{ source= seedData.ServerSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
+                <span v-if="source === seedData.ServerSeed && source !==''">copied</span>
                 <span v-else>copy</span>
               </button>
             </template>
@@ -212,8 +219,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
             <input type="text"  :value="seedType" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
             <div class="relative">
               <template v-if="isSupported ">
-                <button @click="()=>{source=seedType; copy(source)}" class="!p-0 absolute top-0 right-0">
-                  <span v-if="source===seedType && source !==''">copied</span>
+                <button @click="()=>{ source = seedType; copy(source)}" class="!p-0 absolute top-0 right-0">
+                  <span v-if="source === seedType && source !==''">copied</span>
                   <span v-else>copy</span>
                 </button>
               </template>
@@ -226,8 +233,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
             <input type="text" :value="updateSeedData.NewServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
             <div class="relative">
               <template v-if="isSupported ">
-                <button @click="()=>{source=updateSeedData.NewServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
-                  <span v-if="source===updateSeedData.NewServerSeedHash && source !==''">copied</span>
+                <button @click="()=>{ source = updateSeedData.NewServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
+                  <span v-if="source === updateSeedData.NewServerSeedHash && source !==''">copied</span>
                   <span v-else>copy</span>
                 </button>
               </template>
@@ -253,8 +260,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
         <div class="relative">
           {{selectedBetDetail.Id}}
           <template v-if="isSupported && selectedBetDetail.Id">
-            <button @click="()=>{source=selectedBetDetail?.Id; copy(source)}" class="!p-0 absolute top-0 right-0 border-white border">
-              <span v-if="source===selectedBetDetail.Id && source !==''">copied</span>
+            <button @click="()=>{ source = selectedBetDetail?.Id || ''; copy(source)}" class="!p-0 absolute top-0 right-0 border-white border">
+              <span v-if="source === selectedBetDetail.Id && source !==''">copied</span>
               <span v-else>copy</span>
             </button>
           </template>
@@ -272,6 +279,60 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           row: {{selectedBetDetail.Rows}} <br>
           crocodile: {{selectedBetDetail.Risk}} <br>
           ball: {{selectedBetDetail.Ball}} <br>
+        </div>
+
+        <button class="text-center border-white border mx-auto" @click.prevent="isShowGameFairness = true">{{$t('GameFairness')}}</button>
+        <div v-if="isShowGameFairness">
+          <div class="mb-4">
+            <div class="font-bold">{{ $t('ServerSeed') }}</div>
+            <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : ''" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative" v-if="betDetailSeedData.ServerSeed !== ''">
+              <template v-if="isSupported ">
+                <button @click="()=>{ source= betDetailSeedData.ServerSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
+                  <span v-if="source === betDetailSeedData.ServerSeed && source !==''">copied</span>
+                  <span v-else>copy</span>
+                </button>
+              </template>
+            </div>
+          </div>
+          <div class="mb-4">
+            <div class="font-bold">{{ $t('ServerSeedHashing') }}</div>
+            <input type="text" readonly :value="betDetailSeedData.ServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative">
+              <template v-if="isSupported ">
+                <button @click="()=>{ source= betDetailSeedData.ServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
+                  <span v-if="source === betDetailSeedData.ServerSeedHash && source !==''">copied</span>
+                  <span v-else>copy</span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <div class="font-bold">{{$t('ClientSeed')}}</div>
+            <input type="text" readonly :value="betDetailSeedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative">
+              <template v-if="isSupported ">
+                <button @click="()=>{source = betDetailSeedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
+                  <span v-if="source === betDetailSeedData.ClientSeed && source !==''">copied</span>
+                  <span v-else>copy</span>
+                </button>
+              </template>
+            </div>
+          </div>
+
+          <div class="my-4">
+            <div class="font-bold">{{ $t('RandomNumber') }}</div>
+            <input type="text" readonly :value="betDetailSeedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative">
+              <template v-if="isSupported ">
+                <button @click="()=>{source = betDetailSeedData.Nonce; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
+                  <span v-if="source === betDetailSeedData.Nonce && source !==''">copied</span>
+                  <span v-else>copy</span>
+                </button>
+              </template>
+            </div>
+          </div>
         </div>
       </div>
     </div>

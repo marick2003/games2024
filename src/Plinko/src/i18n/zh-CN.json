@@ -28,12 +28,17 @@
   "GameRule": "游戏规则",
   "BetHistory": "下注纪录",
   "Fairness": "游戏公平性设定",
+  "GameFairness": "游戏公平性",
   "FairnessCaption": "游戏透过公平加密机制随机产生结果,修改用户种子能重新生成乱数",
   "CurrentSeed": "当前种子",
   "UpdateSeed": "更新种子",
   "ClientSeed": "用户种子",
   "NewClientSeed": "新用户种子",
+  "ServerSeed": "服务器种子",
   "ServerSeedHashing": "服务器种子(加密中)",
   "Nonce": "使用种子下注次数",
-  "BetDetail": "注单详情"
+  "BetDetail": "注单详情",
+  "RandomNumber": "随机数",
+  "Unannounced": "种子未公布",
+  "WhatIsFairness": "什么是游戏公平性?"
 }

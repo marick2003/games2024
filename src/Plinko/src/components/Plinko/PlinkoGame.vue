@@ -212,13 +212,13 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     const response :any = await game.doBet({
         Currency: game.currency,
         BetMoney: game.betAmount,
-        Rows: rowCountOptions.indexOf(game.rowCount),
-        Risk: Object.values(RiskLevel).indexOf(game.riskLevel),
-        BallType: Object.values(BallType).indexOf(game.ballType)
+        Rows: game.rowCount,
+        Risk: game.riskLevel,
+        BallType: game.ballType.toLowerCase()
       })
       
     if(response.IsSuccess){
-      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.Point])
+      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition])
        // response.Data.ColorMultiplier 0 爆炸  1 正常
       await dropABall(point,(game.ballType === BallType.COLOR && !response.Data.ColorMultiplier));
       game.setDropBall(false);  // Reset `isDropBall` after handling
@@ -385,9 +385,9 @@ const dropABall = (point: number, isExplosion: boolean) => {
       game.updateBalance(payoutValue);
        // 判斷 bin 的數字是否為 0，切換鱷魚圖
         if (multiplier <= 0) {
-          if (game.riskLevel === RiskLevel.SmallMouthMultipliers) {
+          if (game.riskLevel === RiskLevel.SmallMouth) {
             crocodileStep.value = 'step2'; // 如果是小嘴風險，顯示 step2
-          } else if (game.riskLevel === RiskLevel.BigMouthMultipliers) {
+          } else if (game.riskLevel === RiskLevel.BigMouth) {
             crocodileStep.value = 'step3'; // 如果是大嘴風險，顯示 step3
           }
           setTimeout(() => {

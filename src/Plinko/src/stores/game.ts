@@ -17,11 +17,12 @@ import { countValueOccurrences } from '../utils/numbers';
 import { serviceInit,serviceDoBet } from '@/stores/service';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
+    const amount =ref<number>(0)
   const  oneBetAmount=ref<number>(0.00001)
    const setOneBetAmount = (value: number) => {
     oneBetAmount.value = value;
    }
-   const betAmount = ref<number>(oneBetAmount.value);
+   const betAmount = ref<number>(0);
    const setBetAmount = (value: number) => {
     betAmount.value = value;
    }
@@ -54,12 +55,16 @@ export const useGameStore = defineStore('game', () => {
    const setminBetAmount = (value: number) => {
     minBetAmount.value = value;
    }
-   const riskLevel = ref<RiskLevel>(RiskLevel.SwimmingMultipliers);
+   const riskLevel = ref<RiskLevel>(RiskLevel.Swimming);
  
    const setRiskLevel = (value: RiskLevel) => {
     riskLevel.value = value;
    }
-   const currency= ref<string>('1');
+   const currencyLimit = ref<any>([]);
+   const setCurrencyLimit = (value: []) => {
+    currencyLimit.value = value;
+  };
+   const currency= ref<string>('btc');
    const setCurrency = (value: string) => {
     currency.value = value;
    }
@@ -165,6 +170,14 @@ const doBet =async(betData:DoBet)=>{
   await execute()
   return data.value
 }
+
+const getCurrencyLimit = (currency: string) => {
+  const data = currencyLimit.value.find(item => item.Currency === currency);
+  if (!data) {
+    throw new Error(`Currency ${currency} not found.`);
+  }
+  return data;
+};
 // Initialize
 const getInitialization = async() => {
 
@@ -189,16 +202,39 @@ const getInitialization = async() => {
         { Row: 10, Multipliers: [80, 11.1, 3.2, 1.3, 0, 0, 0, 1.3, 3.2, 11.1, 80] },
         { Row: 12, Multipliers: [175, 30, 9, 2, 0.8, 0, 0, 0, 0.8, 2, 9, 30, 175] },
       ],
-      Currency: 1,
-      MaxBetAmount: 1000,
-      MinBetAmount: 10,
+      CurrencyLimit: [
+        {
+            Currency: "btc",
+            DefaultAmount: 0,
+            MaxBetAmount: 0.001,
+            MinBetAmount: 0,
+            AmountUnit:0.00001,
+        },
+        {
+            Currency: "eth",
+            DefaultAmount: 0,
+            MaxBetAmount: 0.0001,
+            MinBetAmount: 0,
+            AmountUnit:0.00001,
+        },
+        {
+            Currency: "usdc",
+            DefaultAmount: 0,
+            MaxBetAmount: 1,
+            MinBetAmount: 0,
+            AmountUnit:0.00001,
+        }
+    ],
     },
   };
   const responseData:any = data.value.IsSuccess ? data.value : fakeResponse
+  setCurrencyLimit(responseData.Data.CurrencyLimit)
 
-  setmaxBetAmount(responseData.Data.MaxBetAmount)
-  setminBetAmount(responseData.Data.MinBetAmount)
-  setCurrency(String(responseData.Data.Currency))
+  const { DefaultAmount, MaxBetAmount, MinBetAmount, AmountUnit } = getCurrencyLimit(currency.value);
+  setmaxBetAmount(MaxBetAmount)
+  setminBetAmount(MinBetAmount)
+  setOneBetAmount(AmountUnit)
+  setBetAmount(DefaultAmount)
   // 組合成目標格式
   const formattedBinPayouts: Record<number, Record<string, number[]>> = {};
   updateBinPayouts(formattedBinPayouts)
@@ -206,17 +242,17 @@ const getInitialization = async() => {
 
   SwimmingMultipliers.forEach(({ Row, Multipliers }) => {
     if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
-    formattedBinPayouts[Row]['SwimmingMultipliers'] = Multipliers;
+    formattedBinPayouts[Row]['Swimming'] = Multipliers;
   });
 
   SmallMouthMultipliers.forEach(({ Row, Multipliers }) => {
     if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
-    formattedBinPayouts[Row]['SmallMouthMultipliers'] = Multipliers;
+    formattedBinPayouts[Row]['SmallMouth'] = Multipliers;
   });
 
   BigMouthMultipliers.forEach(({ Row, Multipliers }) => {
     if (!formattedBinPayouts[Row]) formattedBinPayouts[Row] = {};
-    formattedBinPayouts[Row]['BigMouthMultipliers'] = Multipliers;
+    formattedBinPayouts[Row]['BigMouth'] = Multipliers;
   });
   return formattedBinPayouts;
 };
@@ -224,6 +260,7 @@ const getInitialization = async() => {
 
   return {
     // plinkoEngine,
+    amount,
     betAmount,
     betAmountOfExistingBalls,
     rowCount,
@@ -260,5 +297,7 @@ const getInitialization = async() => {
     currency,
     oneBetAmount,
     setOneBetAmount,
+    currencyLimit,
+    setCurrencyLimit,
    }
 })

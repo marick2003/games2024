@@ -52,6 +52,7 @@ watch(
     </nav> -->
 
     <div class="flex-1 flex items-center justify-center relative">
+
       <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[325px] text-white z-10 flex gap-2">
         <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
           <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
@@ -62,6 +63,10 @@ watch(
         </button>
       </div>
       <div class="mx-auto w-[375px]  drop-shadow-xl">
+        <div class="absolute py-[35px] px-[10px] w-full left-0 text-white flex">
+          <img src="@/assets/images/svg/icon_btc.svg"/>
+          <span class="mx-2">{{ game.amount.toFixed(5) }}</span>
+        </div>
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
           <Sidebar  />
           <div class="flex-1">

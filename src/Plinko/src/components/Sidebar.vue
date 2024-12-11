@@ -39,7 +39,12 @@
               <button class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
-                <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                <div class="flex items-center">
+                  <div class="absolute  w-[4%] mx-[5px]">
+                    <img class="" src="@/assets/images/svg/icon_btc.svg"/>
+                  </div>
+                  <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                </div>
               </div>
               <button class="addBtn" @click="handleAddBet"></button>
               <button class="towxBtn" @click="handleDoubleBet"></button>
@@ -246,9 +251,9 @@ const betModes = [
     { value: BetMode.AUTO, label: $t('Auto') },
 ];
 const riskLevels = [
-    { value: RiskLevel.SwimmingMultipliers, label: 'Close Mouth' },
-    { value: RiskLevel.SmallMouthMultipliers, label: 'Small Mouth' },
-    { value: RiskLevel.BigMouthMultipliers, label: 'Big Mouth' },
+    { value: RiskLevel.Swimming, label: 'Close Mouth' },
+    { value: RiskLevel.SmallMouth, label: 'Small Mouth' },
+    { value: RiskLevel.BigMouth, label: 'Big Mouth' },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
 

@@ -10,9 +10,9 @@ export enum BetMode {
  * Game's risk level, which controls the volatility of payout.
  */
 export enum RiskLevel {
-  SwimmingMultipliers = 'SwimmingMultipliers',
-  SmallMouthMultipliers = 'SmallMouthMultipliers',
-  BigMouthMultipliers = 'BigMouthMultipliers',
+  Swimming = 'Swimming',
+  SmallMouth = 'SmallMouth',
+  BigMouth= 'BigMouth',
 }
 
 
@@ -82,8 +82,8 @@ export type DoBet = {
   Currency:string;
   BetMoney:number;
   Rows: number;
-  Risk: number;
-  BallType: number;
+  Risk: string;
+  BallType: string;
 }
 
 export type BetRecordSeedRequest = {

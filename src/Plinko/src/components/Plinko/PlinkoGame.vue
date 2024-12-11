@@ -107,7 +107,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         isSensor: true,
         isStatic: true,
         render: {
-          visible: true,
+          visible: false,
         },
       },
     );
@@ -135,18 +135,42 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   });
   const handlePinCollision = (bodyA: Matter.Body, bodyB: Matter.Body) => {
     const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
-    if (pin) {
+    const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
+
+    if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞
-       const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
        const isColorBall = ball && ball.render.sprite?.texture.includes("color"); // 假設 "color" 表示彩球的紋理
-
-
       if (pinState) {
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      
+      const randomExplosionChance = Math.random() < 0.2; // 20% 隨機爆炸概率
+      if (isColorBall && randomExplosionChance) {
+        console.log(`output->pinState`,pinState)
+        const explosionX = pinState.x;
+        const explosionY = pinState.y + 46;
+        console.log(`Explosion at -> x: ${explosionX}, y: ${explosionY}`);
+
+        const explosionImg = document.createElement("img");
+        explosionImg.src = '/src/assets/images/boom.gif';
+        explosionImg.style.position = "absolute";
+        explosionImg.style.width = "50px";
+        explosionImg.style.height = "50px";
+        explosionImg.style.left = `${explosionX - 25}px`;
+        explosionImg.style.top = `${explosionY - 25}px`;
+        explosionImg.style.zIndex = "10";
+        explosionImg.style.mixBlendMode = "color-dodge";
+        // 將爆炸特效添加到畫布容器中
+          canvas.value!.parentElement!.parentElement!.appendChild(explosionImg);
+
+          // 在2秒後移除爆炸特效
+          setTimeout(() => {
+            explosionImg.remove();
+          }, 1000);
+          Composite.remove(engine.world, ball);
+          game.deleteItemFromBetAmountOfExistingBalls(ball.id);
+      }
     }
   };
 
@@ -239,42 +263,6 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     );
     Composite.add(engine.world, ball);
 
-       // 如果是彩球，有一定機率觸發爆炸
-      if (isExplosion) {
-        // 初始動畫參數
-        const animationDuration = 1000; // 動畫總時長（毫秒）
-        // 在動畫結束後移除球
-        setTimeout(() => {
-          Composite.remove(engine.world, ball); // 移除球
-            console.log(`output->ball`,ball)
-
-             // 獲取球的最終位置
-            const finalX = ball.position.x;
-            const finalY = ball.position.y;
-            console.log(`Final position -> x: ${finalX}, y: ${finalY}`);
-            // 創建爆炸特效的div
-            const explosionImg = document.createElement("img");
-            explosionImg.src = '/src/assets/images/boom.gif';
-            explosionImg.style.position = "absolute";
-            explosionImg.style.width = "50px";
-            explosionImg.style.height = "50px";
-            explosionImg.style.left = `${ finalX}px`; // 調整爆炸特效的x位置
-            explosionImg.style.top = `${ finalY}px`; // 調整爆炸特效的y位置
-            explosionImg.style.zIndex = "10";
-            explosionImg.style.mixBlendMode = "color-dodge"; // 新增混合模式
-
-            // 將爆炸特效添加到畫布容器中
-            canvas.value!.parentElement!.parentElement!.appendChild(explosionImg);
-
-            // 在2秒後移除爆炸特效
-            setTimeout(() => {
-             // explosionImg.remove();
-            }, 2000);
-        }, animationDuration);
-
-
-        
-      }
 
     game.updateBetAmountOfExistingBalls(ball.id);
     game.updateBalance(-game.betAmount);
@@ -284,9 +272,10 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     // if (currentRowCount === game.rowCount) {
     //   return;
     // }
-    removeAllBalls();
+   // removeAllBalls();
 
     game.setRowCount(currentRowCount);
+    console.log(`output->game.row`,game.rowCount)
     placePinsAndWalls();
   }
 
@@ -323,13 +312,13 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     for (let row = 0; row < game.rowCount; ++row) {
       const rowY =
         PADDING_TOP +
-        ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM- bottomMargin ) / (game.rowCount - 1)) * row;
+        ((canvas.value!?.height - PADDING_TOP - PADDING_BOTTOM - bottomMargin ) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
       const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
      
       for (let col = 0; col < 3 + row; ++col) {
-        const colX = rowPaddingX + ((canvas.value!.width - rowPaddingX * 2) / (3 + row - 1)) * col;
+        const colX = rowPaddingX + ((canvas.value!?.width - rowPaddingX * 2) / (3 + row - 1)) * col;
         const pin = Bodies.circle(colX, rowY, pinRadius.value, {
           isStatic: true,
           render: {

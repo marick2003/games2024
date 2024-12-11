@@ -32,8 +32,9 @@
               </button>
             </div>
         </div>
-        <div v-if="!simulation.isSimulationing" class="relative rounded-md px-3 py-1 border border-[#45698C] text-center">
+        <div v-if="!simulation.isSimulationing" class="relative rounded-md px-2 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
+             <button class="minBtn" @click="handleMinBet"></button>
               <button class="halfBtn" @click="handleHalfBet"></button>
               <button class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
@@ -141,7 +142,7 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
 const currentBetAmount = computed({
   get() {
-    return game.betAmount;
+    return game.betAmount.toFixed(5);
   },
   set(newValue) {
     game.setBetAmount(newValue);
@@ -254,30 +255,32 @@ const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString
 watch(currentRiskLevel, (newRiskLevel) => {
     game.setRiskLevel(newRiskLevel);
 });
-watch(currentRowCount, (newRiskLevel) => {
-    game.setRowCount(currentRowCount.value);
+watch(currentRowCount, (newRowCount) => {
+    game.setRowCount(newRowCount);
 });
 
 const handleHalfBet = () => {
-  const newBetAmount = Math.max(game.minBetAmount / 2, game.minBetAmount);
+  const newBetAmount = Math.max((game.minBetAmount / 2), game.minBetAmount);
   game.setBetAmount(newBetAmount);
 };
 
 const handleReduceBet = () => {
-  const newBetAmount = Math.max(game.betAmount - 1, game.minBetAmount);
+  const newBetAmount = Math.max((game.betAmount - game.oneBetAmount), game.minBetAmount);
   game.setBetAmount(newBetAmount);
 };
 
 const handleAddBet = () => {
-  const newBetAmount = Math.min(game.betAmount + 1, game.maxBetAmount);
+  const newBetAmount = Math.min((game.betAmount +  game.oneBetAmount) , game.maxBetAmount);
   game.setBetAmount(newBetAmount);
 };
 
 const handleDoubleBet = () => {
-  const newBetAmount = Math.min(game.betAmount * 2, game.maxBetAmount);
+  const newBetAmount = Math.min((game.betAmount * 2), game.maxBetAmount);
   game.setBetAmount(newBetAmount);
 };
-
+const handleMinBet = ()=>{
+  game.setBetAmount(game.minBetAmount);
+}
 const handleMaxBet = () => {
   game.setBetAmount(game.maxBetAmount);
 };
@@ -305,10 +308,10 @@ select option {
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
 }
 .autoBtn{
-    background: url(../assets/images/auto_btn.png) no-repeat;
+    background: url(../assets/images/svg/auto_btn.svg) no-repeat;
     background-size: cover;
-    width: 55px;
-    height: 55px;
+    width: 58px;
+    height: 58px;
 }
 .dropBallBtn{
   width: 128px;

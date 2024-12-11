@@ -63,7 +63,7 @@ watch(
         </button>
       </div>
       <div class="mx-auto w-[375px]  drop-shadow-xl">
-        <div class="absolute py-[35px] px-[10px] w-full left-0 text-white flex">
+        <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
           <img src="@/assets/images/svg/icon_btc.svg"/>
           <span class="mx-2">{{ game.amount.toFixed(5) }}</span>
         </div>

@@ -1,5 +1,5 @@
 import { useFetchApi } from '@/utils/useFetchApi'
-import type {DoBet, BetRecordSeedRequest, RefreshSeedRequest} from '../types'
+import type {DoBet, BetRecordSeedRequest, RefreshSeedRequest, UpdateSeedRequest} from '../types'
 interface ApiOptions {
   PageIndex?: number
   PageSize?: number
@@ -35,6 +35,13 @@ export const serviceGetBetRecordSeed = (body: BetRecordSeedRequest) => {
 
 export const serviceGetRefreshSeed = (body: RefreshSeedRequest) => {
   const url = `/Plinko/RefreshSeed`
+  const httpMethod = 'post'
+
+  return useFetchApi({ url, httpMethod, body })
+}
+
+export const serviceUpdateSeed = (body: UpdateSeedRequest) => {
+  const url = `/Plinko/UpdateSeed`
   const httpMethod = 'post'
 
   return useFetchApi({ url, httpMethod, body })

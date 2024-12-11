@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue';
 import type { Ref } from 'vue'
 import { defineStore } from 'pinia'
-import type { BetHistoryResponseList, BetRecordSeedResponse } from '@/types/ResponseType';
-import type {BetRecordSeedRequest, RefreshSeedRequest} from '../types'
+import type {BetHistoryResponseList, BetRecordSeedResponse, GeneralResponse} from '@/types/ResponseType';
+import type {BetRecordSeedRequest, RefreshSeedRequest, UpdateSeedRequest} from '../types'
 
-import {serviceBetHistory, serviceGetBetRecordSeed, serviceGetRefreshSeed} from '@/stores/service';
+import {serviceBetHistory, serviceGetBetRecordSeed, serviceGetRefreshSeed, serviceUpdateSeed} from '@/stores/service';
 
 interface loadingInterface {
     appAssets: boolean
@@ -105,6 +105,16 @@ export const useAppStore = defineStore('App', () => {
         return responseData as BetRecordSeedResponse
     }
 
+    const updateSeed = async(formData:UpdateSeedRequest):Promise<GeneralResponse> => {
+        const { isFetching, data, execute } = serviceUpdateSeed(formData)
+        if (typeof isFetching === "boolean") {
+            isLoading.value.getBetHistory = isFetching
+        }
+        await execute()
+        const responseData = data.value
+        return responseData as GeneralResponse
+    }
+
   return {
       showError,
       isMute,
@@ -115,6 +125,7 @@ export const useAppStore = defineStore('App', () => {
       gameLoaded,
       getBetHistory,
       getBetRecordSeed,
-      getRefreshSeed
+      getRefreshSeed,
+      updateSeed
    }
 })

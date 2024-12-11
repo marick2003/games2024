@@ -88,8 +88,15 @@ export type DoBet = {
 
 export type BetRecordSeedRequest = {
   Id: string
+  Time: string
 }
 
 export type RefreshSeedRequest = {
   SeedType: string
 }
+
+export type UpdateSeedRequest = {
+  NewClientSeed: string
+  NewServiceSeed: string
+}
+

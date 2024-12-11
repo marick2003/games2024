@@ -19,11 +19,11 @@ const seedData = reactive({
   Nonce: ''
 })
 
-const updateSeedDate = reactive({
-  NewClientSeed: '',
-  NewServiceSeed: ''
+const updateSeedData = reactive({
+  NewServerSeed: '',
+  NewServerSeedHash: ''
 })
-
+const seedType = ref('')
 const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
 const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
 const pageIndex:Ref<number> = ref(1)
@@ -37,7 +37,28 @@ function onIntersectionObserver([{ isIntersecting }]) {
     }
   }
 }
+const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
+  const date = new Date(datetime);
 
+  // Get components
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const milliseconds = String(date.getMilliseconds()).padStart(3, '0');
+
+  // Get timezone offset
+  const offset = -date.getTimezoneOffset();
+  const sign = offset >= 0 ? '+' : '-';
+  const absOffset = Math.abs(offset);
+  const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+  const offsetMinutes = String(absOffset % 60).padStart(2, '0');
+
+  // Format string
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}${sign}${offsetHours}:${offsetMinutes}`;
+}
 const getBetHistory = async(index:number = 1) => {
   const response = await appStore.getBetHistory({ PageIndex: index, PageSize: 2 })
   if (response.IsSuccess){
@@ -47,15 +68,15 @@ const getBetHistory = async(index:number = 1) => {
 }
 
 const getBetRecordSeed = async() => {
-  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: '1'})
+  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: '55dbfd13ed254ab3a6e316aa121068b3', Time: '2024-12-10T18:09:53'})
   if (IsSuccess){
     Object.assign(seedData, Data)
   }
 }
-const getServerdSeedHash = async() => {
-  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: '1'})
+const getServerRefreshSeed = async() => {
+  const { IsSuccess, Data } = await appStore.getRefreshSeed({ SeedType: seedType.value})
   if (IsSuccess){
-    Object.assign(seedData, Data)
+    Object.assign(updateSeedData, Data)
   }
 }
 
@@ -68,6 +89,12 @@ const { values, errors, handleSubmit,  defineField } = useForm({
 const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
 
 const onSubmit = handleSubmit(async(values)=> {
+  console.log(values)
+  const { IsSuccess } = await appStore.updateSeed({ NewClientSeed: seedType.value, NewServiceSeed: updateSeedData.NewServerSeed})
+  if (IsSuccess){
+    alert('success')
+  }
+
 
 })
 
@@ -80,6 +107,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
   }
   if (val === 'fairness'){
     getBetRecordSeed()
+    seedType.value = generateRandom()
+    getServerRefreshSeed()
   }
 })
 </script>
@@ -140,8 +169,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
           <div class="relative">
             <template v-if="isSupported ">
-              <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
-                      <span v-if="source===seedData.ClientSeed">
+              <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
+                      <span v-if="source===seedData.ClientSeed && source !==''">
                         copied
                       </span>
                 <span v-else>
@@ -158,7 +187,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           <div class="relative">
             <template v-if="isSupported ">
               <button @click="()=>{source=seedData.ServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
-                      <span v-if="source===seedData.ServerSeedHash">
+                      <span v-if="source===seedData.ServerSeedHash && source !==''">
                         copied
                       </span>
                 <span v-else>
@@ -175,13 +204,13 @@ watch(()=> appStore.settingDialog.section,(val)=>{
         </div>
         <h1 class="text-center mt-6 mb-2">{{$t('UpdateSeed')}}</h1>
         <form @submit.prevent='onSubmit' class='flex flex-col'>
-          <div class="mb-10">
+          <div class="mb-6">
             <div class="font-bold">{{$t('NewClientSeed')}}</div>
-            <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <input type="text"  :value="seedType" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
             <div class="relative">
               <template v-if="isSupported ">
-                <button @click="()=>{source=seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
-                      <span v-if="source===seedData.ClientSeed">
+                <button @click="()=>{source=seedType; copy(source)}" class="!p-0 absolute top-0 right-0">
+                      <span v-if="source===seedType && source !==''">
                         copied
                       </span>
                   <span v-else>
@@ -189,7 +218,30 @@ watch(()=> appStore.settingDialog.section,(val)=>{
                       </span>
                 </button>
               </template>
+              <button @click.prevent="seedType = generateRandom()" class="!p-0 absolute top-0 right-16">random</button>
             </div>
+          </div>
+
+          <div class="mb-6">
+            <div class="font-bold">{{$t('ServerSeedHashing')}}</div>
+            <input type="text" :value="updateSeedData.NewServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="relative">
+              <template v-if="isSupported ">
+                <button @click="()=>{source=updateSeedData.NewServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
+                      <span v-if="source===updateSeedData.NewServerSeedHash && source !==''">
+                        copied
+                      </span>
+                  <span v-else>
+                        copy
+                      </span>
+                </button>
+              </template>
+              <button @click.prevent="getServerRefreshSeed()" class="!p-0 absolute top-0 right-16">get new server seed</button>
+            </div>
+          </div>
+
+          <div class="w-full mt-2">
+            <button @click.prevent="onSubmit" class="bg-white text-black mx-auto">Update</button>
           </div>
         </form>
       </div>
@@ -221,5 +273,11 @@ button{
 .modal-header{
   border-bottom: 1px solid #fff;
   padding-bottom:10px;
+}
+.modal-content{
+  font-size:14px;
+}
+form{
+  font-size:14px;
 }
 </style>

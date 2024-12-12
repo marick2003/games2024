@@ -14,7 +14,7 @@ import {
 } from '../types';
 import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
-import { serviceInit,serviceDoBet } from '@/stores/service';
+import { serviceInit,serviceDoBet, serviceGetBalance } from '@/stores/service';
 
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
@@ -83,6 +83,8 @@ export const useGameStore = defineStore('game', () => {
     betAmount: 0,
     ballType: [],
     autoBetCount: 0,
+    winAdjustmentMode: 'initial',
+    loseAdjustmentMode: 'initial',
     loseAdjustmentPercentage: 0,
     winAdjustmentPercentage: 0,
     isSingleBetProfitLimit: false,
@@ -130,8 +132,7 @@ export const useGameStore = defineStore('game', () => {
  * on every balance change. This prevents unnecessary writes to local storage, which can
  * be slow on low-end devices.
  */
- const balance = ref<number>(200);
-
+ const balance = ref<number>(0);
  const updateBalance = (value:number) => {
   balance.value += value;
  }
@@ -279,17 +280,33 @@ const resetAutoBetInterval = () => {
   if (autoBetInterval.value !== null) {
       clearInterval(autoBetInterval.value);
       autoBetInterval.value = null;
+      currentBallTypeIndex.value=0;
       updateAutoBetSetting(defaultAutoBetSetting.value)
   }
 };
 const isBetExceedBalance = computed(() => {
   return betAmount.value > balance.value;
 });
+const currentBallTypeIndex = ref(0);
 const autoBetDropBall = () => {
   if (isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
   }
+
+  // 判斷 autoBetSetting.value.ballType 並設置 ballType
+  const ballTypes = autoBetSetting.value.ballType;
+
+  if (ballTypes.length === 1) {
+    // 如果只有一種球類，直接設置
+    setBallType(ballTypes[0] === 'red' ? BallType.RED : BallType.COLOR);
+  } else if (ballTypes.length === 2) {
+    // 如果有兩種球類，按照 currentBallTypeIndex 切換
+    const ballType = ballTypes[currentBallTypeIndex.value % ballTypes.length];
+    setBallType(ballType === 'red' ? BallType.RED : BallType.COLOR);
+    currentBallTypeIndex.value += 1; // 切換到下一種類型
+  }
+
   // Infinite mode
   if (autoBetSetting.value.autoBetCount === Infinity) {
     setDropBall(true);
@@ -301,11 +318,20 @@ const autoBetDropBall = () => {
     setDropBall(true);
     autoBetSetting.value.autoBetCount -= 1;
   }
+
+  // 停止條件
   if (autoBetSetting.value.autoBetCount === 0 && autoBetInterval.value !== null) {
     resetAutoBetInterval();
     return;
   }
+
+  
 };
+const getBalance= async()=>{
+  const { data, execute } = serviceGetBalance({Currency: currency.value})
+  await execute()
+  return data.value
+}
   return {
     // plinkoEngine,
     amount,
@@ -343,6 +369,7 @@ const autoBetDropBall = () => {
     setAutoSettingDialog,
     doBet,
     currency,
+    setCurrency,
     oneBetAmount,
     setOneBetAmount,
     currencyLimit,
@@ -350,6 +377,7 @@ const autoBetDropBall = () => {
     autoBetInterval,
     autoBetDropBall,
     autoBetIntervalMs,
-    resetAutoBetInterval
+    resetAutoBetInterval,
+    getBalance
    }
 })

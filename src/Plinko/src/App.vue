@@ -9,10 +9,11 @@ import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useSimulationStore } from './stores/simulation';
 import { useAppStore } from '@/stores/app'
-import { useGameStore } from '@/stores/game'
+import { useGameStore, balance } from '@/stores/game';
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
 import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
+import { useIntervalFn } from '@vueuse/core';
 const simulation = useSimulationStore();
 const appStore = useAppStore()
 const game=useGameStore();
@@ -22,11 +23,24 @@ const showSetting = () => {
 }
 const childRef = ref(null);
 const amountData = ref([]); // 儲存歷史數據
-const displayAmount = ref(0); // 用於顯示的金額
 const payoutDelta = ref(null); // 顯示的加減金額
 const isAnimating = ref(false); // 控制淡入淡出的狀態
-//初始資料
-game.getInitialization();
+const isDataLoaded = ref(false);
+onMounted(async () => {
+  await game.getInitialization(); // 確保初始化完成
+  const response: any = await game.getBalance(); // 取得餘額資料
+  game.updateBalance(response.Data.Balance); // 更新餘額
+  game.setCurrency(response.Data.Currency); // 更新幣別
+  isDataLoaded.value = true; // 資料載入完成
+});
+
+// 自動每 10 秒更新餘額
+useIntervalFn(async () => {
+  const response: any = await game.getBalance();
+  game.updateBalance(response.Data.Balance);
+  game.setCurrency(response.Data.Currency);
+}, 10000);
+
 watch(
     () => game.isDropBall,
     async(newVal) => {
@@ -41,10 +55,10 @@ watch(
   () => game.winRecords,
   async (newVal) => {
     if (newVal && newVal.length > 0) {
-   
-      console.log(`output->newVal`, newVal);
       const { amount, payout, balance } = newVal.at(-1);
-
+      if(payout.value <=0){
+        return false;
+      }
       isAnimating.value = true;
       payoutDelta.value = payout.value > 0 ? `+${payout.value.toFixed(8)}` : payout.value.toFixed(8);
 
@@ -53,13 +67,11 @@ watch(
       const targetAmount = balance; // 餘額
       const duration = 1000; 
       const startTime = performance.now();
-
       const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
         const progress = Math.min(elapsedTime / duration, 1); 
-        displayAmount.value =
-          startAmount + (targetAmount - startAmount) * progress;
-
+        game.updateBalance(startAmount + (targetAmount - startAmount) * progress)
+  
         if (progress < 1) {
           requestAnimationFrame(updateAmount);
         } else {
@@ -105,7 +117,7 @@ watch(
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
            <img src="@/assets/images/svg/icon_btc.svg"/>
             <!-- 顯示當前金額 -->
-          <span class="mx-2">{{ displayAmount.toFixed(8) }}</span>
+          <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(8) }}</span>
            <!-- 顯示加減金額 -->
           <transition name="fade">
             <span v-if="isAnimating" class="mx-2 text-green-500 font-bold">

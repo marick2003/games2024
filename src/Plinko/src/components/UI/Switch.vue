@@ -37,28 +37,28 @@ const handleInput = (event: Event) => {
 
 /* 自定義 label 外觀 */
 .mz-switch-rounded + label {
-  display: inline-block;
-  width: 40px;
-  height: 24px;
-  background-color: #adb5bd;
-  position: relative;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: background-color 0.4s;
+  display: block;
+    width: 35px;
+    height: 19px;
+    background-color: rgba(92, 92, 92, 1);
+    position: relative;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.4s;
 }
 
 /* 自定義滑塊 */
 .mz-switch-rounded + label::after {
   content: "";
-  display: block;
-  width: 20px;
-  height: 20px;
-  background-color: #ffffff;
-  position: absolute;
-  bottom: 2px;
-  left: 2px;
-  border-radius: 50%;
-  transition: transform 0.4s;
+    display: block;
+    width: 15px;
+    height: 15px;
+    background-color: #ffffff;
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    border-radius: 50%;
+    transition: transform 0.4s;
 }
 
 /* 勾選時的樣式 */

@@ -46,8 +46,10 @@
   "AutoBetCount": "自动投注",
   "LoseAdjustmentPercentage": "若输",
   "WinAdjustmentPercentage": "若赢",
-  "SingleBetProfitLimitAmount": "是否单注止盈",
-  "CumulativeStopLossAmount": "是否累积止损",
-  "CumulativeStopWinAmount": "是否累积止盈",
-  "StartAutoBet":"自动投注"
+  "SingleBetProfitLimitAmount": "单注止盈",
+  "CumulativeStopLossAmount": "累积止损",
+  "CumulativeStopWinAmount": "累积止盈",
+  "StartAutoBet":"开始自动下注",
+  "AutomaticBettingSettings":"自动下注设定",
+  "InitialBet": "初始下注"
 }

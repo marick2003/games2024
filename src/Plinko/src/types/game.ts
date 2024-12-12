@@ -74,8 +74,10 @@ export type AutoBetSetting={
   betAmount: number;      // 初始下注金額
   ballType: string[];     // 投注球類型
   autoBetCount: number;   // 自動投注
+  loseAdjustmentMode: string; // 若輸類型參照
   loseAdjustmentPercentage: number; // 若輸，金額增加 10%
   winAdjustmentPercentage: number;  // 若贏，金額減少 5%
+  winAdjustmentMode:string ; // 若贏類型參照
   isSingleBetProfitLimit: boolean;  // 是否單注止盈
   singleBetProfitLimit: number;     // 單注止盈
   isCumulativeStopLoss: boolean;    // 是否累積止損

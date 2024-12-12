@@ -125,7 +125,7 @@ export const useAppStore = defineStore('App', () => {
         const responseData = data.value
         return responseData as GeneralResponse
     }
-
+    
   return {
       showError,
       isMute,

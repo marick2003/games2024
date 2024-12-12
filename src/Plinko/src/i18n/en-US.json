@@ -48,5 +48,8 @@
   "SingleBetProfitLimitAmount": "Single Bet Profit Limit Amount",
   "CumulativeStopLossAmount": "Cumulative Stop Loss Amount",
   "CumulativeStopWinAmount": "Cumulative Stop Win Amount",
-  "StartAutoBet":"Start Auto Bet"
+  "StartAutoBet":"Start Auto Bet",
+  "AutomaticBettingSettings":"Automatic Betting Settings",
+  "InitialBet": "Initial Bet"
+  
 }

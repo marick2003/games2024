@@ -40,5 +40,14 @@
   "BetDetail": "注单详情",
   "RandomNumber": "随机数",
   "Unannounced": "种子未公布",
-  "WhatIsFairness": "什么是游戏公平性?"
+  "WhatIsFairness": "什么是游戏公平性?",
+  "InitialBetAmount": "初始下注金额",
+  "BallType": "投注球类型",
+  "AutoBetCount": "自动投注",
+  "LoseAdjustmentPercentage": "若输",
+  "WinAdjustmentPercentage": "若赢",
+  "SingleBetProfitLimitAmount": "是否单注止盈",
+  "CumulativeStopLossAmount": "是否累积止损",
+  "CumulativeStopWinAmount": "是否累积止盈",
+  "StartAutoBet":"自动投注"
 }

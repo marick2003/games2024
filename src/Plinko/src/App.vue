@@ -21,6 +21,10 @@ const showSetting = () => {
   appStore.settingDialog.section = 'main'
 }
 const childRef = ref(null);
+const amountData = ref([]); // 儲存歷史數據
+const displayAmount = ref(0); // 用於顯示的金額
+const payoutDelta = ref(null); // 顯示的加減金額
+const isAnimating = ref(false); // 控制淡入淡出的狀態
 //初始資料
 game.getInitialization();
 watch(
@@ -33,6 +37,41 @@ watch(
       }
     }
   );
+  watch(
+  () => game.winRecords,
+  async (newVal) => {
+    if (newVal && newVal.length > 0) {
+   
+      console.log(`output->newVal`, newVal);
+      const { amount, payout, balance } = newVal.at(-1);
+
+      isAnimating.value = true;
+      payoutDelta.value = payout.value > 0 ? `+${payout.value.toFixed(8)}` : payout.value.toFixed(8);
+
+      // 数字递增跳动效果
+      const startAmount = amount; // 金额
+      const targetAmount = balance; // 餘額
+      const duration = 1000; 
+      const startTime = performance.now();
+
+      const updateAmount = (currentTime) => {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1); 
+        displayAmount.value =
+          startAmount + (targetAmount - startAmount) * progress;
+
+        if (progress < 1) {
+          requestAnimationFrame(updateAmount);
+        } else {
+          isAnimating.value = false;
+          payoutDelta.value = null;
+        }
+      };
+      requestAnimationFrame(updateAmount);
+    }
+  }
+);
+
 </script>
 
 <template>
@@ -65,7 +104,14 @@ watch(
       <div class="mx-auto w-[375px]  drop-shadow-xl">
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
           <img src="@/assets/images/svg/icon_btc.svg"/>
-          <span class="mx-2">{{ game.amount.toFixed(5) }}</span>
+            <!-- 顯示當前金額 -->
+          <span class="mx-2">{{ displayAmount.toFixed(8) }}</span>
+           <!-- 顯示加減金額 -->
+          <transition name="fade">
+            <span v-if="isAnimating" class="mx-2 text-green-500 font-bold">
+              {{ payoutDelta }}
+            </span>
+          </transition>
         </div>
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
           <Sidebar  />
@@ -109,4 +155,28 @@ watch(
     background: url(./assets/images/background.png) no-repeat;
     background-size: cover;
   }
+  .fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(20px); /* 从下往上 */
+}
+
+.fade-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(20px); /* 往下淡出 */
+}
 </style>

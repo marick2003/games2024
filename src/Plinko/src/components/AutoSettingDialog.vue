@@ -7,7 +7,7 @@
       <form @submit.prevent="submitSettings" class="flex flex-col gap-4">
         <div class="flex flex-col">
           <label class="flex items-center justify-between">
-            {{$t('Initial Bet Amount')}}
+            {{$t('InitialBetAmount')}}
             <div class="flex items-center gap-2">
               <input type="number" v-model="form.betAmount" class="input w-24" placeholder="0.00001" />
               <span class="currency-icon">฿</span>
@@ -16,36 +16,37 @@
         </div>
 
         <div class="flex justify-between items-center">
-          <span>{{$t('Ball Type')}}</span>
+          <span>{{$t('BallType')}}</span>
           <div class="flex gap-2">
-            <button type="button" class="btn-secondary" @click="toggleBallType('red')">Red</button>
-            <button type="button" class="btn-secondary" @click="toggleBallType('color')">Color</button>
+            <button type="button" class="btn-secondary"  :class="{ 'active': form.ballType.includes('red') }" @click="toggleBallType('red')">Red</button>
+            <button type="button" class="btn-secondary"  :class="{ 'active': form.ballType.includes('color') }" @click="toggleBallType('color')">Color</button>
           </div>
         </div>
 
         <div class="flex flex-wrap gap-2">
-          <span>{{$t('Auto Bet Count')}}</span>
+          <span>{{$t('AutoBetCount')}}</span>
           <div class="flex gap-2 flex-wrap">
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 5">5</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 10">10</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 20">20</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 50">50</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 100">100</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 200">200</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 500">500</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = 1000">1000</button>
-            <button type="button" class="btn-secondary" @click="form.autoBetCount = Infinity">∞</button>
+            <button
+              v-for="count in autoBetCounts"
+              :key="count"
+              type="button"
+              class="btn-secondary"
+              :class="{ 'active': form.autoBetCount === count }"
+              @click="form.autoBetCount = count"
+            >
+              {{ count === Infinity ? '∞' : count }}
+            </button>
           </div>
         </div>
 
         <div class="flex flex-col gap-2">
           <label class="flex items-center justify-between">
-            {{$t('Lose Adjustment Percentage')}}
+            {{$t('LoseAdjustmentPercentage')}}
             <input type="number" v-model="form.loseAdjustmentPercentage" class="input w-24" placeholder="%" />
           </label>
 
           <label class="flex items-center justify-between">
-            {{$t('Win Adjustment Percentage')}}
+            {{$t('WinAdjustmentPercentage')}}
             <input type="number" v-model="form.winAdjustmentPercentage" class="input w-24" placeholder="%" />
           </label>
         </div>
@@ -53,74 +54,73 @@
         <div class="divider"></div>
 
         <div class="flex flex-col gap-2">
-          <Switch v-model="form.isSingleBetProfitLimit" :label="$t('Single Bet Profit Limit')" />
-          <label  class="flex items-center justify-between">
-            {{$t('Single Bet Profit Limit Amount')}}
-            <input type="number" v-model="form.singleBetProfitLimit" class="input w-24" placeholder="0.00" />
-          </label>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <Switch v-model="form.isCumulativeStopLoss" :label="$t('Cumulative Stop Loss')" />
-          <label  class="flex items-center justify-between">
-            {{$t('Cumulative Stop Loss Amount')}}
-            <input type="number" v-model="form.cumulativeStopLoss" class="input w-24" placeholder="0.00" />
-          </label>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <Switch v-model="form.iscumulativeStopWin" :label="$t('Cumulative Stop Win')" />
+          {{$t('SingleBetProfitLimitAmount')}}
           <label class="flex items-center justify-between">
-            {{$t('Cumulative Stop Win Amount')}}
+            
+            <Switch v-model="form.isSingleBetProfitLimit" />
+            <input type="number" :disabled="!form.isSingleBetProfitLimit" v-model="form.singleBetProfitLimit" class="input w-24" placeholder="0.00" />
+          </label>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          {{$t('CumulativeStopLossAmount')}}
+          <label class="flex items-center justify-between">
+           
+            <Switch v-model="form.isCumulativeStopLoss" />
+            <input type="number" :disabled="!form.isCumulativeStopLoss" v-model="form.cumulativeStopLoss" class="input w-24" placeholder="0.00" />
+          </label>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          {{$t('CumulativeStopWinAmount')}}
+          <label class="flex items-center justify-between">
+           
+            <Switch v-model="form.iscumulativeStopWin" />
             <input type="number" :disabled="!form.iscumulativeStopWin" v-model="form.cumulativeStopWin" class="input w-24" placeholder="0.00" />
           </label>
         </div>
 
-        <button type="submit" class="btn-primary mt-4">{{$t('Start Auto Bet')}}</button>
+        <button type="submit" class="btn-primary mt-4">{{$t('StartAutoBet')}}</button>
       </form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed,ref } from 'vue'; // 使用 computed 來簡化綁定
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../stores/game';
 import Switch from '@/components/UI/Switch.vue';
 
 const { t: $t } = useI18n();
 const game = useGameStore();
+const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]); // Store counts in an array
 
-const autoBetSetting = ref<AutoBetSetting[]>([]);
+// 使用 computed 將 form 綁定到 store
+const form = computed(() => game.autoBetSetting);
 
-const form = ref<AutoBetSetting>({
-  betAmount: 0,
-  ballType: [],
-  autoBetCount: 0,
-  loseAdjustmentPercentage: 0,
-  winAdjustmentPercentage: 0,
-  isSingleBetProfitLimit: false,
-  singleBetProfitLimit: 0,
-  isCumulativeStopLoss: false,
-  cumulativeStopLoss: 0,
-  iscumulativeStopWin: false,
-  cumulativeStopWin: 0
-});
-
+// 切換球類型的邏輯
 const toggleBallType = (type: string) => {
-  if (form.value.ballType.includes(type)) {
-    form.value.ballType = form.value.ballType.filter(t => t !== type);
+  const currentBallType = form.value.ballType || [];
+  if (currentBallType.includes(type)) {
+    form.value.ballType = currentBallType.filter(t => t !== type);
   } else {
-    form.value.ballType.push(type);
+    form.value.ballType = [...currentBallType, type];
   }
+  console.log(`output->form.value.ballType`,form.value.ballType)
 };
 
-const submitSettings = () => {
-  autoBetSetting.value.push({ ...form.value });
-  game.setAutoSettingDialog(false); // Close the modal
-  console.log('Settings saved:', autoBetSetting.value);
+// 提交設置
+const submitSettings = async () => {
+  game.updateAutoBetSetting({ ...form.value }); // 更新 store 中的設定
+
+  game.autoBetInterval = setInterval(game.autoBetDropBall, game.autoBetIntervalMs)
+
+  game.setAutoSettingDialog(false); // 關閉對話框
+  console.log('Settings saved:', game.autoBetSetting);
 };
 </script>
+
 
 <style scoped>
 .modal-container {
@@ -146,7 +146,6 @@ button {
 .input {
   width: 100%;
   padding: 0.5rem;
-  margin-top: 0.5rem;
   background: #333;
   border: 1px solid #555;
   border-radius: 4px;
@@ -175,8 +174,9 @@ button {
   cursor: pointer;
 }
 
-.btn-secondary:hover {
-  background-color: #666;
+.btn-secondary.active {
+  background-color: #f81616;
+  color: white;
 }
 
 .currency-icon {

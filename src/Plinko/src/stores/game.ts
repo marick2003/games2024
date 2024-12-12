@@ -15,6 +15,7 @@ import {
 import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
 import { serviceInit,serviceDoBet } from '@/stores/service';
+
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
     const amount =ref<number>(0)
@@ -75,11 +76,27 @@ export const useGameStore = defineStore('game', () => {
    const winRecords = ref<WinRecord[]>([]);
 
    const updateWinRecords = (value:WinRecord) => {
-    winRecords.value.push(value);
+    winRecords.value = [...winRecords.value, value]; // 創建新陣列
+    console.log(`output->winRecords.value`,winRecords.value)
    }
-   const autoBetSetting= ref<AutoBetSetting[]>([]);
+   const defaultAutoBetSetting=ref<AutoBetSetting>({
+    betAmount: 0,
+    ballType: [],
+    autoBetCount: 0,
+    loseAdjustmentPercentage: 0,
+    winAdjustmentPercentage: 0,
+    isSingleBetProfitLimit: false,
+    singleBetProfitLimit: 0,
+    isCumulativeStopLoss: false,
+    cumulativeStopLoss: 0,
+    iscumulativeStopWin: false,
+    cumulativeStopWin: 0
+   });
+   const autoBetSetting = ref<AutoBetSetting>({
+    ...defaultAutoBetSetting.value
+  });
    const updateAutoBetSetting = (value:AutoBetSetting) => {
-    autoBetSetting.value.push(value);
+    autoBetSetting.value=value;
    }
    const isDropBall = ref<boolean>(false);
 
@@ -256,8 +273,39 @@ const getInitialization = async() => {
   });
   return formattedBinPayouts;
 };
+const autoBetInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const autoBetIntervalMs =ref(1000)
+const resetAutoBetInterval = () => {
+  if (autoBetInterval.value !== null) {
+      clearInterval(autoBetInterval.value);
+      autoBetInterval.value = null;
+      updateAutoBetSetting(defaultAutoBetSetting.value)
+  }
+};
+const isBetExceedBalance = computed(() => {
+  return betAmount.value > balance.value;
+});
+const autoBetDropBall = () => {
+  if (isBetExceedBalance.value) {
+    resetAutoBetInterval();
+    return;
+  }
+  // Infinite mode
+  if (autoBetSetting.value.autoBetCount === Infinity) {
+    setDropBall(true);
+    return;
+  }
 
-
+  // Finite mode
+  if (autoBetSetting.value.autoBetCount > 0) {
+    setDropBall(true);
+    autoBetSetting.value.autoBetCount -= 1;
+  }
+  if (autoBetSetting.value.autoBetCount === 0 && autoBetInterval.value !== null) {
+    resetAutoBetInterval();
+    return;
+  }
+};
   return {
     // plinkoEngine,
     amount,
@@ -299,5 +347,9 @@ const getInitialization = async() => {
     setOneBetAmount,
     currencyLimit,
     setCurrencyLimit,
+    autoBetInterval,
+    autoBetDropBall,
+    autoBetIntervalMs,
+    resetAutoBetInterval
    }
 })

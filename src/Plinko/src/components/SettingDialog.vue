@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import {ref, reactive, computed, watch, type Ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
-import { useI18n } from 'vue-i18n'
-const { t: $t  } = useI18n()
-import { useAppStore } from '@/stores/app'
-import type {BetHistoryResponseList, BetHistoryResponse} from '@/types/ResponseType';
-const appStore = useAppStore()
 import { vIntersectionObserver } from '@vueuse/components'
+import Decimal from 'decimal.js';
+import { useI18n } from 'vue-i18n'
+import { useAppStore } from '@/stores/app'
+import type { BetHistoryResponseList, BetHistoryResponse } from '@/types/ResponseType';
 import randomize from 'randomatic';
 import { useForm, Field, ErrorMessage, useField } from 'vee-validate';
 import * as yup from 'yup';
+
+const { t: $t  } = useI18n()
+
+const appStore = useAppStore()
+
 const root = ref(null)
-const isVisible = ref(false)
+
 const seedData = reactive({
   ServerSeed: '',
   ClientSeed: '',
@@ -126,14 +130,30 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     seedType.value = generateRandom()
     getServerRefreshSeed()
   }
-  isShowBetDetail.value= false
-  selectedBetDetail.value = null
+  if (val === 'fairness-history'){
+    getSeedInfo()
+    seedType.value = generateRandom()
+    getServerRefreshSeed()
+  }
+  if (val === 'main'){
+    isShowBetDetail.value= false
+    selectedBetDetail.value = null
+  }
 })
+
+const backButtonControl = (): void => {
+  if (appStore.settingDialog.section === 'fairness'){
+    appStore.settingDialog.section = 'main'
+  }
+  if (appStore.settingDialog.section === 'fairness-history') {
+    appStore.settingDialog.section = 'history'
+  }
+}
 </script>
 
 <template>
-  <div v-show='appStore.settingDialog.visible' @click="appStore.settingDialog.visible = false" class='modal-backdrop fixed w-full h-full left-0 right-0 top-0 bottom-0 z-10'></div>
-  <div v-show='appStore.settingDialog.visible' class="fixed flex flex-col items-center left-[50%] top-0 -translate-x-[50%] w-[368px] h-[100%] overflow-hidden z-20">
+  <div v-show='appStore.settingDialog.visible'  class='modal-backdrop fixed w-full h-full left-0 right-0 top-0 bottom-0 z-20'></div>
+  <div v-show='appStore.settingDialog.visible' @click.self="appStore.settingDialog.visible = false; appStore.settingDialog.section = 'main'" class="fixed flex flex-col items-center left-[50%] top-0 -translate-x-[50%] w-[368px] h-[100%] overflow-hidden z-20">
     <div
          :class="[appStore.settingDialog.section === 'main' ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[-100vw] !translate-y-[-50%]']"
          class='modal-container pt-3 pb-8 z-50 text-red-800 h-[350px]'>
@@ -147,11 +167,11 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     </div>
 
     <div
-         :class="[appStore.settingDialog.section === 'history' ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[100vw] !translate-y-[-50%]']"
+         :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[100vw] !translate-y-[-50%]']"
          class='modal-container pt-3 pb-8 z-50 text-red-800 h-[600px]'>
       <div class="relative modal-header px-3">
         {{$t('BetHistory')}}
-        <button class='absolute right-0 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'">back</button>
+        <button class='absolute right-0 top-0 !pt-0' @click.prevent="appStore.settingDialog.section = 'main'">back</button>
       </div>
       <div class='modal-content mx-auto text-left pt-1 mt-4 pb-6 h-[100%] overflow-hidden'>
         <div class="flex flex-col gap-5 h-[530px] overflow-y-auto"  ref="root">
@@ -160,10 +180,10 @@ watch(()=> appStore.settingDialog.section,(val)=>{
               <h1>{{index}}</h1>
               Name Crocodile Plinko <br>
               ID: {{history.Id}}<br>
-              amount: {{history.Amount}} {{history.Currency}}<br>
+              amount: {{ new Decimal(history.Amount).toFixed(8) }} {{ history.Currency }}<br>
               PayoutMultiplier: {{history.PayoutMultiplier}}<br>
               Payout: {{history.Payout}}<br>
-              DateTime: {{history.Time}}
+              DateTime: {{getCurrentDateTimeWithTimezone(history.Time)}}
               <div v-if='appStore.isLoading.getBetHistory'>loading</div>
               <div v-if='index === (betHistoryResult.length - 1)' v-intersection-observer="onIntersectionObserver">last and fetch</div>
             </div>
@@ -173,12 +193,12 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'fairness' ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[100vw] !translate-y-[-50%]']"
-      class='modal-container pt-3 pb-8 z-50 text-red-800 h-[600px]'>
+      :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      class='modal-container pt-3 pb-8 !z-[51] text-red-800 h-[600px]'>
       <div class="relative modal-header px-3">
         {{$t('Fairness')}}
         <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
-        <button class='absolute right-0 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'">back</button>
+        <button class='absolute right-0 top-0 !pt-0' @click.prevent="backButtonControl">back</button>
       </div>
       <div class='modal-content mx-auto text-left pt-1 px-4 mt-2 pb-6 h-[100%] overflow-hidden'>
         <h1 class="text-center">{{$t('CurrentSeed')}}</h1>
@@ -250,10 +270,10 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     </div>
 
 
-    <div class="modal-container h-[630px]  pt-3 pb-8 transition-all z-50" :class="isShowBetDetail ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[-50%] !translate-y-[60vh]'">
+    <div class="modal-container h-[640px]  pt-3 pb-8 transition-all z-50" :class="isShowBetDetail ? '!translate-x-[-50%] !translate-y-[-50%]' : '!translate-x-[-50%] !translate-y-[60vh]'">
       <div class="relative modal-header px-3">
         {{$t('BetDetail')}}
-        <button class='absolute right-0 top-0 !pt-0' @click.prevent="isShowBetDetail = false">back</button>
+        <button class='absolute right-0 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false">back</button>
       </div>
       <div class='modal-content mx-auto text-left pt-1 px-4 mt-2 pb-6 h-[100%] overflow-hidden' v-if="selectedBetDetail">
         <h1>Crocodile Plinko</h1>
@@ -267,11 +287,11 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           </template>
         </div>
         <div class="relative">
-          {{selectedBetDetail.Time}}
+          {{getCurrentDateTimeWithTimezone(selectedBetDetail.Time)}}
         </div>
 
         <div class="bg-slate-400 text-black p-1">
-          amount: {{selectedBetDetail.Amount}} <br>
+          amount: {{ new Decimal(selectedBetDetail.Amount ).toFixed(8) }} <br>
           payout: {{selectedBetDetail.Payout}} <br>
           multiplier: {{selectedBetDetail.PayoutMultiplier}} <br>
         </div>
@@ -281,7 +301,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
           ball: {{selectedBetDetail.Ball}} <br>
         </div>
 
-        <button class="text-center border-white border mx-auto" @click.prevent="isShowGameFairness = true">{{$t('GameFairness')}}</button>
+        <button class="text-center border-white border mx-auto" @click.prevent="isShowGameFairness = !isShowGameFairness">{{$t('GameFairness')}}</button>
         <div v-if="isShowGameFairness">
           <div class="mb-4">
             <div class="font-bold">{{ $t('ServerSeed') }}</div>
@@ -333,6 +353,8 @@ watch(()=> appStore.settingDialog.section,(val)=>{
               </template>
             </div>
           </div>
+
+          <button @click.prevent="appStore.settingDialog.section = 'fairness-history'">{{$t('WhatIsFairness')}}</button>
         </div>
       </div>
     </div>
@@ -351,7 +373,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
   left:50%;
   top:50%;
   transform: translate(-50%, -50%);
-  transition: all .3s cubic-bezier(0,.53,.42,.99);
+  transition: all .3s cubic-bezier(0,.4,.55,1);
 }
 button{
   padding: .5rem 2rem;

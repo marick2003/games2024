@@ -56,7 +56,7 @@ export const useAppStore = defineStore('App', () => {
     const assets = {
         // arrow:  new URL('@/assets/images/arrow.svg', import.meta.url).href,
         auto_btn:  new URL('@/assets/images/auto_btn.png', import.meta.url).href,
-        // background:  new URL('@/assets/images/background.png', import.meta.url).href,
+        background:  new URL('@/assets/images/background.png', import.meta.url).href,
         // boom:  new URL('@/assets/images/boom.gif', import.meta.url).href,
         // closemouth:  new URL('@/assets/images/closemouth.png', import.meta.url).href,
         // color:  new URL('@/assets/images/color.png', import.meta.url).href,

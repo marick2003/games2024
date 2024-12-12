@@ -103,7 +103,7 @@ watch(
       </div>
       <div class="mx-auto w-[375px]  drop-shadow-xl">
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
-    
+           <img src="@/assets/images/svg/icon_btc.svg"/>
             <!-- 顯示當前金額 -->
           <span class="mx-2">{{ displayAmount.toFixed(8) }}</span>
            <!-- 顯示加減金額 -->

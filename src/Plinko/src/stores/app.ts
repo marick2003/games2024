@@ -65,7 +65,7 @@ export const useAppStore = defineStore('App', () => {
         pin:  new URL('@/assets/images/pin.png', import.meta.url).href,
         red:  new URL('@/assets/images/red.png', import.meta.url).href,
         redBtn:  new URL('@/assets/images/redBtn.png', import.meta.url).href,
-        redBtn_pass:  new URL('@/assets/images/redBtn_pass.png', import.meta.url).href,
+        //redBtn_pass:  new URL('@/assets/images/redBtn_pass.png', import.meta.url).href,
         // muteSvg:  new URL('@/assets/images/mute.svg', import.meta.url).href,
         // soundSvg:  new URL('@/assets/images/sound.svg', import.meta.url).href,
         // settingSvg:  new URL('@/assets/images/setting.svg', import.meta.url).href,

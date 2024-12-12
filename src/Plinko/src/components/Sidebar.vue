@@ -41,7 +41,7 @@
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
                 <div class="flex items-center">
                   <div class="absolute  w-[4%] mx-[5px]">
-                    <img class="" src="@/assets/images/svg/icon_btc.svg"/>
+                    <img class="" src="@/assets/images/svg/Icon_btc.svg"/>
                   </div>
                   <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
@@ -100,7 +100,7 @@
           </div>
         </div>
     </div>
-   
+
 </template>
 
 <script setup lang="ts">
@@ -233,7 +233,7 @@ const autoBetDropBall = () => {
 // };
 
 const handleBetClick = (ballType:BallType) => {
-  
+
     game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");

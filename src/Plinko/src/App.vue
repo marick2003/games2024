@@ -26,7 +26,7 @@ game.getInitialization();
 watch(
     () => game.isDropBall,
     async(newVal) => {
-     
+
       if (newVal) {
         console.log(`output->game.isDropBall`,newVal)
         childRef.value.callToDrop()
@@ -64,7 +64,7 @@ watch(
       </div>
       <div class="mx-auto w-[375px]  drop-shadow-xl">
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
-          <img src="@/assets/images/svg/icon_btc.svg"/>
+          <img src="@/assets/images/svg/Icon_btc.svg"/>
           <span class="mx-2">{{ game.amount.toFixed(5) }}</span>
         </div>
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">

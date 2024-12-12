@@ -47,11 +47,17 @@ export type WinRecord = {
    * Zero-based index of which bin the ball fell into (leftmost bin is 0).
    */
   ballType: BallType ;
+  balance: number;
+  amount: number;
   binIndex: number;
   payout: {
+    /*
+     */
+    colorMultiplier: number;
     /**
      * Multiplier for the payout (e.g. `0.3`, `1.5`).
      */
+   
     multiplier: number;
     /**
      * Actual payout amount.

@@ -12,7 +12,7 @@
       {{ item.payout.multiplier + (item.payout.multiplier < 100 && item.payout.multiplier > 0 ? '×' : '') }}
       
     </div>
-    <span v-if="item.ballType === BallType.COLOR" 
+    <span v-if="item.ballType === BallType.COLOR && item.payout.colorMultiplier >1" 
     class="text-[#fff] absolute left-7 z-0  pr-2 pl-3  rounded-tr-xl rounded-br-xl bg-[rgba(0,0,0,0.2)] text-[12px]"
     >2x</span>
     </div>

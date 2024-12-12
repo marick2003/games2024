@@ -218,9 +218,15 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       })
       
     if(response.IsSuccess){
-      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition])
+      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
        // response.Data.ColorMultiplier 0 爆炸  1 正常
-      await dropABall(point,(game.ballType === BallType.COLOR && !response.Data.ColorMultiplier));
+      await dropABall(point
+      ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
+      ,response.Data.ColorMultiplier
+      ,response.Data.Payout
+      ,response.Data.Balance
+      ,response.Data.Amount
+    );
       game.setDropBall(false);  // Reset `isDropBall` after handling
     }
     
@@ -228,7 +234,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   defineExpose({
     callToDrop,
 });
-const dropABall = (point: number, isExplosion: boolean) => {
+const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,payout:number ,balance:number ,amount:number) => {
     console.log(`output->isExplosion`, isExplosion);
 
     // 初始化圖片
@@ -245,7 +251,11 @@ const dropABall = (point: number, isExplosion: boolean) => {
             ballRadius,
             {
                 isExplosion, // 是否爆炸
+                colorMultiplier,
                 collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
+                payout,
+                balance,
+                amount,
                 restitution: 0.8, // 彈性
                 friction,
                 frictionAir: frictionAirByRowCount[game.rowCount],
@@ -367,7 +377,7 @@ const dropABall = (point: number, isExplosion: boolean) => {
     if (binIndex !== -1 && binIndex < pinsLastRowXCoords.value.length - 1) {
       const betAmount = game.betAmountOfExistingBalls[ball.id] ?? 0;
       const multiplier = game.binPayouts[game.rowCount][game.riskLevel][binIndex];
-      const payoutValue = betAmount * multiplier;
+      const payoutValue = ball.payout;
       const profit = payoutValue - betAmount;
       game.updateWinRecords({
         id: uuidv4(),
@@ -375,7 +385,10 @@ const dropABall = (point: number, isExplosion: boolean) => {
         rowCount: game.rowCount,
         binIndex,
         ballType: game.ballType,
+        balance: ball.balance,
+        amount: ball.amount,
         payout: {
+          colorMultiplier: ball.colorMultiplier,
           multiplier,
           value: payoutValue,
         },

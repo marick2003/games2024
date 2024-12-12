@@ -13,9 +13,10 @@
         </div> -->
 
         <div class="flex items-center justify-between flex-row gap-2">
-
-            <button @click="game.autoSettingDialog.visible = true " class="autoBtn rounded-full  mx-2">
-
+            
+            <button v-if="!game.autoBetInterval" @click="game.autoSettingDialog.visible = true " class="autoBtn rounded-full  mx-2"></button>
+            <button v-else="game.autoBetInterval" @click="handleStopAutoBet" class="stopBtn rounded-full  mx-2 text-white font-bold">
+              {{ game.autoBetSetting.autoBetCount }}
             </button>
             <div class="flex justify-end items-center">
                 <button
@@ -147,7 +148,7 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
 const currentBetAmount = computed({
   get() {
-    return game.betAmount.toFixed(5);
+    return game.betAmount.toFixed(8);
   },
   set(newValue) {
     game.setBetAmount(newValue);
@@ -174,24 +175,8 @@ const hasOutstandingBalls = computed(() => {
     return Object.keys(game.betAmountOfExistingBalls).length > 0;
 });
 
-const autoBetInputValue = computed({
-  get() {
-    return autoBetInterval.value === null ? autoBetInput.value : autoBetsLeft.value ?? 0;
-  },
-  set(newValue) {
-    autoBetInput.value = newValue;
-  }
-});
 
-// const handleBetAmountFocusOut: FormEventHandler<HTMLInputElement> = (e) => {
-//     const parsedValue = parseFloat(e.currentTarget.value.trim());
-//     if (isNaN(parsedValue)) {
-//       $betAmount = -1; // If input field is empty, this forces re-render so its value resets to 0
-//       $betAmount = 0;
-//     } else {
-//       $betAmount = parsedValue;
-//     }
-//   };
+
 
 const resetAutoBetInterval = () => {
     if (autoBetInterval.value !== null) {
@@ -297,7 +282,9 @@ const validateBetAmount = () => {
     game.setBetAmount(game.maxBetAmount);
   }
 };
-
+const handleStopAutoBet=()=>{
+  game.resetAutoBetInterval()
+}
 </script>
 
 <style scoped lang="scss">
@@ -314,6 +301,12 @@ select option {
 }
 .autoBtn{
     background: url(../assets/images/svg/auto_btn.svg) no-repeat;
+    background-size: cover;
+    width: 58px;
+    height: 58px;
+}
+.stopBtn{
+    background: url(../assets/images/svg/stop_btn.svg) no-repeat;
     background-size: cover;
     width: 58px;
     height: 58px;

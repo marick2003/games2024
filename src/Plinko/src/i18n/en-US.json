@@ -39,5 +39,14 @@
   "BetDetail": "Bet Detail",
   "RandomNumber": "Random Number",
   "Unannounced": "Unannounced",
-  "WhatIsFairness": "What is game fairness?"
+  "WhatIsFairness": "What is game fairness?",
+  "InitialBetAmount": "Initial Bet Amount",
+  "BallType": "Ball Type",
+  "AutoBetCount": "Auto Bet Count",
+  "LoseAdjustmentPercentage": "Lose Adjustment Percentage",
+  "WinAdjustmentPercentage": "Win Adjustment Percentage",
+  "SingleBetProfitLimitAmount": "Single Bet Profit Limit Amount",
+  "CumulativeStopLossAmount": "Cumulative Stop Loss Amount",
+  "CumulativeStopWinAmount": "Cumulative Stop Win Amount",
+  "StartAutoBet":"Start Auto Bet"
 }

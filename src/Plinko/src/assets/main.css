@@ -7,7 +7,10 @@
   scrollbar-width: thin;
   scrollbar-color: #4646467d #ffffff82;
 }
-
+input:focus {
+  outline: none;
+  border: none;
+}
 /* #app {
   max-width: 1280px;
   margin: 0 auto;

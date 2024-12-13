@@ -10,7 +10,7 @@
           <p class="text-xs">{{$t('InitialBetAmount')}} </p>
           <label class="flex items-center justify-start my-1">
             <div class="flex items-center   w-full">
-              <input type="number" v-model="form.betAmount" class="input  w-full" placeholder="0.00001" />
+              <input type="number" v-model="formattedBetAmount" :step="game.oneBetAmount" class="input  w-full" placeholder="0.00001" />
             </div>
           </label>
         </div>
@@ -95,7 +95,8 @@
           <label class="flex items-center justify-between">
             
             <Switch v-model="form.isSingleBetProfitLimit" class="mr-8" />
-            <input type="number" :disabled="!form.isSingleBetProfitLimit" v-model="form.singleBetProfitLimit" class="input  w-full" placeholder="0.00" />
+            <input type="number" :disabled="!form.isSingleBetProfitLimit" :step="game.oneBetAmount" 
+            v-model="formattedSingleBetProfitLimit" class="input  w-full" placeholder="0.00" />
           </label>
         </div>
 
@@ -104,7 +105,8 @@
           <label class="flex items-center justify-between">
            
             <Switch v-model="form.isCumulativeStopLoss" class="mr-8" />
-            <input type="number" :disabled="!form.isCumulativeStopLoss" v-model="form.cumulativeStopLoss" class="input w-full" placeholder="0.00" />
+            <input type="number" :disabled="!form.isCumulativeStopLoss" :step="game.oneBetAmount" 
+            v-model="formattedCumulativeStopLoss" class="input w-full" placeholder="0.00" />
           </label>
         </div>
 
@@ -113,7 +115,8 @@
           <label class="flex items-center justify-between">
            
             <Switch v-model="form.iscumulativeStopWin" class="mr-8" />
-            <input type="number" :disabled="!form.iscumulativeStopWin" v-model="form.cumulativeStopWin" class="input w-full" placeholder="0.00" />
+            <input type="number" :disabled="!form.iscumulativeStopWin" :step="game.oneBetAmount" 
+            v-model="formattedCumulativeStopWin" class="input w-full" placeholder="0.00" />
           </label>
         </div>
 
@@ -129,12 +132,18 @@ import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../stores/game';
 import Switch from '@/components/UI/Switch.vue';
 import Percentage from '@/components/UI/Percentage.vue';
+import { useFormattedNumber } from '@/utils/numbers';
 const { t: $t } = useI18n();
 const game = useGameStore();
 const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]); // Store counts in an array
 
 // 使用 computed 將 form 綁定到 store
 const form = computed(() => game.autoBetSetting);
+const formattedBetAmount = useFormattedNumber(form.value.betAmount);
+const formattedSingleBetProfitLimit = useFormattedNumber(form.value.singleBetProfitLimit);
+const formattedCumulativeStopLoss = useFormattedNumber(form.value.cumulativeStopLoss);
+const formattedCumulativeStopWin = useFormattedNumber(form.value.cumulativeStopWin);
+
 // 切換球類型的邏輯
 const toggleBallType = (type: string) => {
   const currentBallType = form.value.ballType || [];

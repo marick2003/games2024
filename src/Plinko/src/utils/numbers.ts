@@ -1,5 +1,5 @@
 import type { RowCount } from '../types';
-
+import { computed } from 'vue';
 /**
  * Calculate the probabilities of a ball falling into each bin (from left to right).
  *
@@ -107,3 +107,19 @@ export const getRandomElement = (array) => {
   const randomIndex = Math.floor(Math.random() * array.length);
   return array[randomIndex];
 };
+
+
+
+
+export function useFormattedNumber(refValue, decimals = 8) {
+  return computed({
+    get() {
+      // 如果 refValue.value 是 undefined 或不是數字，預設為 0
+      const value = parseFloat(refValue.value);
+      return isNaN(value) ? '0.00000000' : value.toFixed(decimals);
+    },
+    set(value) {
+      refValue.value = parseFloat(value) || 0; // 確保始終是數字類型
+    },
+  });
+}

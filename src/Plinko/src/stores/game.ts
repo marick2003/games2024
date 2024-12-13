@@ -81,8 +81,8 @@ export const useGameStore = defineStore('game', () => {
    }
    const defaultAutoBetSetting=ref<AutoBetSetting>({
     betAmount: 0,
-    ballType: [],
-    autoBetCount: 0,
+    ballType: ['red'],
+    autoBetCount: 5,
     winAdjustmentMode: 'initial',
     loseAdjustmentMode: 'initial',
     loseAdjustmentPercentage: 0,

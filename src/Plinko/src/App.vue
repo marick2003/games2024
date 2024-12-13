@@ -9,10 +9,11 @@ import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useSimulationStore } from './stores/simulation';
 import { useAppStore } from '@/stores/app'
-import { useGameStore } from '@/stores/game'
+import { useGameStore, balance } from '@/stores/game';
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
 import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
+import { useIntervalFn } from '@vueuse/core';
 const simulation = useSimulationStore();
 const appStore = useAppStore()
 const game=useGameStore();
@@ -22,15 +23,33 @@ const showSetting = () => {
 }
 const childRef = ref(null);
 const amountData = ref([]); // 儲存歷史數據
-const displayAmount = ref(0); // 用於顯示的金額
 const payoutDelta = ref(null); // 顯示的加減金額
+const isWin=ref(false);
 const isAnimating = ref(false); // 控制淡入淡出的狀態
-//初始資料
-game.getInitialization();
+const isDataLoaded = ref(false);
+const hasOutstandingBalls = computed(() => {
+    return Object.keys(game.betAmountOfExistingBalls).length > 0;
+});
+onMounted(async () => {
+  await game.getInitialization(); // 確保初始化完成
+  const response: any = await game.getBalance(); // 取得餘額資料
+  game.setBalance(response.Data.Balance); // 更新餘額
+  game.setCurrency(response.Data.Currency); // 更新幣別
+  isDataLoaded.value = true; // 資料載入完成
+});
+
+// 自動每 10 秒更新餘額
+useIntervalFn(async () => {
+  if(!hasOutstandingBalls){
+    const response: any = await game.getBalance();
+    game.setBalance(response.Data.Balance);
+    game.setCurrency(response.Data.Currency);
+  }
+}, 10000);
+
 watch(
     () => game.isDropBall,
     async(newVal) => {
-
       if (newVal) {
         console.log(`output->game.isDropBall`,newVal)
         childRef.value.callToDrop()
@@ -41,25 +60,23 @@ watch(
   () => game.winRecords,
   async (newVal) => {
     if (newVal && newVal.length > 0) {
-
-      console.log(`output->newVal`, newVal);
       const { amount, payout, balance } = newVal.at(-1);
-
+      if(payout.multiplier <=0){
+        return false;
+      }
       isAnimating.value = true;
-      payoutDelta.value = payout.value > 0 ? `+${payout.value.toFixed(8)}` : payout.value.toFixed(8);
-
+      payoutDelta.value = `+${payout.value.toFixed(8)}`;
+      isWin.value = payout.multiplier > 1  ? true : false ;
       // 数字递增跳动效果
       const startAmount = amount; // 金额
       const targetAmount = balance; // 餘額
-      const duration = 1000;
+      const duration = 1000; 
       const startTime = performance.now();
-
       const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / duration, 1);
-        displayAmount.value =
-          startAmount + (targetAmount - startAmount) * progress;
-
+        const progress = Math.min(elapsedTime / duration, 1); 
+        game.updateBalance(startAmount + (targetAmount - startAmount) * progress)
+  
         if (progress < 1) {
           requestAnimationFrame(updateAmount);
         } else {
@@ -92,10 +109,10 @@ watch(
 
     <div class="flex-1 flex items-center justify-center relative">
 
-      <div class="absolute left-[50%] translate-x-[98px] top-[50%] -translate-y-[345px] text-white z-10 flex gap-2">
+      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[325px] text-white z-10 flex gap-2">
         <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
-          <img src="@/assets/images/sound.svg" class="w-[36px]" v-show="appStore.isMute" alt="">
-          <img src="@/assets/images/mute.svg" class="w-[36px]" v-show="!appStore.isMute" alt="">
+          <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
+          <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">
         </button>
         <button @click.prevent="showSetting" class="active:translate-y-[1px]">
           <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">
@@ -105,10 +122,10 @@ watch(
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
            <img src="@/assets/images/svg/icon_btc.svg"/>
             <!-- 顯示當前金額 -->
-          <span class="mx-2">{{ displayAmount.toFixed(8) }}</span>
+          <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(8) }}</span>
            <!-- 顯示加減金額 -->
           <transition name="fade">
-            <span v-if="isAnimating" class="mx-2 text-green-500 font-bold">
+            <span v-if="isAnimating" class="mx-2  font-bold" :class="isWin ? 'text-orange-500' : 'text-orange-300'">
               {{ payoutDelta }}
             </span>
           </transition>

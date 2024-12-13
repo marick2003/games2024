@@ -140,20 +140,22 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞
-       const isColorBall = ball && ball.render.sprite?.texture.includes("color"); // 假設 "color" 表示彩球的紋理
       if (pinState) {
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      ball.collisionCount = (ball.collisionCount || 0) - 1;
-      if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
+      if (ball.collisionCount && ball.collisionCount > 0) {
+          ball.collisionCount -= 1;
+      }
+
+      if (ball.isExplosion &&  ball.collisionCount==0) {
         console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;
-        console.log(`Explosion at -> x: ${explosionX}, y: ${explosionY}`);
-
+   
+        
         const explosionImg = document.createElement("img");
-        explosionImg.src = '/src/assets/images/boom.gif';
+        explosionImg.src = new URL(`../../assets/images/boom.gif`, import.meta.url).href; // 確保圖片路徑正確
         explosionImg.style.position = "absolute";
         explosionImg.style.width = "80px";
         explosionImg.style.height = "80px";
@@ -168,6 +170,24 @@ import { RowCount,rowCountOptions } from '../../constants/game';
           setTimeout(() => {
             explosionImg.remove();
           }, 1000);
+
+          game.updateWinRecords({
+            id: uuidv4(),
+            betAmount: 0,
+            rowCount: game.rowCount,
+            binIndex:0,
+            ballType: game.ballType,
+            balance: ball.balance,
+            amount: ball.amount,
+            payout: {
+              colorMultiplier: ball.colorMultiplier,
+              multiplier: 0,
+              value: 0,
+            },
+            profit:0,
+          });
+
+
           Composite.remove(engine.world, ball);
           game.deleteItemFromBetAmountOfExistingBalls(ball.id);
       }
@@ -205,9 +225,6 @@ import { RowCount,rowCountOptions } from '../../constants/game';
 
 
   const callToDrop = async () => {
-    // const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/game`, {
-    //   rowCount: game.rowCount,
-    // });
     console.log(`output->game.isDropBall`,'newVal')
     const response :any = await game.doBet({
         Currency: game.currency,
@@ -220,26 +237,27 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
        // response.Data.ColorMultiplier 0 爆炸  1 正常
-      await dropABall(point
-      ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
-      ,response.Data.ColorMultiplier
-      ,response.Data.Payout
-      ,response.Data.Balance
-      ,response.Data.Amount
-    );
-      game.setDropBall(false);  // Reset `isDropBall` after handling
+       game.setDropBall(false);  
+        await dropABall(point
+          ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
+          ,response.Data.ColorMultiplier
+          ,response.Data.Payout
+          ,response.Data.Balance
+          ,response.Data.Amount
+        );
+     
     }
     
   };
   defineExpose({
     callToDrop,
 });
+
 const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,payout:number ,balance:number ,amount:number) => {
     console.log(`output->isExplosion`, isExplosion);
 
     // 初始化圖片
     const ballTexture = new Image();
-
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
 
@@ -250,13 +268,13 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
             0,
             ballRadius,
             {
+                restitution: 0.8, // 彈性
                 isExplosion, // 是否爆炸
                 colorMultiplier,
                 collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
                 payout,
                 balance,
                 amount,
-                restitution: 0.8, // 彈性
                 friction,
                 frictionAir: frictionAirByRowCount[game.rowCount],
                 collisionFilter: {
@@ -272,7 +290,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
                 },
             }
         );
-
+            
         // 添加到引擎中
         Composite.add(engine.world, ball);
 

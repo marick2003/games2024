@@ -6,8 +6,8 @@
               - Mobile (< 1024px): From 6px at 370px viewport width to 8px at 600px viewport width
               - Desktop (>= 1024px): From 10px at 1024px viewport width to 12px at 1100px viewport width
          -->
-        <div v-for="(item, index) in game.binPayouts[game.rowCount][game.riskLevel]" :key="index"
-          class="flex text-[#575757] font-bold min-w-0 flex-1 items-center justify-center rounded-[2px]
+        <div v-if="game.binPayouts && game.binPayouts[game.rowCount] && game.binPayouts[game.rowCount][game.riskLevel]"  v-for="(item, index) in game.binPayouts[game.rowCount][game.riskLevel]" :key="index"
+          class="flex  text-[#575757] font-bold min-w-0 flex-1 items-center justify-center rounded-[2px]
            text-[clamp(6px,2.784px+0.87vw,8px)] shadow-[0_5px_var(--shadow-color)]
              lg:text-[clamp(10px,-16.944px+2.632vw,12px)] lg:shadow-[0_3px_var(--shadow-color)]"
           :class="{'bounce': item > 0 ? game.isBallEnterBins[index] :''}"
@@ -16,7 +16,7 @@
             '--shadow-color': item  <=  0 ? 'transparent' : binColorsByRowCount[game.rowCount].shadow[index]
           }"
         >
-          {{ item > 0  ? item + (item < 100? 'x' : '' ): ''}}
+          {{ item > 0  ? item + (item < 300? 'x' : '' ): ''}}
         </div>
       </div>
 </div>

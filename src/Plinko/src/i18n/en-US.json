@@ -53,5 +53,8 @@
   "StartAutoBet":"Start Auto Bet",
   "Close": "Close",
   "LoadingMore": "Loading",
-  "NoMoreResult": "No More Result"
+  "NoMoreResult": "No More Result",
+  "AutomaticBettingSettings":"Automatic Betting Settings",
+  "InitialBet": "Initial Bet"
+  
 }

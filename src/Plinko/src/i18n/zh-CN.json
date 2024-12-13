@@ -45,14 +45,18 @@
   "WhatIsFairness": "什么是游戏公平性?",
   "InitialBetAmount": "初始下注金额",
   "BallType": "投注球类型",
-  "AutoBetCount": "自动投注",
+  "AutoBetCount": "自动投注次数",
   "LoseAdjustmentPercentage": "若输",
   "WinAdjustmentPercentage": "若赢",
-  "SingleBetProfitLimitAmount": "是否单注止盈",
-  "CumulativeStopLossAmount": "是否累积止损",
-  "CumulativeStopWinAmount": "是否累积止盈",
+  "SingleBetProfitLimitAmount": "单注止盈",
+  "CumulativeStopLossAmount": "累积止损",
+  "CumulativeStopWinAmount": "累积止盈",
   "StartAutoBet":"自动投注",
   "Close": "关闭",
   "LoadingMore": "载入更多",
-  "NoMoreResult": "已经是最后一笔纪录"
+  "NoMoreResult": "已经是最后一笔纪录",
+  "StartAutoBet":"开始自动下注",
+  "AutomaticBettingSettings":"自动下注设定",
+  "InitialBet": "初始下注"
+  
 }

@@ -14,7 +14,7 @@ import {
 } from '../types';
 import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
-import { serviceInit,serviceDoBet } from '@/stores/service';
+import { serviceInit,serviceDoBet, serviceGetBalance } from '@/stores/service';
 
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
@@ -81,21 +81,25 @@ export const useGameStore = defineStore('game', () => {
    }
    const defaultAutoBetSetting=ref<AutoBetSetting>({
     betAmount: 0,
-    ballType: [],
-    autoBetCount: 0,
+    ballType: ['red'],
+    autoBetCount: 5,
+    winAdjustmentMode: 'initial',
+    loseAdjustmentMode: 'initial',
     loseAdjustmentPercentage: 0,
     winAdjustmentPercentage: 0,
     isSingleBetProfitLimit: false,
     singleBetProfitLimit: 0,
     isCumulativeStopLoss: false,
+    setCumulativeStopLoss:0,
     cumulativeStopLoss: 0,
-    iscumulativeStopWin: false,
+    isCumulativeStopWin: false,
+    setCumulativeStopWin: 0,
     cumulativeStopWin: 0
    });
    const autoBetSetting = ref<AutoBetSetting>({
     ...defaultAutoBetSetting.value
   });
-   const updateAutoBetSetting = (value:AutoBetSetting) => {
+   const setAutoBetSetting = (value:AutoBetSetting) => {
     autoBetSetting.value=value;
    }
    const isDropBall = ref<boolean>(false);
@@ -130,8 +134,10 @@ export const useGameStore = defineStore('game', () => {
  * on every balance change. This prevents unnecessary writes to local storage, which can
  * be slow on low-end devices.
  */
- const balance = ref<number>(200);
-
+ const balance = ref<number>(0);
+ const setBalance = (value:number) => {
+  balance.value = value;
+ }
  const updateBalance = (value:number) => {
   balance.value += value;
  }
@@ -185,6 +191,10 @@ const setAutoSettingDialog= (visible: boolean)=>{
 const doBet =async(betData:DoBet)=>{
   const { data, execute } = serviceDoBet(betData)
   await execute()
+  // 當是自動下注時
+  if(autoBetInterval.value){
+    autoBetData.value=data.value
+  }
   return data.value
 }
 
@@ -279,33 +289,89 @@ const resetAutoBetInterval = () => {
   if (autoBetInterval.value !== null) {
       clearInterval(autoBetInterval.value);
       autoBetInterval.value = null;
-      updateAutoBetSetting(defaultAutoBetSetting.value)
+      currentBallTypeIndex.value=0;
+      setAutoBetSetting(defaultAutoBetSetting.value)
   }
 };
+const autoBetData=ref();
 const isBetExceedBalance = computed(() => {
   return betAmount.value > balance.value;
 });
+const currentBallTypeIndex = ref(0);
 const autoBetDropBall = () => {
-  if (isBetExceedBalance.value) {
+  const {
+    isSingleBetProfitLimit,
+    isCumulativeStopLoss,
+    isCumulativeStopWin,
+    singleBetProfitLimit,
+    setCumulativeStopLoss,
+    setCumulativeStopWin,
+    cumulativeStopLoss,
+    cumulativeStopWin,
+    winAdjustmentMode,
+    loseAdjustmentMode,
+    winAdjustmentPercentage,
+    loseAdjustmentPercentage,
+    ballType,
+    autoBetCount
+  } = autoBetSetting.value;
+
+  if (!isSingleBetProfitLimit && !isCumulativeStopLoss && !isCumulativeStopWin || isBetExceedBalance.value) {
     resetAutoBetInterval();
-    return;
-  }
-  // Infinite mode
-  if (autoBetSetting.value.autoBetCount === Infinity) {
-    setDropBall(true);
     return;
   }
 
-  // Finite mode
-  if (autoBetSetting.value.autoBetCount > 0) {
+  if (currentBallTypeIndex.value > 0) {
+    const { Amount, PayoutMultiplier ,Payout } = autoBetData.value;
+    const isWin = PayoutMultiplier > 1;
+
+    if (isWin) {
+      autoBetSetting.value.cumulativeStopWin += Payout - Amount;
+      if (winAdjustmentMode !== 'initial') {
+        setBetAmount(betAmount.value + betAmount.value * (winAdjustmentPercentage / 100));
+      }
+    } else {
+      autoBetSetting.value.cumulativeStopLoss += Amount - Payout;
+      if (loseAdjustmentMode !== 'initial') {
+        setBetAmount(betAmount.value - betAmount.value * (loseAdjustmentPercentage / 100));
+      }
+    }
+
+    if (
+      (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
+      (isCumulativeStopLoss && cumulativeStopLoss >= setCumulativeStopLoss) ||
+      (isCumulativeStopWin && cumulativeStopWin >= setCumulativeStopWin)
+    ) {
+      resetAutoBetInterval();
+      return;
+    }
+  }
+
+  const ballTypes = ballType;
+  if (ballTypes.length === 1) {
+    setBallType(ballTypes[0] === 'red' ? BallType.RED : BallType.COLOR);
+  } else if (ballTypes.length === 2) {
+    setBallType(ballTypes[currentBallTypeIndex.value % ballTypes.length] === 'red' ? BallType.RED : BallType.COLOR);
+    currentBallTypeIndex.value += 1;
+  }
+
+  if (autoBetCount === Infinity) {
+    setDropBall(true);
+  } else if (autoBetCount > 0) {
     setDropBall(true);
     autoBetSetting.value.autoBetCount -= 1;
   }
-  if (autoBetSetting.value.autoBetCount === 0 && autoBetInterval.value !== null) {
+
+  if (autoBetCount === 0 && autoBetInterval.value !== null) {
     resetAutoBetInterval();
-    return;
   }
 };
+
+const getBalance= async()=>{
+  const { data, execute } = serviceGetBalance({Currency: currency.value})
+  await execute()
+  return data.value
+}
   return {
     // plinkoEngine,
     amount,
@@ -329,6 +395,7 @@ const autoBetDropBall = () => {
     setIsBallEnterBins,
     initBetAmountOfExistingBalls,
     deleteItemFromBetAmountOfExistingBalls,
+    setBalance,
     updateBalance,
     updateWinRecords,
     updateTotalProfitHistory,
@@ -338,11 +405,12 @@ const autoBetDropBall = () => {
     maxBetAmount,
     minBetAmount,
     autoBetSetting,
-    updateAutoBetSetting,
+    setAutoBetSetting,
     autoSettingDialog,
     setAutoSettingDialog,
     doBet,
     currency,
+    setCurrency,
     oneBetAmount,
     setOneBetAmount,
     currencyLimit,
@@ -350,6 +418,7 @@ const autoBetDropBall = () => {
     autoBetInterval,
     autoBetDropBall,
     autoBetIntervalMs,
-    resetAutoBetInterval
+    resetAutoBetInterval,
+    getBalance
    }
 })

@@ -12,6 +12,12 @@ export const serviceInit = (body: any) => {
   return useFetchApi({ url, httpMethod, body })
 }
 
+export const serviceGetBalance = (body: any) => {
+  const url = `/Client/GetBalance`
+  const httpMethod = 'post'
+
+  return useFetchApi({ url, httpMethod, body })
+}
 export const serviceBetHistory = (body: ApiOptions) => {
   const url = `/Plinko/GetBetRecord`
   const httpMethod = 'post'

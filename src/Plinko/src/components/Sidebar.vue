@@ -16,7 +16,7 @@
             
             <button v-if="!game.autoBetInterval" @click="game.autoSettingDialog.visible = true " class="autoBtn rounded-full  mx-2"></button>
             <button v-else="game.autoBetInterval" @click="handleStopAutoBet" class="stopBtn rounded-full  mx-2 text-white font-bold">
-              {{ game.autoBetSetting.autoBetCount }}
+              {{ game.autoBetSetting.autoBetCount === Infinity ? '∞' : game.autoBetSetting.autoBetCount }}
             </button>
             <div class="flex justify-end items-center">
                 <button
@@ -42,7 +42,7 @@
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
                 <div class="flex items-center">
                   <div class="absolute  w-[4%] mx-[5px]">
-                    <img class="" src="@/assets/images/svg/Icon_btc.svg"/>
+                    <img class="" src="@/assets/images/svg/icon_btc.svg"/>
                   </div>
                   <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
@@ -216,19 +216,18 @@ const autoBetDropBall = () => {
 //       autoBetInput.value = autoBetInputValue.value;
 //     }
 // };
-
+let betClickTimeout = false; // 防止連點的標誌
 const handleBetClick = (ballType:BallType) => {
-
+    if (betClickTimeout) return; 
+    betClickTimeout = true; 
+    setTimeout(() => {
+      betClickTimeout = false; 
+    }, 200); 
     game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");
         game.setDropBall(true);
-    } else if (autoBetInterval.value === null) {
-        autoBetsLeft.value = autoBetInput.value === 0? null : autoBetInput.value;
-        autoBetInterval.value = setInterval(autoBetDropBall, autoBetIntervalMs)
-    } else if (autoBetInterval.value !== null) {
-        resetAutoBetInterval();
-    }
+    } 
 };
 
 const betModes = [

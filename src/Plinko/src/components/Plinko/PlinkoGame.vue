@@ -148,6 +148,9 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       if (ball.collisionCount && ball.collisionCount > 0) {
           ball.collisionCount -= 1;
       }
+      console.log(`output->isColorBall`,isColorBall)
+      console.log(`output->collisionCount`,ball.collisionCount)
+      console.log(`output->isExplosion`,ball.isExplosion)
       if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
         console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
@@ -207,9 +210,6 @@ import { RowCount,rowCountOptions } from '../../constants/game';
 
 
   const callToDrop = async () => {
-    // const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/game`, {
-    //   rowCount: game.rowCount,
-    // });
     console.log(`output->game.isDropBall`,'newVal')
     const response :any = await game.doBet({
         Currency: game.currency,
@@ -236,6 +236,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   defineExpose({
     callToDrop,
 });
+
 const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,payout:number ,balance:number ,amount:number) => {
     console.log(`output->isExplosion`, isExplosion);
 
@@ -251,13 +252,13 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
             0,
             ballRadius,
             {
+                restitution: 0.8, // 彈性
                 isExplosion, // 是否爆炸
                 colorMultiplier,
                 collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
                 payout,
                 balance,
                 amount,
-                restitution: 0.8, // 彈性
                 friction,
                 frictionAir: frictionAirByRowCount[game.rowCount],
                 collisionFilter: {
@@ -273,7 +274,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
                 },
             }
         );
-
+            
         // 添加到引擎中
         Composite.add(engine.world, ball);
 

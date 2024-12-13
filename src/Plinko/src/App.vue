@@ -41,7 +41,7 @@ watch(
   () => game.winRecords,
   async (newVal) => {
     if (newVal && newVal.length > 0) {
-   
+
       console.log(`output->newVal`, newVal);
       const { amount, payout, balance } = newVal.at(-1);
 
@@ -51,12 +51,12 @@ watch(
       // 数字递增跳动效果
       const startAmount = amount; // 金额
       const targetAmount = balance; // 餘額
-      const duration = 1000; 
+      const duration = 1000;
       const startTime = performance.now();
 
       const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / duration, 1); 
+        const progress = Math.min(elapsedTime / duration, 1);
         displayAmount.value =
           startAmount + (targetAmount - startAmount) * progress;
 
@@ -92,10 +92,10 @@ watch(
 
     <div class="flex-1 flex items-center justify-center relative">
 
-      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[325px] text-white z-10 flex gap-2">
+      <div class="absolute left-[50%] translate-x-[98px] top-[50%] -translate-y-[345px] text-white z-10 flex gap-2">
         <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
-          <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
-          <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">
+          <img src="@/assets/images/sound.svg" class="w-[36px]" v-show="appStore.isMute" alt="">
+          <img src="@/assets/images/mute.svg" class="w-[36px]" v-show="!appStore.isMute" alt="">
         </button>
         <button @click.prevent="showSetting" class="active:translate-y-[1px]">
           <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">

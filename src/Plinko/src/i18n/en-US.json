@@ -9,6 +9,8 @@
   "StartAutobet": "Start Autobet",
   "StopAutobet": "Stop Autobet",
   "BetAmount": "Bet Amount",
+  "Payout": "Payout",
+  "Multiplier": "Multiplier",
   "NumberofBets": "Number of Bets",
   "NumberofBetsCaption": "Enter '0' for unlimited bets",
   "GreaterThanMessage": "This must be greater than or equal to 0.",
@@ -48,5 +50,8 @@
   "SingleBetProfitLimitAmount": "Single Bet Profit Limit Amount",
   "CumulativeStopLossAmount": "Cumulative Stop Loss Amount",
   "CumulativeStopWinAmount": "Cumulative Stop Win Amount",
-  "StartAutoBet":"Start Auto Bet"
+  "StartAutoBet":"Start Auto Bet",
+  "Close": "Close",
+  "LoadingMore": "Loading",
+  "NoMoreResult": "No More Result"
 }

@@ -170,6 +170,24 @@ import { RowCount,rowCountOptions } from '../../constants/game';
           setTimeout(() => {
             explosionImg.remove();
           }, 1000);
+
+          game.updateWinRecords({
+            id: uuidv4(),
+            betAmount: 0,
+            rowCount: game.rowCount,
+            binIndex:0,
+            ballType: game.ballType,
+            balance: ball.balance,
+            amount: ball.amount,
+            payout: {
+              colorMultiplier: ball.colorMultiplier,
+              multiplier: 0,
+              value: 0,
+            },
+            profit:0,
+          });
+
+
           Composite.remove(engine.world, ball);
           game.deleteItemFromBetAmountOfExistingBalls(ball.id);
       }
@@ -219,14 +237,15 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
        // response.Data.ColorMultiplier 0 爆炸  1 正常
-      await dropABall(point
-      ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
-      ,response.Data.ColorMultiplier
-      ,response.Data.Payout
-      ,response.Data.Balance
-      ,response.Data.Amount
-    );
-      game.setDropBall(false);  // Reset `isDropBall` after handling
+       game.setDropBall(false);  
+        await dropABall(point
+          ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
+          ,response.Data.ColorMultiplier
+          ,response.Data.Payout
+          ,response.Data.Balance
+          ,response.Data.Amount
+        );
+     
     }
     
   };

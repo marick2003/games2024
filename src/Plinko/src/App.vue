@@ -27,6 +27,9 @@ const payoutDelta = ref(null); // 顯示的加減金額
 const isWin=ref(false);
 const isAnimating = ref(false); // 控制淡入淡出的狀態
 const isDataLoaded = ref(false);
+const hasOutstandingBalls = computed(() => {
+    return Object.keys(game.betAmountOfExistingBalls).length > 0;
+});
 onMounted(async () => {
   await game.getInitialization(); // 確保初始化完成
   const response: any = await game.getBalance(); // 取得餘額資料
@@ -37,9 +40,11 @@ onMounted(async () => {
 
 // 自動每 10 秒更新餘額
 useIntervalFn(async () => {
-  const response: any = await game.getBalance();
-  game.setBalance(response.Data.Balance);
-  game.setCurrency(response.Data.Currency);
+  if(!hasOutstandingBalls){
+    const response: any = await game.getBalance();
+    game.setBalance(response.Data.Balance);
+    game.setCurrency(response.Data.Currency);
+  }
 }, 10000);
 
 watch(

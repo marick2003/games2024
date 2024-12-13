@@ -219,7 +219,6 @@ const autoBetDropBall = () => {
 let betClickTimeout = false; // 防止連點的標誌
 const handleBetClick = (ballType:BallType) => {
     if (betClickTimeout) return; 
-
     betClickTimeout = true; 
     setTimeout(() => {
       betClickTimeout = false; 
@@ -228,12 +227,7 @@ const handleBetClick = (ballType:BallType) => {
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");
         game.setDropBall(true);
-    } else if (autoBetInterval.value === null) {
-        autoBetsLeft.value = autoBetInput.value === 0? null : autoBetInput.value;
-        autoBetInterval.value = setInterval(autoBetDropBall, autoBetIntervalMs)
-    } else if (autoBetInterval.value !== null) {
-        resetAutoBetInterval();
-    }
+    } 
 };
 
 const betModes = [

@@ -16,7 +16,7 @@
             
             <button v-if="!game.autoBetInterval" @click="game.autoSettingDialog.visible = true " class="autoBtn rounded-full  mx-2"></button>
             <button v-else="game.autoBetInterval" @click="handleStopAutoBet" class="stopBtn rounded-full  mx-2 text-white font-bold">
-              {{ game.autoBetSetting.autoBetCount }}
+              {{ game.autoBetSetting.autoBetCount === Infinity ? '∞' : game.autoBetSetting.autoBetCount }}
             </button>
             <div class="flex justify-end items-center">
                 <button

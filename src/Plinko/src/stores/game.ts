@@ -90,14 +90,16 @@ export const useGameStore = defineStore('game', () => {
     isSingleBetProfitLimit: false,
     singleBetProfitLimit: 0,
     isCumulativeStopLoss: false,
+    setCumulativeStopLoss:0,
     cumulativeStopLoss: 0,
-    iscumulativeStopWin: false,
+    isCumulativeStopWin: false,
+    setCumulativeStopWin: 0,
     cumulativeStopWin: 0
    });
    const autoBetSetting = ref<AutoBetSetting>({
     ...defaultAutoBetSetting.value
   });
-   const updateAutoBetSetting = (value:AutoBetSetting) => {
+   const setAutoBetSetting = (value:AutoBetSetting) => {
     autoBetSetting.value=value;
    }
    const isDropBall = ref<boolean>(false);
@@ -133,6 +135,9 @@ export const useGameStore = defineStore('game', () => {
  * be slow on low-end devices.
  */
  const balance = ref<number>(0);
+ const setBalance = (value:number) => {
+  balance.value = value;
+ }
  const updateBalance = (value:number) => {
   balance.value += value;
  }
@@ -186,6 +191,10 @@ const setAutoSettingDialog= (visible: boolean)=>{
 const doBet =async(betData:DoBet)=>{
   const { data, execute } = serviceDoBet(betData)
   await execute()
+  // 當是自動下注時
+  if(autoBetInterval.value){
+    autoBetData.value=data.value
+  }
   return data.value
 }
 
@@ -281,52 +290,83 @@ const resetAutoBetInterval = () => {
       clearInterval(autoBetInterval.value);
       autoBetInterval.value = null;
       currentBallTypeIndex.value=0;
-      updateAutoBetSetting(defaultAutoBetSetting.value)
+      setAutoBetSetting(defaultAutoBetSetting.value)
   }
 };
+const autoBetData=ref();
 const isBetExceedBalance = computed(() => {
   return betAmount.value > balance.value;
 });
 const currentBallTypeIndex = ref(0);
 const autoBetDropBall = () => {
-  if (isBetExceedBalance.value) {
+  const {
+    isSingleBetProfitLimit,
+    isCumulativeStopLoss,
+    isCumulativeStopWin,
+    singleBetProfitLimit,
+    setCumulativeStopLoss,
+    setCumulativeStopWin,
+    cumulativeStopLoss,
+    cumulativeStopWin,
+    winAdjustmentMode,
+    loseAdjustmentMode,
+    winAdjustmentPercentage,
+    loseAdjustmentPercentage,
+    ballType,
+    autoBetCount
+  } = autoBetSetting.value;
+
+  if (!isSingleBetProfitLimit && !isCumulativeStopLoss && !isCumulativeStopWin || isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
   }
 
-  // 判斷 autoBetSetting.value.ballType 並設置 ballType
-  const ballTypes = autoBetSetting.value.ballType;
+  if (currentBallTypeIndex.value > 0) {
+    const { Amount, PayoutMultiplier ,Payout } = autoBetData.value;
+    const isWin = PayoutMultiplier > 1;
 
+    if (isWin) {
+      autoBetSetting.value.cumulativeStopWin += Payout - Amount;
+      if (winAdjustmentMode !== 'initial') {
+        setBetAmount(betAmount.value + betAmount.value * (winAdjustmentPercentage / 100));
+      }
+    } else {
+      autoBetSetting.value.cumulativeStopLoss += Amount - Payout;
+      if (loseAdjustmentMode !== 'initial') {
+        setBetAmount(betAmount.value - betAmount.value * (loseAdjustmentPercentage / 100));
+      }
+    }
+
+    if (
+      (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
+      (isCumulativeStopLoss && cumulativeStopLoss >= setCumulativeStopLoss) ||
+      (isCumulativeStopWin && cumulativeStopWin >= setCumulativeStopWin)
+    ) {
+      resetAutoBetInterval();
+      return;
+    }
+  }
+
+  const ballTypes = ballType;
   if (ballTypes.length === 1) {
-    // 如果只有一種球類，直接設置
     setBallType(ballTypes[0] === 'red' ? BallType.RED : BallType.COLOR);
   } else if (ballTypes.length === 2) {
-    // 如果有兩種球類，按照 currentBallTypeIndex 切換
-    const ballType = ballTypes[currentBallTypeIndex.value % ballTypes.length];
-    setBallType(ballType === 'red' ? BallType.RED : BallType.COLOR);
-    currentBallTypeIndex.value += 1; // 切換到下一種類型
+    setBallType(ballTypes[currentBallTypeIndex.value % ballTypes.length] === 'red' ? BallType.RED : BallType.COLOR);
+    currentBallTypeIndex.value += 1;
   }
 
-  // Infinite mode
-  if (autoBetSetting.value.autoBetCount === Infinity) {
+  if (autoBetCount === Infinity) {
     setDropBall(true);
-    return;
-  }
-
-  // Finite mode
-  if (autoBetSetting.value.autoBetCount > 0) {
+  } else if (autoBetCount > 0) {
     setDropBall(true);
     autoBetSetting.value.autoBetCount -= 1;
   }
 
-  // 停止條件
-  if (autoBetSetting.value.autoBetCount === 0 && autoBetInterval.value !== null) {
+  if (autoBetCount === 0 && autoBetInterval.value !== null) {
     resetAutoBetInterval();
-    return;
   }
-
-  
 };
+
 const getBalance= async()=>{
   const { data, execute } = serviceGetBalance({Currency: currency.value})
   await execute()
@@ -355,6 +395,7 @@ const getBalance= async()=>{
     setIsBallEnterBins,
     initBetAmountOfExistingBalls,
     deleteItemFromBetAmountOfExistingBalls,
+    setBalance,
     updateBalance,
     updateWinRecords,
     updateTotalProfitHistory,
@@ -364,7 +405,7 @@ const getBalance= async()=>{
     maxBetAmount,
     minBetAmount,
     autoBetSetting,
-    updateAutoBetSetting,
+    setAutoBetSetting,
     autoSettingDialog,
     setAutoSettingDialog,
     doBet,

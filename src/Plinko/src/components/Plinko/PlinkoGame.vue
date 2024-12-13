@@ -239,7 +239,6 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
 
     // 初始化圖片
     const ballTexture = new Image();
-
     const ballRadius = pinRadius.value * 2;
     const { friction, frictionAirByRowCount } = ballFrictions;
 

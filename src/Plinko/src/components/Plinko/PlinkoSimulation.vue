@@ -211,7 +211,7 @@
     Composite.add(engine.world, ball);
 
     game.updateBetAmountOfExistingBalls(ball.id);
-    game.updateBalance(-game.betAmount);
+    //game.updateBalance(-game.betAmount);
   }
 
   const updateRowCount = (currentRowCount:RowCount) => {

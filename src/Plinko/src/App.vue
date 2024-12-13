@@ -24,12 +24,13 @@ const showSetting = () => {
 const childRef = ref(null);
 const amountData = ref([]); // 儲存歷史數據
 const payoutDelta = ref(null); // 顯示的加減金額
+const isWin=ref(false);
 const isAnimating = ref(false); // 控制淡入淡出的狀態
 const isDataLoaded = ref(false);
 onMounted(async () => {
   await game.getInitialization(); // 確保初始化完成
   const response: any = await game.getBalance(); // 取得餘額資料
-  game.updateBalance(response.Data.Balance); // 更新餘額
+  game.setBalance(response.Data.Balance); // 更新餘額
   game.setCurrency(response.Data.Currency); // 更新幣別
   isDataLoaded.value = true; // 資料載入完成
 });
@@ -37,14 +38,13 @@ onMounted(async () => {
 // 自動每 10 秒更新餘額
 useIntervalFn(async () => {
   const response: any = await game.getBalance();
-  game.updateBalance(response.Data.Balance);
+  game.setBalance(response.Data.Balance);
   game.setCurrency(response.Data.Currency);
 }, 10000);
 
 watch(
     () => game.isDropBall,
     async(newVal) => {
-
       if (newVal) {
         console.log(`output->game.isDropBall`,newVal)
         childRef.value.callToDrop()
@@ -56,12 +56,12 @@ watch(
   async (newVal) => {
     if (newVal && newVal.length > 0) {
       const { amount, payout, balance } = newVal.at(-1);
-      if(payout.value <=0){
+      if(payout.multiplier <=0){
         return false;
       }
       isAnimating.value = true;
-      payoutDelta.value = payout.value > 0 ? `+${payout.value.toFixed(8)}` : payout.value.toFixed(8);
-
+      payoutDelta.value = `+${payout.value.toFixed(8)}`;
+      isWin.value = payout.multiplier > 1  ? true : false ;
       // 数字递增跳动效果
       const startAmount = amount; // 金额
       const targetAmount = balance; // 餘額
@@ -120,7 +120,7 @@ watch(
           <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(8) }}</span>
            <!-- 顯示加減金額 -->
           <transition name="fade">
-            <span v-if="isAnimating" class="mx-2 text-green-500 font-bold">
+            <span v-if="isAnimating" class="mx-2  font-bold" :class="isWin ? 'text-orange-500' : 'text-orange-300'">
               {{ payoutDelta }}
             </span>
           </transition>

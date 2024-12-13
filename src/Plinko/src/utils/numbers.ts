@@ -1,5 +1,6 @@
 import type { RowCount } from '../types';
 import { computed } from 'vue';
+import Decimal from 'decimal.js';
 /**
  * Calculate the probabilities of a ball falling into each bin (from left to right).
  *
@@ -111,15 +112,15 @@ export const getRandomElement = (array) => {
 
 
 
-export function useFormattedNumber(refValue, decimals = 8) {
+export function useFormattedNumber(getter: () => number, setter: (value: number) => void, decimals = 8) {
   return computed({
     get() {
-      // 如果 refValue.value 是 undefined 或不是數字，預設為 0
-      const value = parseFloat(refValue.value);
-      return isNaN(value) ? '0.00000000' : value.toFixed(decimals);
+      const value = parseFloat(getter());
+      return isNaN(value) ? '0.00000000' : new Decimal(value).toFixed(decimals);
     },
-    set(value) {
-      refValue.value = parseFloat(value) || 0; // 確保始終是數字類型
+    set(newValue) {
+      const parsedValue = parseFloat(newValue);
+      setter(isNaN(parsedValue) ? 0 : parseFloat(new Decimal(parsedValue).toFixed(decimals)));
     },
   });
 }

@@ -82,7 +82,7 @@ export type AutoBetSetting={
   singleBetProfitLimit: number;     // 單注止盈
   isCumulativeStopLoss: boolean;    // 是否累積止損
   cumulativeStopLoss: number;       // 累積止損
-  iscumulativeStopWin:boolean;      // 是否累積止盈
+  isCumulativeStopWin:boolean;      // 是否累積止盈
   cumulativeStopWin: number;        // 累積止盈
 }
 

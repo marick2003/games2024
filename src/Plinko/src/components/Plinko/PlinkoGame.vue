@@ -140,7 +140,6 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞
-       const isColorBall = ball && ball.render.sprite?.texture.includes("color"); // 假設 "color" 表示彩球的紋理
       if (pinState) {
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
@@ -154,9 +153,9 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;
    
-
+        
         const explosionImg = document.createElement("img");
-        explosionImg.src = '/src/assets/images/boom.gif';
+        explosionImg.src = new URL(`../../assets/images/boom.gif`, import.meta.url).href; // 確保圖片路徑正確
         explosionImg.style.position = "absolute";
         explosionImg.style.width = "80px";
         explosionImg.style.height = "80px";

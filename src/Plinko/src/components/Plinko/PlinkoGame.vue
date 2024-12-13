@@ -148,10 +148,8 @@ import { RowCount,rowCountOptions } from '../../constants/game';
       if (ball.collisionCount && ball.collisionCount > 0) {
           ball.collisionCount -= 1;
       }
-      console.log(`output->isColorBall`,isColorBall)
-      console.log(`output->collisionCount`,ball.collisionCount)
-      console.log(`output->isExplosion`,ball.isExplosion)
-      if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
+
+      if (ball.isExplosion &&  ball.collisionCount==0) {
         console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;

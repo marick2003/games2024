@@ -145,12 +145,14 @@ import { RowCount,rowCountOptions } from '../../constants/game';
         pinState.isGlowing = true;
         setTimeout(() => (pinState.isGlowing = false), 300); // 發光效果維持 300ms
       }
-      ball.collisionCount = (ball.collisionCount || 0) - 1;
+      if (ball.collisionCount && ball.collisionCount > 0) {
+          ball.collisionCount -= 1;
+      }
       if (isColorBall && ball.isExplosion &&  ball.collisionCount==0) {
         console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;
-        console.log(`Explosion at -> x: ${explosionX}, y: ${explosionY}`);
+   
 
         const explosionImg = document.createElement("img");
         explosionImg.src = '/src/assets/images/boom.gif';

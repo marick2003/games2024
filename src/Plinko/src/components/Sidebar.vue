@@ -216,9 +216,14 @@ const autoBetDropBall = () => {
 //       autoBetInput.value = autoBetInputValue.value;
 //     }
 // };
-
+let betClickTimeout = false; // 防止連點的標誌
 const handleBetClick = (ballType:BallType) => {
+    if (betClickTimeout) return; 
 
+    betClickTimeout = true; 
+    setTimeout(() => {
+      betClickTimeout = false; 
+    }, 200); 
     game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");

@@ -1,18 +1,19 @@
 import { createFetch } from '@vueuse/core'
 import CustomError from '@/utils/CustomError'
+import queryString from 'query-string';
 const apiUrl = import.meta.env.VITE_API_URL;
 
 const useFetch = createFetch({
   baseUrl: `${import.meta.env.DEV ? '' : apiUrl}/api`
 })
 export const useFetchApi = ({ url, httpMethod, body }) => {
-
+  const parsed = queryString.parse(location.search) ;
   const fetchResult = useFetch(url, {
     immediate: false,
     beforeFetch({ options }) {
       options.headers = {
         'Content-Type': 'application/json',
-        'token':'G4JaSpQhBXLOiDn6t5P1MfijJfARQhCZXYdY1jbJ7pV/cAqQn21sy+KGrhokuZeX'
+        'token': parsed.token || 'G4JaSpQhBXLOiDn6t5P1MfijJfARQhCZXYdY1jbJ7pV/cAqQn21sy+KGrhokuZeX'
       }
       return {
         options

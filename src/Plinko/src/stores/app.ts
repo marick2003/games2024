@@ -77,10 +77,7 @@ export const useAppStore = defineStore('App', () => {
     }
 
     const getBetHistory = async(formData:PaginationInterface): Promise<BetHistoryResponseList> => {
-        const { isFetching, data, execute } = serviceBetHistory(formData)
-        if (typeof isFetching === "boolean") {
-            isLoading.value.getBetHistory = isFetching
-        }
+        const { isFetching, isFinished, data, execute } = serviceBetHistory(formData)
         await execute()
         const responseData = data.value
         return responseData as BetHistoryResponseList

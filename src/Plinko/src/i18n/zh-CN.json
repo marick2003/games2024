@@ -9,6 +9,8 @@
   "StartAutobet": "开始自动投注",
   "StopAutobet": "停止自动下注",
   "BetAmount": "下注金额",
+  "Payout": "兑现",
+  "Multiplier": "乘数",
   "NumberofBets": "注数",
   "NumberofBetsCaption": "输入“0”即可无限投注",
   "GreaterThanMessage": "该值必须大于或等于 0。",
@@ -49,7 +51,12 @@
   "SingleBetProfitLimitAmount": "单注止盈",
   "CumulativeStopLossAmount": "累积止损",
   "CumulativeStopWinAmount": "累积止盈",
+  "StartAutoBet":"自动投注",
+  "Close": "关闭",
+  "LoadingMore": "载入更多",
+  "NoMoreResult": "已经是最后一笔纪录",
   "StartAutoBet":"开始自动下注",
   "AutomaticBettingSettings":"自动下注设定",
   "InitialBet": "初始下注"
+  
 }

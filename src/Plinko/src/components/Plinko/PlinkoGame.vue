@@ -423,7 +423,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
           }
           setTimeout(() => {
             crocodileStep.value = 'step1'; // 0.2 秒後重置為 step1
-          }, 200);
+          }, 300);
         }
     }
     
@@ -457,17 +457,19 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
       </div>
       <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[34%]" />
       <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
-        <div v-if="crocodileStep === 'step2'" class="absolute top-[20px] left-[142px]">
+        <!-- 使用 v-show 控制步驟2 -->
+        <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[142px]">
           <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step2.svg" />
         </div>
-        <div v-else-if="crocodileStep === 'step3'" class="absolute top-[20px] left-[120px]">
+        <!-- 使用 v-show 控制步驟3 -->
+        <div v-show="crocodileStep === 'step3'" class="absolute top-[20px] left-[120px]">
           <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step3.svg" />
         </div>
-        <div v-else class="absolute top-[65px] left-[80px] animate-move">
+        <!-- 使用 v-show 控制步驟1 -->
+        <div v-show="crocodileStep === 'step1'" class="absolute top-[65px] left-[80px] animate-move">
           <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step1.svg" />
         </div>
       </div>
-
       </div>
     <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
       <LastWins />

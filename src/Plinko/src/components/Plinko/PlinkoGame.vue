@@ -136,7 +136,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   const handlePinCollision = (bodyA: Matter.Body, bodyB: Matter.Body) => {
     const pin = [bodyA, bodyB].find((body) => body.collisionFilter.category === PIN_CATEGORY);
     const ball = [bodyA, bodyB].find((body) => body.collisionFilter.category === BALL_CATEGORY);
-    console.log(`output->ball`,ball)
+    // console.log(`output->ball`,ball)
     if (pin && ball) {
       const pinState = pinsState.value.find((p) => p.id === pin.id);
        // 檢查是否與彩球碰撞

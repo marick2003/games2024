@@ -178,35 +178,8 @@ const hasOutstandingBalls = computed(() => {
 
 
 
-const resetAutoBetInterval = () => {
-    if (autoBetInterval.value !== null) {
-        clearInterval(autoBetInterval.value);
-        autoBetInterval.value = null;
-    }
-};
 
-const autoBetDropBall = () => {
-    if (isBetExceedBalance.value) {
-      resetAutoBetInterval();
-      return;
-    }
 
-    // Infinite mode
-    if (autoBetsLeft.value === null) {
-      game.setDropBall(true);
-      return;
-    }
-
-    // Finite mode
-    if (autoBetsLeft.value > 0) {
-      game.setDropBall(true);
-      autoBetsLeft.value -= 1;
-    }
-    if (autoBetsLeft.value === 0 && autoBetInterval.value !== null) {
-      resetAutoBetInterval();
-      return;
-    }
-};
 
 // const handleAutoBetInputFocusOut = () => {
 //     if (isNaN(autoBetInputValue.value)) {
@@ -222,7 +195,7 @@ const handleBetClick = (ballType:BallType) => {
     betClickTimeout = true; 
     setTimeout(() => {
       betClickTimeout = false; 
-    }, 200); 
+    }, 400); 
     game.setBallType(ballType);
     if (betMode.value === BetMode.MANUAL) {
         console.log("Drop Ball");

@@ -25,7 +25,7 @@ export const useGameStore = defineStore('game', () => {
    }
    const betAmount = ref<number>(0);
    const setBetAmount = (value: number) => {
-    betAmount.value = value;
+    betAmount.value = Math.max(0, value);
    }
    const betAmountOfExistingBalls = ref<BetAmountOfExistingBalls>({});
 
@@ -193,7 +193,7 @@ const doBet =async(betData:DoBet)=>{
   await execute()
   // 當是自動下注時
   if(autoBetInterval.value){
-    autoBetData.value=data.value
+    autoBetData.value=data.value.Data
   }
   return data.value
 }
@@ -284,7 +284,7 @@ const getInitialization = async() => {
   return formattedBinPayouts;
 };
 const autoBetInterval = ref<ReturnType<typeof setInterval> | null>(null);
-const autoBetIntervalMs =ref(1000)
+const autoBetIntervalMs =ref(1500)
 const resetAutoBetInterval = () => {
   if (autoBetInterval.value !== null) {
       clearInterval(autoBetInterval.value);
@@ -293,7 +293,7 @@ const resetAutoBetInterval = () => {
       setAutoBetSetting(defaultAutoBetSetting.value)
   }
 };
-const autoBetData=ref();
+const autoBetData=ref(null);
 const isBetExceedBalance = computed(() => {
   return betAmount.value > balance.value;
 });
@@ -316,32 +316,39 @@ const autoBetDropBall = () => {
     autoBetCount
   } = autoBetSetting.value;
 
-  if (!isSingleBetProfitLimit && !isCumulativeStopLoss && !isCumulativeStopWin || isBetExceedBalance.value) {
+  if ((!isSingleBetProfitLimit && !isCumulativeStopLoss && !isCumulativeStopWin) || isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
   }
-
-  if (currentBallTypeIndex.value > 0) {
+  console.log(`output->currentBallTypeIndex`,currentBallTypeIndex.value)
+  console.log(`output->autoBetCount`,autoBetCount)
+  console.log(`output->autoBetData`,autoBetData.value)
+  if ((currentBallTypeIndex.value >= 0 || autoBetCount === Infinity) && autoBetData.value) {
     const { Amount, PayoutMultiplier ,Payout } = autoBetData.value;
     const isWin = PayoutMultiplier > 1;
-
+    
     if (isWin) {
       autoBetSetting.value.cumulativeStopWin += Payout - Amount;
+      console.log(`output->autoBetSetting.value.cumulativeStopWin`,autoBetSetting.value.cumulativeStopWin)
       if (winAdjustmentMode !== 'initial') {
         setBetAmount(betAmount.value + betAmount.value * (winAdjustmentPercentage / 100));
+        console.log(`output->winAdjustmentMode betAmount`,betAmount.value)
       }
     } else {
       autoBetSetting.value.cumulativeStopLoss += Amount - Payout;
+      console.log(`output->autoBetSetting.value.cumulativeStopLoss`,autoBetSetting.value.cumulativeStopLoss)
       if (loseAdjustmentMode !== 'initial') {
         setBetAmount(betAmount.value - betAmount.value * (loseAdjustmentPercentage / 100));
+        console.log(`output->loseAdjustmentMode betAmount`,betAmount.value)
       }
     }
 
     if (
       (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
-      (isCumulativeStopLoss && cumulativeStopLoss >= setCumulativeStopLoss) ||
-      (isCumulativeStopWin && cumulativeStopWin >= setCumulativeStopWin)
+      (isCumulativeStopLoss && autoBetSetting.value.cumulativeStopLoss >= setCumulativeStopLoss) ||
+      (isCumulativeStopWin && autoBetSetting.value.cumulativeStopWin >= setCumulativeStopWin)
     ) {
+
       resetAutoBetInterval();
       return;
     }
@@ -364,6 +371,7 @@ const autoBetDropBall = () => {
 
   if (autoBetCount === 0 && autoBetInterval.value !== null) {
     resetAutoBetInterval();
+    return;
   }
 };
 

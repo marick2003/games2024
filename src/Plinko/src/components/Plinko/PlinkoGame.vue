@@ -228,7 +228,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
     console.log(`output->game.isDropBall`,'newVal')
     const response :any = await game.doBet({
         Currency: game.currency,
-        BetMoney: game.betAmount,
+        Amount: game.betAmount,
         Rows: game.rowCount,
         Risk: game.riskLevel,
         BallType: game.ballType.toLowerCase()

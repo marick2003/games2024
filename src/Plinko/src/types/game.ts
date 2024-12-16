@@ -90,7 +90,7 @@ export type AutoBetSetting={
 
 export type DoBet = {
   Currency:string;
-  BetMoney:number;
+  Amount:number;
   Rows: number;
   Risk: string;
   BallType: string;

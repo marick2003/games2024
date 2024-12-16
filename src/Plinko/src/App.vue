@@ -23,7 +23,7 @@ const showSetting = () => {
 }
 const childRef = ref(null);
 const amountData = ref([]); // 儲存歷史數據
-const payoutDelta = ref(null); // 顯示的加減金額
+const payoutDelta = ref(''); // 顯示的加減金額
 const isWin=ref(false);
 const isAnimating = ref(false); // 控制淡入淡出的狀態
 const isDataLoaded = ref(false);
@@ -67,21 +67,19 @@ watch(
       isAnimating.value = true;
       payoutDelta.value = `+${payout.value.toFixed(8)}`;
       isWin.value = payout.multiplier > 1  ? true : false ;
-      // 数字递增跳动效果
-      const startAmount = amount; // 金额
-      const targetAmount = balance; // 餘額
-      const duration = 1000; 
-      const startTime = performance.now();
-      const updateAmount = (currentTime) => {
+        // 数字递增跳动效果
+        const duration = 1000; 
+        const startTime = performance.now();
+        const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
         const progress = Math.min(elapsedTime / duration, 1); 
-        game.updateBalance(startAmount + (targetAmount - startAmount) * progress)
-  
+        game.updateBalance((balance - game.balance) * progress)
+          
         if (progress < 1) {
           requestAnimationFrame(updateAmount);
         } else {
           isAnimating.value = false;
-          payoutDelta.value = null;
+          payoutDelta.value = '';
         }
       };
       requestAnimationFrame(updateAmount);

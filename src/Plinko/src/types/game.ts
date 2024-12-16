@@ -81,14 +81,16 @@ export type AutoBetSetting={
   isSingleBetProfitLimit: boolean;  // 是否單注止盈
   singleBetProfitLimit: number;     // 單注止盈
   isCumulativeStopLoss: boolean;    // 是否累積止損
+  setCumulativeStopLoss:number;     // 設定累積止損
   cumulativeStopLoss: number;       // 累積止損
   isCumulativeStopWin:boolean;      // 是否累積止盈
+  setCumulativeStopWin: number;     // 設定累積止盈
   cumulativeStopWin: number;        // 累積止盈
 }
 
 export type DoBet = {
   Currency:string;
-  BetMoney:number;
+  Amount:number;
   Rows: number;
   Risk: string;
   BallType: string;

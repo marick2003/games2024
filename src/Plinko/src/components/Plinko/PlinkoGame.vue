@@ -296,7 +296,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
 
         // 更新遊戲狀態
         game.updateBetAmountOfExistingBalls(ball.id);
-        game.updateBalance(-game.betAmount);
+        game.setBalance(balance-payout);
     };
 
     ballTexture.onerror = () => {
@@ -314,7 +314,6 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
      removeAllBalls();
 
     game.setRowCount(currentRowCount);
-    console.log(`output->game.row`,game.rowCount)
     placePinsAndWalls();
   }
 
@@ -413,7 +412,6 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
         profit,
       });
       game.updateTotalProfitHistory(profit);
-      game.updateBalance(payoutValue);
        // 判斷 bin 的數字是否為 0，切換鱷魚圖
         if (multiplier <= 0) {
           if (game.riskLevel === RiskLevel.SmallMouth) {

@@ -13,7 +13,7 @@ export const useFetchApi = ({ url, httpMethod, body }) => {
     beforeFetch({ options }) {
       options.headers = {
         'Content-Type': 'application/json',
-        'token': parsed.token || 'G4JaSpQhBXLOiDn6t5P1MfijJfARQhCZXYdY1jbJ7pV/cAqQn21sy+KGrhokuZeX'
+        'token': parsed.token || 'GhSKH8%2Blf7zZxU7x%2FNpDNig6d0ovwrM6EcIbc23%2F%2BmF%2FcAqQn21sy%2BKGrhokuZeX'
       }
       return {
         options

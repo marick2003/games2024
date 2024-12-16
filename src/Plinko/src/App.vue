@@ -73,8 +73,8 @@ watch(
         const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
         const progress = Math.min(elapsedTime / duration, 1); 
-        game.updateBalance((payout.value) * progress)
-  
+        game.updateBalance((balance - game.balance) * progress)
+          
         if (progress < 1) {
           requestAnimationFrame(updateAmount);
         } else {

@@ -65,12 +65,12 @@ watch(
         return false;
       }
       isAnimating.value = true;
-      payoutDelta.value = `${payout.multiplier > 1 ? '+' :''}${payout.value.toFixed(8)}`;
+      payoutDelta.value = `+${payout.value.toFixed(8)}`;
       isWin.value = payout.multiplier > 1  ? true : false ;
-      // 数字递增跳动效果
-      const duration = 1000; 
-      const startTime = performance.now();
-      const updateAmount = (currentTime) => {
+        // 数字递增跳动效果
+        const duration = 1000; 
+        const startTime = performance.now();
+        const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
         const progress = Math.min(elapsedTime / duration, 1); 
         game.updateBalance((payout.value) * progress)

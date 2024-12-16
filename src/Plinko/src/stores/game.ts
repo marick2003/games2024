@@ -328,14 +328,14 @@ const autoBetDropBall = () => {
     const isWin = PayoutMultiplier > 1;
     
     if (isWin) {
-      autoBetSetting.value.cumulativeStopWin += Payout;
+      autoBetSetting.value.cumulativeStopWin += Payout - Amount;
       console.log(`output->autoBetSetting.value.cumulativeStopWin`,autoBetSetting.value.cumulativeStopWin)
       if (winAdjustmentMode !== 'initial') {
         setBetAmount(betAmount.value + betAmount.value * (winAdjustmentPercentage / 100));
         console.log(`output->winAdjustmentMode betAmount`,betAmount.value)
       }
     } else {
-      autoBetSetting.value.cumulativeStopLoss += Payout;
+      autoBetSetting.value.cumulativeStopLoss += Amount - Payout;
       console.log(`output->autoBetSetting.value.cumulativeStopLoss`,autoBetSetting.value.cumulativeStopLoss)
       if (loseAdjustmentMode !== 'initial') {
         setBetAmount(betAmount.value - betAmount.value * (loseAdjustmentPercentage / 100));

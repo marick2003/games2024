@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import Plinko from './components/Plinko/PlinkoGame.vue';
-import { onMounted, onUnmounted, ref, computed, watch } from 'vue';
+import { onMounted, onUnmounted, ref, Ref, computed, watch } from 'vue';
 import PlinkoSimulation from './components/Plinko/PlinkoSimulation.vue';
 import Sidebar from './components/Sidebar.vue';
-import Balance from './components/Balance.vue';
-import logo from './assets/logo.svg';
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 import { useSimulationStore } from './stores/simulation';
 import { useAppStore } from '@/stores/app'
-import { useGameStore, balance } from '@/stores/game';
+import { useGameStore } from '@/stores/game';
 import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
 import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
@@ -21,8 +19,11 @@ const showSetting = () => {
   appStore.settingDialog.visible = true
   appStore.settingDialog.section = 'main'
 }
-const childRef = ref(null);
-const amountData = ref([]); // 儲存歷史數據
+// 定義子元件的類型
+interface ChildComponent {
+  callToDrop: () => void; // 子元件中的方法
+}
+const childRef: Ref<ChildComponent | null> = ref(null);
 const payoutDelta = ref(''); // 顯示的加減金額
 const isWin=ref(false);
 const isAnimating = ref(false); // 控制淡入淡出的狀態
@@ -51,8 +52,9 @@ watch(
     () => game.isDropBall,
     async(newVal) => {
       if (newVal) {
-        console.log(`output->game.isDropBall`,newVal)
-        childRef.value.callToDrop()
+        if (childRef.value) {
+          childRef.value.callToDrop();
+        }        
       }
     }
   );

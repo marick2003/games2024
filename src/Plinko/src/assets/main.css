@@ -11,36 +11,27 @@ input:focus {
   outline: none;
   border: none;
 }
-/* #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+.game-instruction {
+  transform: scale(.85) translateX(-7%) translateY(-4%);
+  width: 108%;
 }
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+.game-instruction p{
+  margin-bottom: 1rem;
+  font-weight:400;
+  line-height: 2;
 }
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.game-instruction ol{
+  padding-left: 20px;
+  list-style: decimal;
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-} */
+.game-instruction ul{
+  padding-left: 20px;
+  margin-bottom:.5rem;
+  list-style: disc;
+}
+.game-instruction ul ul{
+  margin-bottom:.5rem;
+  padding-left: 20px;
+  list-style: circle;
+}
+.game-instruction strong{font-weight:700}

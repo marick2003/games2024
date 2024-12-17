@@ -5,7 +5,9 @@ import { vIntersectionObserver } from '@vueuse/components'
 import Decimal from 'decimal.js';
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
+import { useGameStore } from '@/stores/game';
 import type { BetHistoryResponseList, BetHistoryResponse } from '@/types/ResponseType';
+import type { CurrencyLimitType } from '@/types/game'
 import randomize from 'randomatic';
 import { useForm, Field, ErrorMessage, useField } from 'vee-validate';
 import * as yup from 'yup';
@@ -13,6 +15,7 @@ import * as yup from 'yup';
 const { t: $t  } = useI18n()
 
 const appStore = useAppStore()
+const gameStore = useGameStore()
 
 const root = ref(null)
 
@@ -59,6 +62,8 @@ function onIntersectionObserver([{ isIntersecting }]) {
 }
 const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
   const date = new Date(datetime);
+  const timeOffsetInMS:number = date.getTimezoneOffset() * 60000;
+  date.setTime(date.getTime() - timeOffsetInMS);
 
   // Get components
   const year = date.getFullYear();
@@ -68,15 +73,8 @@ const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  // Get timezone offset
-  const offset = -date.getTimezoneOffset();
-  const sign = offset >= 0 ? '+' : '-';
-  const absOffset = Math.abs(offset);
-  const offsetHours = String(Math.floor(absOffset / 60)).padStart(2, '0');
-  const offsetMinutes = String(absOffset % 60).padStart(2, '0');
-
   // Format string
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetMinutes}`;
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
 const showHistoryListPlaceholder = ref(true)
@@ -171,6 +169,8 @@ const backButtonControl = (): void => {
 }
 
 const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 45
+const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => gameStore.currencyLimit.find((obj:CurrencyLimitType) => obj.Currency === currency)
+
 </script>
 
 <template>
@@ -205,9 +205,9 @@ const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 
     </div>
 
     <div
-      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[110%]',
+      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]',
       isShowBetDetail ? '!translate-x-[-100vw] !translate-y-[-50%] active-container' : '']"
-      class='modal-container z-50 text-red-800'>
+      class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetHistory')}} </h1>
       </div>
@@ -327,15 +327,36 @@ const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
-      class='modal-container !z-[51] text-red-800'>
+      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]']"
+      class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetLimit')}}</h1>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
-        <div class="card-row my-3">1</div>
-        <div class="card-row my-3">2</div>
-        <div class="card-row">3</div>
+      <div class='modal-content mx-auto text-left h-[calc(100%-72px)]' v-if="returnCurrentLimitByCurrency(gameStore.currency)">
+        <div class="card-row my-3 text-xs flex flex-row justify-between">
+          <div class="flex flex-row flex-1 justify-between">
+            {{$t('MaximumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
+          </div>
+          <div class="flex-1 text-right">
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MaxBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
+          </div>
+        </div>
+        <div class="card-row my-3 text-xs flex flex-row justify-between">
+          <div class="flex flex-row flex-1 justify-between">
+            {{$t('MinimumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
+          </div>
+          <div class="flex-1 text-right">
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MinBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
+          </div>
+        </div>
+        <div class="card-row text-xs flex flex-row justify-between">
+          <div class="flex flex-row flex-1 justify-between">
+            {{$t('MaximumProfit')}}<img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
+          </div>
+          <div class="flex-1 text-right">
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).AmountUnit).toFixed(8) || new Decimal(0).toFixed(8)}}
+          </div>
+        </div>
       </div>
       <div class="drawer-action">
         <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
@@ -344,8 +365,8 @@ const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 
 
 
     <div
-      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
-      class='modal-container !z-[51] text-red-800'>
+      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]']"
+      class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('GameInstruction')}}</h1>
       </div>
@@ -565,9 +586,9 @@ const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 
   box-shadow: 1px 1px 1px 0 #747879 inset, -1px -1px 1px 0 #747879 inset, 0 15px 20px 0 #00000059,  0 0 15px 0 #00000026;
   border-radius: 6px;
   width: 376px;
-  height: calc(706px - 118px);
-  top: 390px;
-  min-height: 636px;
+  height: calc(100vh - 70px);
+  top: calc(50% + 35px);
+  //min-height: 676px;
   position: absolute;
   color: #fff;
   left:50%;
@@ -575,18 +596,16 @@ const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 
   transition: all .35s cubic-bezier(0,.86,.37,1);
   padding: 1.15rem 0;
   &.main-menu{
-    height: 706px;
-    min-height: 0!important;
+    height: 100vh;
     top: 50%;
     width:100%;
     .modal-content{
       padding: 0 1.4rem;
     }
   }
-  @media(min-height:706px){
-    top: calc(50% + 36px);
-    min-height: 626px;
-
+  @media(min-height:734px){
+    top: calc(50% + 28px);
+    height: calc(706px - 28px);
   }
 }
 button{
@@ -691,8 +710,8 @@ form{
 .card-row{
   background: #2D2D2DB2;
   border: 1px solid #333737;
-  border-radius: 6px;
-  padding:.85rem 1.2rem;
+  border-radius: 10px;
+  padding:.65rem 1.2rem;
   box-shadow: 0 0 2px 0 #91949462 inset;
 }
 .tiny-text{

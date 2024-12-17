@@ -3,19 +3,21 @@
   <div
     class="flex w-[clamp(1.5rem,0.893rem+2.857vw,32px)] flex-col  rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 lg:text-sm">
     <div  v-for="item in lastWins" class="flex items-center">
+      <div class=" mb-[5px] flex">
     <div
      
       :key="item.id"
-      class="flex  z-[1] aspect-square items-center justify-center text-xs font-bold shadow-[0_3px_var(--shadow-color)] text-[#575757] rounded-[20px] w-[32px] h-[17px] px-[3px] mb-2"
+      class="flex  z-[1] aspect-square items-center justify-center text-xs font-bold shadow-[0_3px_var(--shadow-color)] text-[#575757] rounded-[20px] w-[32px] h-[17px] px-[3px] "
       :style="getItemStyle(item)"
     >
       {{ item.payout.multiplier + (item.payout.multiplier < 100 && item.payout.multiplier > 0 ? '×' : '') }}
       
     </div>
     <span v-if="item.ballType === BallType.COLOR && item.payout.colorMultiplier >1" 
-    class="text-[#fff] absolute left-7 z-0  w-[32px] h-[17px] px-[3px]  rounded-tr-xl rounded-br-xl bg-[rgba(0,0,0,0.2)] text-[12px]"
+    class="text-[#fff] text-center absolute left-[1.7rem]  z-0  w-[32px] h-[17px] px-[3px]  rounded-tr-xl rounded-br-xl bg-[rgba(0,0,0,0.2)] text-[12px]"
     >2x</span>
     </div>
+  </div>
   </div>
 </template>
 

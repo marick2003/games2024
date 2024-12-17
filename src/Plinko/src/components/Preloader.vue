@@ -70,39 +70,60 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class='preloader-container z-50 bg-black w-full h-full'>
+  <div class='preloader-container z-50 w-full h-full px-7'>
     <template v-if='loading'>
-      <h1>{{ $t('Loading')}}... {{ loadingPercentage }}% </h1>
-      <div class='progress-bar'>
+      
+      <div class='progress-bar '>
         <div class='progress-width' :style='{width: loadingPercentage +"%"}'></div>
       </div>
     </template>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .preloader-container{
   position:fixed;
-  min-height: 750px;
-  top:0;left:0;display:flex;flex-direction:column;justify-content: center;align-items: center;
+  min-height: auto;
+  background: url('../assets/images/loading.jpg') no-repeat;
+  background-size: cover;
 }
 h1{font-family: 'Arial', sans-serif;font-size: calc(15px + 0.390625vw);font-weight:bold;margin-bottom:10px;color:#F5E48A;}
 
 .progress-bar{
-  width:50vw;
-  height:10px;
-  background: transparent linear-gradient(180deg, #384255F2 0%, #2C3545 100%);
-  box-shadow: 1px 0 3px #717884;
+  width:80%;
+  height:25px;
+  padding: 6px;
+  background: rgba(224, 224, 224, 1);
+  box-shadow: 
+    0px 2px 1px 0px rgba(255, 255, 255, 1) inset, /* 原有的白色陰影 */
+    0px -1.5px 0.5px 0px rgba(91, 115, 130, 1) inset, /* 原有的灰色陰影 */
+    0px 0px 8px 0px rgba(0, 0, 0, 0.7) inset; /* 黑色內陰影 */
   border-radius: 20px;
+  top: 70%; 
+  left: 50%; /* 水平居中 */
+  transform: translate(-50%, -50%) translateY(75%);
+  position: absolute;
   overflow:hidden;
+ 
 }
 .progress-bar > .progress-width{
-  height:10px;
-  background: #D5B881;
-  animation-name: pulse;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
+  height:12px;
+  background: linear-gradient(180deg, #B5F962 0%, #5B8F1E 100%);
+  border-radius: 20px;
   transition: width .25s ease-out;
+  
+}
+.progress-bar > .progress-width::before {
+  content: "";
+    position: absolute;
+    top: 7px;
+    left: 6px;
+    width: 95%;
+    padding: 5px;
+    height: 7px;
+    background: rgb(52, 75, 89);
+    z-index: -1;
+    border-radius: 20px;
 }
 @keyframes pulse {
   0%   {background: rgb(255, 215, 109);}

@@ -124,3 +124,10 @@ export function useFormattedNumber(getter: () => number, setter: (value: number)
     },
   });
 }
+
+
+// 截斷到小數點後8位數
+export const truncateToDecimals = (value: number, decimals: number = 8): number => {
+  const factor = Math.pow(10, decimals);
+  return Math.floor(value * factor) / factor;
+};

@@ -113,6 +113,7 @@ import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
 import Switch from '../components/UI/Switch.vue';
 import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
+import { truncateToDecimals } from '@/utils/numbers';
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 const game = useGameStore();
@@ -184,22 +185,22 @@ watch(currentRowCount, (newRowCount) => {
 });
 
 const handleHalfBet = () => {
-  const newBetAmount = Math.max((game.betAmount / 2), game.minBetAmount);
+  const newBetAmount = truncateToDecimals(Math.max((game.betAmount / 2), game.minBetAmount));
   game.setBetAmount(newBetAmount);
 };
 
 const handleReduceBet = () => {
-  const newBetAmount = Math.max((game.betAmount - game.oneBetAmount), game.minBetAmount);
+  const newBetAmount = truncateToDecimals(Math.max((game.betAmount - game.oneBetAmount), game.minBetAmount));
   game.setBetAmount(newBetAmount);
 };
 
 const handleAddBet = () => {
-  const newBetAmount = Math.min((game.betAmount +  game.oneBetAmount) , game.maxBetAmount);
+  const newBetAmount = truncateToDecimals(Math.min((game.betAmount +  game.oneBetAmount) , game.maxBetAmount));
   game.setBetAmount(newBetAmount);
 };
 
 const handleDoubleBet = () => {
-  const newBetAmount = Math.min((game.betAmount * 2), game.maxBetAmount);
+  const newBetAmount = truncateToDecimals(Math.min((game.betAmount * 2), game.maxBetAmount));
   game.setBetAmount(newBetAmount);
 };
 const handleMinBet = ()=>{

@@ -244,6 +244,7 @@ const canvasPaddingX = computed(() => {
       
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
+      console.log(`output->point 落球點`,point)
        // response.Data.ColorMultiplier 0 爆炸  1 正常
        game.setDropBall(false);  
         await dropABall(point
@@ -335,7 +336,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
   }
 
   const placePinsAndWalls = () => {
-    console.log(`output->pinRadius.value`,pinRadius.value)
+    
     pinsState.value=[];
     const pinTexture = new Image();
     pinTexture.src = new URL(`../../assets/images/pin.png`, import.meta.url).href; // 確保圖片路徑正確
@@ -424,11 +425,12 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
 
        // 判斷 bin 的數字是否為 0，切換鱷魚圖
         if (multiplier <= 0) {
-          if (game.riskLevel === RiskLevel.SmallMouth) {
-            crocodileStep.value = 'step2'; // 如果是小嘴風險，顯示 step2
-          } else if (game.riskLevel === RiskLevel.BigMouth) {
-            crocodileStep.value = 'step3'; // 如果是大嘴風險，顯示 step3
-          }
+          // if (game.riskLevel === RiskLevel.SmallMouth) {
+          //   crocodileStep.value = 'step2'; // 如果是小嘴風險，顯示 step2
+          // } else if (game.riskLevel === RiskLevel.BigMouth) {
+          //   crocodileStep.value = 'step3'; // 如果是大嘴風險，顯示 step3
+          // }
+          crocodileStep.value = 'step2';
           setTimeout(() => {
             crocodileStep.value = 'step1'; // 0.2 秒後重置為 step1
           }, 300);
@@ -469,21 +471,44 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
       </div>
       <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[33%]"   />
       <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
-        <!-- 使用 v-show 控制步驟2 -->
-        <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[132px]">
-          <img class="w-full" src="../../assets/images/svg/crocodiles_step2.svg" />
+
+        <div v-if="game.riskLevel===RiskLevel.Swimming">
+
+          <div class="absolute top-[53px] left-[50px] animate-move">
+            <img class="w-full" src="../../assets/images/svg/crocodiles_step1.svg" />
+          </div>
+
         </div>
-        <!-- 使用 v-show 控制步驟3 -->
-        <div v-show="crocodileStep === 'step3'" class="absolute top-[20px] left-[110px]">
-          <img class="w-full" src="../../assets/images/svg/crocodiles_step3.svg" />
+        <div v-if="game.riskLevel===RiskLevel.SmallMouth">
+            <!-- 使用 v-show 控制步驟2 -->
+          <div v-show="crocodileStep === 'step1'" class="absolute top-[15px] left-[132px]">
+            <img class="w-full" src="../../assets/images/svg/crocodiles_step2.svg" />
+          </div>
+          <!-- 使用 v-show 控制步驟3 -->
+          <div v-show="crocodileStep === 'step2'" class="absolute top-[15px] left-[132px]">
+            <img class="w-full" src="../../assets/images/svg/crocodiles_step2-1.svg" />
+          </div>
+        
         </div>
-        <!-- 使用 v-show 控制步驟1 -->
-        <div v-show="crocodileStep === 'step1'" class="absolute top-[53px] left-[50px] animate-move">
-          <img class="w-full" src="../../assets/images/svg/crocodiles_step1.svg" />
+        <div v-if="game.riskLevel===RiskLevel.BigMouth">
+    
+          <div v-show="crocodileStep === 'step1'" class="absolute top-[20px] left-[110px]">
+            <img class="w-full" src="../../assets/images/svg/crocodiles_step3.svg" />
+          </div>
+          <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[110px]">
+            <img class="w-full" src="../../assets/images/svg/crocodiles_step3-1.svg" />
+          </div>
+
+          
         </div>
+        
+
+
+
+
       </div>
       </div>
-    <div class="absolute left-[2%] top-[28%] -translate-y-1/2">
+    <div class="absolute left-[2%] top-[26%] -translate-y-1/2">
       <LastWins />
     </div>
    

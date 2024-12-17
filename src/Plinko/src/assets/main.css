@@ -1,5 +1,5 @@
 /* @import './base.css'; */
-
+body{min-height:680px;}
 #app {
   background-color: #1f2937;
 }

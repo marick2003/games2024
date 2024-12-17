@@ -60,11 +60,8 @@ export const useAppStore = defineStore('App', () => {
         background:  new URL('@/assets/images/background.png', import.meta.url).href,
         boom:  new URL('@/assets/images/boom.gif', import.meta.url).href,
         closemouth:  new URL('@/assets/images/closemouth.png', import.meta.url).href,
-        //color:  new URL('@/assets/images/color.png', import.meta.url).href,
         colorBtn:  new URL('@/assets/images/colorBtn.png', import.meta.url).href,
         colorBtn_pass:  new URL('@/assets/images/colorBtn_pass.png', import.meta.url).href,
-        //pin:  new URL('@/assets/images/pin.png', import.meta.url).href,
-        //red:  new URL('@/assets/images/red.png', import.meta.url).href,
         redBtn:  new URL('@/assets/images/redBtn.png', import.meta.url).href,
         redBtn_pass:  new URL('@/assets/images/redBtn_pass.png', import.meta.url).href,
         // muteSvg:  new URL('@/assets/images/mute.svg', import.meta.url).href,
@@ -123,7 +120,7 @@ export const useAppStore = defineStore('App', () => {
         const responseData = data.value
         return responseData as GeneralResponse
     }
-    
+
   return {
       showError,
       isMute,

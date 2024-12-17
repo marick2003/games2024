@@ -57,7 +57,7 @@ export type WinRecord = {
     /**
      * Multiplier for the payout (e.g. `0.3`, `1.5`).
      */
-   
+
     multiplier: number;
     /**
      * Actual payout amount.
@@ -110,3 +110,10 @@ export type UpdateSeedRequest = {
   NewServiceSeed: string
 }
 
+export type CurrencyLimitType = {
+  Currency: string
+  DefaultAmount: number
+  AmountUnit: number
+  MaxBetAmount: number
+  MinBetAmount: number
+}

@@ -64,6 +64,7 @@ export const i18n = createI18n<MessageSchema, 'zh-CN' | 'en-US'>({
   legacy: false, // 修复组件引入 i18n 时 vite 脚手架报错的问题
   globalInjection: true, // 全局注册 $t
   fallbackLocale: 'zh-CN',
+  warnHtmlMessage: false,
   messages: {
     'zh-CN': zhCN,
     'en-US': enUS,

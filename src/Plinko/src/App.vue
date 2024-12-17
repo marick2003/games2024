@@ -54,7 +54,7 @@ watch(
       if (newVal) {
         if (childRef.value) {
           childRef.value.callToDrop();
-        }        
+        }
       }
     }
   );
@@ -70,13 +70,13 @@ watch(
       payoutDelta.value = `+${payout.value.toFixed(8)}`;
       isWin.value = payout.multiplier > 1  ? true : false ;
         // 数字递增跳动效果
-        const duration = 1000; 
+        const duration = 1000;
         const startTime = performance.now();
         const updateAmount = (currentTime) => {
         const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / duration, 1); 
+        const progress = Math.min(elapsedTime / duration, 1);
         game.updateBalance((balance - game.balance) * progress)
-          
+
         if (progress < 1) {
           requestAnimationFrame(updateAmount);
         } else {
@@ -111,7 +111,7 @@ watch(
 
     <div class="flex-1 flex items-center justify-center relative">
 
-      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[325px] text-white z-10 flex gap-2">
+      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
         <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
           <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
           <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">

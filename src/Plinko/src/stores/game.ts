@@ -316,7 +316,7 @@ const autoBetDropBall = () => {
     autoBetCount
   } = autoBetSetting.value;
 
-  if ((!isSingleBetProfitLimit && !isCumulativeStopLoss && !isCumulativeStopWin) || isBetExceedBalance.value) {
+  if ( isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
   }

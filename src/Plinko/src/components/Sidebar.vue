@@ -35,21 +35,21 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-2 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-             <button class="minBtn" @click="handleMinBet"></button>
-              <button class="halfBtn" @click="handleHalfBet"></button>
-              <button class="reduceBtn" @click="handleReduceBet"></button>
+             <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="minBtn" @click="handleMinBet"></button>
+              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
+              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
                 <div class="flex items-center">
                   <div class="absolute  w-[4%] mx-[5px]">
                     <img class="" src="@/assets/images/svg/icon_btc.svg"/>
                   </div>
-                  <input @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                  <input :disabled="hasOutstandingBalls || autoBetInterval !== null" @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
               </div>
-              <button class="addBtn" @click="handleAddBet"></button>
-              <button class="towxBtn" @click="handleDoubleBet"></button>
-              <button class="maxBtn" @click="handleMaxBet"></button>
+              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
+              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="towxBtn" @click="handleDoubleBet"></button>
+              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="maxBtn" @click="handleMaxBet"></button>
           </div>
 
         </div>

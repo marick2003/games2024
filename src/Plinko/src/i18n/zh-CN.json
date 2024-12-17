@@ -51,7 +51,7 @@
   "SingleBetProfitLimitAmount": "单注止盈",
   "CumulativeStopLossAmount": "累积止损",
   "CumulativeStopWinAmount": "累积止盈",
-  "StartAutoBet":"自动投注",
+  "AutoBet":"自动投注",
   "Close": "关闭",
   "LoadingMore": "载入更多",
   "NoMoreResult": "已经是最后一笔纪录",

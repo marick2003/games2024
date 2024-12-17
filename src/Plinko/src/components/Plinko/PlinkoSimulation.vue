@@ -20,7 +20,14 @@
   const WIDTH = 750;
   const HEIGHT = 570;
 
-  const PADDING_X = 20;
+  const PADDING_X = {
+    8:  120,
+    10: 60 ,
+    12: 20,
+  };
+  const canvasPaddingX = computed(() => {
+  return PADDING_X[game.rowCount] || PADDING_X[12]; // 預設為 12 排的 padding
+});
   const PADDING_TOP = 36;
   const PADDING_BOTTOM = 28;
 
@@ -143,7 +150,7 @@
   const pinDistanceX = computed<number>(() => {
     if (canvas.value !== null ){
       const lastRowPinCount = 3 + game.rowCount - 1;
-      return (canvas.value!.width - PADDING_X * 2) / (lastRowPinCount - 1);
+      return (canvas.value!.width - canvasPaddingX.value * 2) / (lastRowPinCount - 1);
     }
     return 0;
   });
@@ -256,7 +263,7 @@
         ((canvas.value!.height - PADDING_TOP - PADDING_BOTTOM - bottomMargin) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
-      const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
+      const rowPaddingX = canvasPaddingX.value + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
 
       for (let col = 0; col < 3 + row; ++col) {
         const colX = rowPaddingX + ((canvas.value!.width - rowPaddingX * 2) / (3 + row - 1)) * col;
@@ -363,7 +370,7 @@
 <template>
   <div class="relative bg-gray-900">
     <div class="mx-auto flex h-full flex-col" :style="{maxWidth: WIDTH +'px'}">
-      <div class="relative w-full  mt-[62px] z-[2]" :style="{aspectRatio: WIDTH / HEIGHT}">
+      <div class="relative w-full  mt-[62px] z-[2]  h-[328px]" :style="{aspectRatio: WIDTH / HEIGHT}">
           <!-- <div v-if="game.plinkoEngine === null" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <PhCircleNotch class="size-20 animate-spin text-slate-600" weight="bold" />
           </div> -->

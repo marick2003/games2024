@@ -35,21 +35,21 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-2 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-             <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="minBtn" @click="handleMinBet"></button>
-              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
-              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
+             <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="minBtn" @click="handleMinBet"></button>
+              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
+              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
                 <div class="flex items-center">
                   <div class="absolute  w-[4%] mx-[5px]">
                     <img class="" src="@/assets/images/svg/icon_btc.svg"/>
                   </div>
-                  <input :disabled="hasOutstandingBalls || autoBetInterval !== null" @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                  <input :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
               </div>
-              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
-              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="towxBtn" @click="handleDoubleBet"></button>
-              <button :disabled="hasOutstandingBalls || autoBetInterval !== null" class="maxBtn" @click="handleMaxBet"></button>
+              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
+              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="towxBtn" @click="handleDoubleBet"></button>
+              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="maxBtn" @click="handleMaxBet"></button>
           </div>
 
         </div>
@@ -60,7 +60,7 @@
                 v-model="currentRowCount"
                 :items="rowCounts"
                 type="vertical"
-                :disabled="hasOutstandingBalls || autoBetInterval !== null"
+                :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
               >
                 <template #default="{ currentItem }">
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
@@ -74,7 +74,7 @@
                   v-model="currentRiskLevel"
                   :items="riskLevels"
                   type="horizontal"
-                  :disabled="hasOutstandingBalls || autoBetInterval !== null"
+                  :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
                 >
                   <template #default="{ currentItem }">
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
@@ -92,7 +92,7 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto ">
+        <div v-if="env === 'development'" class="mt-auto hidden">
           <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
@@ -113,7 +113,6 @@ import { useGameStore } from '../stores/game';
 import { useSimulationStore } from '../stores/simulation';
 import Switch from '../components/UI/Switch.vue';
 import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
-import AutoSettingDialog from './AutoSettingDialog.vue';
 import { useI18n } from 'vue-i18n'
 const { t: $t  } = useI18n()
 const game = useGameStore();
@@ -123,34 +122,17 @@ const { rowCount, riskLevel } = game;
 
 const env = ref<string>(import.meta.env.VITE_ENV);
 
-const isMouseEnterNumberBetHint = ref<boolean>(false);
-
 const betMode = ref(BetMode.MANUAL);
-
-/**
- * When `betMode` is `AUTO`, the number of bets to be placed. Zero means infinite bets.
- */
-const autoBetInput = ref<number>(0);
-
-/**
- * Number of auto bets remaining when `betMode` is `AUTO`.
- *
- * - `number`: Finite count of how many bets left. It decrements from `autoBetInput` to 0.
- * - `null`: For infinite bets (i.e. `autoBetInput` is 0).
- */
-const autoBetsLeft = ref<number | null>(null);
-
-const autoBetInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 const currentRowCount = ref<RowCount>(rowCount);
 
 const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
-const currentBetAmount = computed({
+const currentBetAmount = computed<any>({
   get() {
-    return game.betAmount.toFixed(8);
+    return (game.betAmount.toFixed(8));
   },
-  set(newValue) {
+  set(newValue: number) {
     game.setBetAmount(newValue);
   }
 });
@@ -163,12 +145,9 @@ const isBetExceedBalance = computed(() => {
     return currentBetAmount.value > game.balance;
 });
 
-const isAutoBetInputNegative = computed(() => {
-    return autoBetInput.value < 0;
-});
 
 const isDropBallDisabled = computed(() => {
-    return isBetAmountNegative.value || isBetExceedBalance.value || isAutoBetInputNegative.value;
+    return isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
 });
 
 const hasOutstandingBalls = computed(() => {
@@ -176,19 +155,6 @@ const hasOutstandingBalls = computed(() => {
 });
 
 
-
-
-
-
-
-// const handleAutoBetInputFocusOut = () => {
-//     if (isNaN(autoBetInputValue.value)) {
-//       autoBetInput.value = -1; // If input field is empty, this forces re-render so its value resets to 0
-//       autoBetInput.value = 0;
-//     } else {
-//       autoBetInput.value = autoBetInputValue.value;
-//     }
-// };
 let betClickTimeout = false; // 防止連點的標誌
 const handleBetClick = (ballType:BallType) => {
     if (betClickTimeout) return; 
@@ -203,10 +169,6 @@ const handleBetClick = (ballType:BallType) => {
     } 
 };
 
-const betModes = [
-    { value: BetMode.MANUAL, label: $t('Manual') },
-    { value: BetMode.AUTO, label: $t('Auto') },
-];
 const riskLevels = [
     { value: RiskLevel.Swimming, label: 'Close Mouth' },
     { value: RiskLevel.SmallMouth, label: 'Small Mouth' },
@@ -283,28 +245,46 @@ select option {
     width: 58px;
     height: 58px;
 }
-.dropBallBtn{
+.dropBallBtn {
   width: 128px;
   height: 58px;
   border-radius: 20px;
-  &.redBall{
+
+  &.redBall {
     background: url(../assets/images/svg/redBtn.svg) no-repeat;
     background-size: cover;
-        &:active{
-          background: url(../assets/images/svg/redBtn_pass.svg) no-repeat;
-          background-size: contain;
-        }
-  }
-  &.colorBall{
-    background: url(../assets/images/svg/colorBtn.svg) no-repeat;
-    background-size: cover;
-    &:active{
-          background: url(../assets/images/svg/colorBtn_pass.svg) no-repeat;
-          background-size: contain;
-        }
+
+    &:active {
+      background: url(../assets/images/svg/redBtn_pass.svg) no-repeat;
+      background-size: contain;
+    }
+
+    &:disabled,
+    &:disabled:active {
+      background: url(../assets/images/svg/redBtn.svg) no-repeat;
+      background-size: cover;
+      pointer-events: none; // 禁用點擊行為
+    }
   }
 
+  &.colorBall {
+    background: url(../assets/images/svg/colorBtn.svg) no-repeat;
+    background-size: cover;
+
+    &:active {
+      background: url(../assets/images/svg/colorBtn_pass.svg) no-repeat;
+      background-size: contain;
+    }
+
+    &:disabled,
+    &:disabled:active {
+      background: url(../assets/images/svg/colorBtn.svg) no-repeat;
+      background-size: cover;
+      pointer-events: none; // 禁用點擊行為
+    }
+  }
 }
+
 .betContent{
       .minBtn{
          width: 36px;

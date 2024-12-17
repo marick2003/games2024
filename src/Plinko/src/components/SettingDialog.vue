@@ -51,12 +51,12 @@ const lastPageNode = ref(true)
 function onIntersectionObserver([{ isIntersecting }]) {
   if (isIntersecting){
     if (betHistoryResponseList.value.Data.PageCount > betHistoryResponseList.value.Data.PageIndex){
-      pageIndex.value= pageIndex.value + 1
-      getBetHistory(pageIndex.value)
-      isScrollBottom.value = false
+        pageIndex.value= pageIndex.value + 1
+        getBetHistory(pageIndex.value)
+        isScrollBottom.value = false
     }else{
       isScrollBottom.value = true
-      setTimeout(()=> lastPageNode.value = false, 3000)
+      setTimeout(()=> lastPageNode.value = false, 5000)
     }
   }
 }
@@ -83,14 +83,15 @@ const getBetHistory = async(index:number = 1) => {
   if (index === 1){
     showHistoryListPlaceholder.value = true
   }
-  const response = await appStore.getBetHistory({ PageIndex: index, PageSize: 4 })
-  if (response.IsSuccess){
-    appStore.isLoading.getBetHistory = false
-    showHistoryListPlaceholder.value = false
-    betHistoryResponseList.value = response
-    betHistoryResult.value = [...betHistoryResult.value, ...response.Data.Items]
-  }
-  console.log(appStore.isLoading.getBetHistory)
+
+    const response = await appStore.getBetHistory({PageIndex: index, PageSize: 10})
+
+    if (response.IsSuccess) {
+      appStore.isLoading.getBetHistory = false
+      showHistoryListPlaceholder.value = false
+      betHistoryResponseList.value = response
+      betHistoryResult.value = [...betHistoryResult.value, ...response.Data.Items]
+    }
 
 }
 
@@ -125,12 +126,14 @@ const onSubmit = handleSubmit(async(values)=> {
   if (IsSuccess){
     alert('update success')
     getSeedInfo()
+    getServerRefreshSeed()
   }
 })
 const betRecordDetail = async(item:BetHistoryResponse) => {
-  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: item.Id, Time: getCurrentDateTimeWithTimezone(item.Time)})
+  const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: item.Id, Time: item.Time})
   if (IsSuccess){
     isShowBetDetail.value = true
+
     selectedBetDetail.value = item
     Object.assign(betDetailSeedData, Data)
   }
@@ -180,7 +183,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
        class="fixed flex flex-col items-center left-[50%] top-0 -translate-x-[50%] w-[376px] h-[100%] overflow-hidden z-20">
     <div
          :class="[
-           appStore.settingDialog.section === '' ? 'opacity-0 pointer-events-none' : appStore.settingDialog.section === 'main' ? 'opacity-1 pointer-events-auto' : '',
+           appStore.settingDialog.section === '' ? 'hidden pointer-events-none' : appStore.settingDialog.section === 'main' ? 'pointer-events-auto' : '',
            appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? '!translate-x-[-100vw] !translate-y-[-50%]' : ''
            ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
@@ -212,111 +215,73 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       isShowBetDetail ? '!translate-x-[-100vw] !translate-y-[-50%] active-container' : '']"
       class='modal-container z-50'>
       <div class="relative modal-header">
-        <h1>{{$t('BetHistory')}} </h1>
+        <h1>{{$t('BetHistory')}}</h1>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left relative h-[calc(100%-60px)] !pr-2'>
-        <div class="h-[100%] overflow-y-auto pt-4 pr-[6px]">
-          <div class="flex flex-col gap-3.5 pr-2"  ref="root">
+      <div class='modal-content mx-auto text-left relative h-[calc(100%-60px)]'>
+        <div class="h-[100%] overflow-y-auto pt-4">
+          <div class="flex flex-col gap-3.5"  ref="root">
             <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length > 0">
-              <div v-for="(history, index) in betHistoryResult" :key="history.Id" class="cursor-pointer card-row relative" @click="betRecordDetail(history)">
-                <div class="flex justify-center">
-                  <div class="w-1/4">
-                    <div class="bg-gray-600 aspect-square w-full max-w-[60px] mx-auto rounded"></div>
-                    <h4 class="leading-tight font-bold mt-0.5 text-center text-xs">Crocodile Plinko</h4>
-                  </div>
-
-                  <div class="w-3/4">
-                    <div class="text-xs flex w-full mt-1">
-                      <div class="flex-[2] flex mr-0.5 justify-end">{{ $t('BetAmount')}}  <img :src='returnCurrency(history.Currency)' class="ml-0.5 w-[14px]" /> </div>
-                      <div class="flex-[3] text-right">{{ new Decimal(history.Amount).toFixed(8) }}</div>
-                    </div>
-                    <div class="text-xs flex w-full my-1.5">
-                      <div class="flex-[2] flex mr-0.5 justify-end">{{ $t('Payout')}}  <img :src='returnCurrency(history.Currency)' class="ml-0.5 w-[14px]" /> </div>
-                      <div class="flex-[3] text-right">{{ new Decimal(history.Payout).toFixed(8) }}</div>
-                    </div>
-                    <div class="text-xs flex w-full my-1.5">
-                      <div class="flex-[2] flex mr-0.5 justify-end">{{ $t('Multiplier')}}  <img :src='returnCurrency(history.Currency)' class="ml-0.5 w-[14px] opacity-0" /> </div>
-                      <div class="flex-[3] text-right text-[#FE862C] font-bold">{{ history.PayoutMultiplier }}x</div>
-                    </div>
-                    <div class="tiny-text text-right text-[#8D8B8A] scale-[.85] translate-x-4">
-                        {{getCurrentDateTimeWithTimezone(history.Time)}}
-                    </div>
-                  </div>
-                </div>
-
+              <div v-for="(history, index) in betHistoryResult" :key="history.Id" class="cursor-pointer card-row relative !px-3" @click="betRecordDetail(history)">
                 <div v-if='index === (betHistoryResult.length - 1)'
                      v-intersection-observer="onIntersectionObserver"
                      class="absolute text-center w-[200px] left-[60px] pointer-events-none">
-                  <div class="transition-all rounded-lg bg-black p-2"
-                       v-if="lastPageNode"
-                       :class="[isScrollBottom ? 'opacity-0.8':'opacity-0']"
-                  >{{$t('NoMoreResult')}}</div>
-                </div>
-              </div>
-              <div class='absolute bottom-[30px] text-center w-full translate-x-[-28px] translate-y-[18px] pointer-events-none transition-all'
-                   :class="[appStore.isLoading.getBetHistory ? 'opacity-1':'opacity-0']"
-                >{{$t('LoadingMore')}}...</div>
 
+                </div>
+                <div class="flex flex-row justify-between">
+                  <div class="flex flex-[2]">
+                    <div class="bg-gray-600 aspect-square w-full max-w-[30px] max-h-[30px] mx-auto rounded"></div>
+                    <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
+                      <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
+                      <div class="flex items-center text-xs leading-4" >
+                        <img :src='returnCurrency(history.Currency)' class="w-[14px] mr-1" />
+                        {{ new Decimal(history.Amount).toFixed(8) }}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-end text-xs" :class="history.Amount > 0 ? 'text-[#51C53F]' : ''">
+                    {{history.Amount !== 'undefined' ? '+' : '--'}}{{ history.Payout === 0 ? '0' : new Decimal(history.Payout).toFixed(8) }}
+                  </div>
+                </div>
+                <div class="flex flex-row justify-between text-xs mt-0.5">
+                  <div class="text-[#8D8B8A]">
+                    {{getCurrentDateTimeWithTimezone(history.Time)}}
+                  </div>
+                  <div class="flex-[3] text-right text-[#FE862C] font-bold">{{ history.PayoutMultiplier }}x</div>
+                </div>
+
+              </div>
+              <div class='absolute bottom-[30px] text-xs text-center w-full translate-x-[-28px] translate-y-[18px] pointer-events-none transition-all'
+                   :class="[appStore.isLoading.getBetHistory ? 'opacity-50':'opacity-0']"
+                >{{$t('LoadingMore')}}</div>
+              <div class="text-xs text-center flex w-fit mx-auto mb-4 pointer-events-none transition-all rounded-lg bg-gray-900 py-2 px-6"
+                   :class="[isScrollBottom && lastPageNode ? 'opacity-80':'opacity-0']"
+              >{{$t('NoMoreResult')}}</div>
             </template>
 
             <template v-if="appStore.settingDialog.section==='history' && appStore.isLoading.getBetHistory && showHistoryListPlaceholder">
-              <div v-for="item in new Array(3).fill(null)"  class="card-row">
-                <div class="flex justify-center">
-                  <div class="w-1/4">
-                    <div class="bg-gray-600 aspect-square w-full max-w-[60px] mx-auto rounded placeholder"></div>
-                    <h4 class="mt-0.5">
-                      <div class="h-[12px] bg-slate-400 rounded my-[2px] mx-auto placeholder" :style="'width: '+returnPlaceholderWidth() +'%'">
-                        <div class="animated-background"></div>
-                      </div>
-                      <div class="h-[12px] bg-slate-400 rounded mx-auto placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                        <div class="animated-background"></div>
-                      </div>
-                    </h4>
-                  </div>
+              <div v-for="item in new Array(3).fill(null)"  class="card-row relative !px-3">
 
-                  <div class="w-3/4">
-                    <div class="text-xs flex w-full mt-1">
-                      <div class="flex-[2] flex mr-0.5 justify-end">
-                        <div class="h-[14px] bg-slate-400 rounded mr-0 placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                      <div class="flex-[3] text-right ">
-                        <div class="h-[14px] bg-slate-400 mr-0 ml-auto rounded placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-xs flex w-full my-1.5">
-                      <div class="flex-[2] flex mr-0.5 justify-end">
-                        <div class="h-[14px] bg-slate-400 rounded mr-0 placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                      <div class="flex-[3] text-right">
-                        <div class="h-[14px] bg-slate-400 mr-0 ml-auto rounded placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="text-xs flex w-full my-1.5">
-                      <div class="flex-[2] flex mr-0.5 justify-end">
-                        <div class="h-[14px] bg-slate-400 rounded mr-0 placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                      <div class="flex-[3] text-right">
-                        <div class="h-[14px] bg-slate-400 mr-0 ml-auto rounded placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
-                          <div class="animated-background"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="tiny-text text-right text-[#8D8B8A] scale-[.85] translate-x-4">
-                      <div class="h-[12px] bg-slate-400 mr-0 ml-auto rounded placeholder" :style="'width: '+returnPlaceholderWidth()+'%'">
+                <div class="flex flex-row justify-between">
+                  <div class="flex flex-[2]">
+                    <div class="bg-gray-600 aspect-square w-full max-w-[30px] max-h-[30px] mx-auto placeholder"></div>
+                    <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
+                      <h4 class="h-[12px] bg-slate-600 rounded my-[2px] placeholder" :style="'width: '+returnPlaceholderWidth() +'%'"><div class="animated-background"></div></h4>
+                      <div class="h-[12px] bg-slate-600 rounded placeholder" :style="'width: '+returnPlaceholderWidth() +'%'">
                         <div class="animated-background"></div>
                       </div>
                     </div>
+                  </div>
+                  <div class="flex flex-1 h-[12px] bg-slate-600 rounded mx-auto placeholder mt-auto mb-1" :style="'width: '+returnPlaceholderWidth() +'%'">
+                    <div class="animated-background"></div>
+                  </div>
+                </div>
+                <div class="flex flex-row justify-between text-xs mt-0.5 gap-16">
+                  <div class="h-[12px] bg-slate-600 rounded placeholder" :style="'width: '+returnPlaceholderWidth() +'%'">
+                    <div class="animated-background"></div>
+                  </div>
+                  <div class="h-[12px] bg-slate-600 rounded placeholder" :style="'width: '+returnPlaceholderWidth() +'%'">
+                    <div class="animated-background"></div>
                   </div>
                 </div>
 
@@ -326,7 +291,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         </div>
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
 
@@ -389,12 +356,13 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
-        {{$t('Fairness')}}
+        <h1>{{$t('Fairness')}}</h1>
+
         <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
-        <div class="h-[100%] overflow-y-auto pt-4 pr-[6px]">
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
+        <div class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center">{{$t('CurrentSeed')}}</h1>
           <div class="mb-4">
             <div class="font-bold">{{$t('ClientSeed')}}</div>
@@ -478,8 +446,8 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2' v-if="selectedBetDetail">
-        <div class="h-[100%] overflow-y-auto pt-4 pr-[6px]">
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]' v-if="selectedBetDetail">
+        <div class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold text-lg ">Crocodile Plinko</h1>
           <div class="bg-gray-600 aspect-square w-full max-w-[65px] mx-auto my-[10px] rounded"></div>
 
@@ -496,12 +464,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
             {{getCurrentDateTimeWithTimezone(selectedBetDetail.Time)}}
           </div>
 
-          <div class="bg-slate-400 text-black p-1">
+          <div class="bg-slate-600 text-black p-1">
             amount: {{ new Decimal(selectedBetDetail.Amount ).toFixed(8) }} <br>
             payout: {{selectedBetDetail.Payout}} <br>
             multiplier: {{selectedBetDetail.PayoutMultiplier}} <br>
           </div>
-          <div class="bg-slate-400 my-6 text-black p-1">
+          <div class="bg-slate-600 my-6 text-black p-1">
             row: {{selectedBetDetail.Rows}} <br>
             crocodile: {{selectedBetDetail.Risk}} <br>
             ball: {{selectedBetDetail.Ball}} <br>
@@ -568,7 +536,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       </div>
 
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = '';isShowBetDetail = false; isShowGameFairness = false">{{ $t('Close') }}</button>
       </div>
     </div>
   </div>
@@ -697,7 +665,7 @@ form{
 }
 .drawer-action{
   border-top: 1px solid #DBBFBF33;
-  padding:.4rem 0 0;
+  padding:.4rem .5rem 0;
 }
 .back-button{
   background: #2D2D2D;
@@ -729,7 +697,7 @@ form{
 }
 
 .placeholder {
-  opacity: .5;
+  opacity: .45;
   position:relative;
   overflow:hidden;
 }

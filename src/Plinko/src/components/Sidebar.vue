@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col gap-2 p-3 z-[1] mt-[-65px]   md:mt-[-62px]">
+    <div class="flex flex-col gap-2 p-3 z-[1] mt-[-75px]   md:mt-[-75px]">
         <!-- <div class="flex gap-1 rounded-full bg-slate-900 p-1">
             <button v-for="item in betModes" :key="item.label" :value="item.value"
                 class='flex-1 rounded-full py-2 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-50

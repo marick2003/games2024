@@ -18,10 +18,18 @@ import { RowCount,rowCountOptions } from '../../constants/game';
 
   const game = useGameStore();
 
-  const WIDTH = 750;
+  const WIDTH =750;
   const HEIGHT = 570;
 
-  const PADDING_X = 20;
+  const PADDING_X = {
+    8:  120,
+    10: 60 ,
+    12: 20,
+  };
+
+const canvasPaddingX = computed(() => {
+  return PADDING_X[game.rowCount] || PADDING_X[12]; // 預設為 12 排的 padding
+});
   const PADDING_TOP = 36;
   const PADDING_BOTTOM = 28;
 
@@ -205,7 +213,7 @@ import { RowCount,rowCountOptions } from '../../constants/game';
   const pinDistanceX = computed<number>(() => {
     if (canvas.value !== null ){
       const lastRowPinCount = 3 + game.rowCount - 1;
-      return (canvas.value!.width - PADDING_X * 2) / (lastRowPinCount - 1);
+      return (canvas.value!.width - canvasPaddingX.value * 2) / (lastRowPinCount - 1);
     }
     return 0;
   });
@@ -284,8 +292,8 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
                 render: {
                     sprite: {
                         texture: ballTexture.src,
-                        xScale: 2,
-                        yScale: 2,
+                        xScale: 2 ,
+                        yScale: 2
                     },
                 },
             }
@@ -353,7 +361,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
         ((canvas.value!?.height - PADDING_TOP - PADDING_BOTTOM - bottomMargin ) / (game.rowCount - 1)) * row;
 
       /** Horizontal distance between canvas left/right boundary and first/last pin of the row. */
-      const rowPaddingX = PADDING_X + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
+      const rowPaddingX = canvasPaddingX.value + ((game.rowCount - 1 - row) * pinDistanceX.value) / 2;
      
       for (let col = 0; col < 3 + row; ++col) {
         const colX = rowPaddingX + ((canvas.value!?.width - rowPaddingX * 2) / (3 + row - 1)) * col;
@@ -373,10 +381,11 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
           },
         });
         pins.value.push(pin);
+      
         pinsState.value.push({
           id: pin.id,
           x: colX/2,
-          y: rowY/2,
+          y: rowY/1.74,
           isGlowing: false,
         });
         if (row === game.rowCount - 1) {
@@ -412,6 +421,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
         profit,
       });
       game.updateTotalProfitHistory(profit);
+
        // 判斷 bin 的數字是否為 0，切換鱷魚圖
         if (multiplier <= 0) {
           if (game.riskLevel === RiskLevel.SmallMouth) {
@@ -431,57 +441,61 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
 
 
   const getPinStyle = (pin: { x: number; y: number }) => ({
-  left: `${pin.x - 4}px`,
-  top: `${pin.y - 4}px`,
+  left: `${pin.x - 5}px`,
+  top: `${pin.y - 5}px`,
 });
+
 const crocodileStep = ref('step1'); // 默認顯示 step1
 
 </script>
 
 <template>
   <div class="relative ">
-    <div class="mx-auto flex h-full flex-col" :style="{maxWidth: WIDTH +'px'}">
-      <div class="relative w-full mt-[62px] z-[2]" :style="{aspectRatio: WIDTH / HEIGHT}">
+    <div class="mx-auto flex h-full flex-col" >
+      <div class="relative w-full mt-[62px] z-[2] h-[328px]" :style="{aspectRatio: WIDTH / HEIGHT}">
           <!-- <div v-if="game.plinkoEngine === null" class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             <PhCircleNotch class="size-20 animate-spin text-slate-600" weight="bold" />
           </div> -->
-          <canvas id="canvas" width={WIDTH} height={HEIGHT} class="absolute inset-0 h-full w-full" />
-          
+          <canvas id="canvas" :width="WIDTH" height={HEIGHT}   class="absolute inset-0 h-full w-full" />
+        
+
             <div v-for="pin in pinsState" :key="pin.id" class="pin" :class="{ glowing: pin.isGlowing }" 
             :style="getPinStyle(pin)">
             </div>
+         
+          
        
             
       </div>
-      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[34%]" />
+      <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[33%]"   />
       <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
         <!-- 使用 v-show 控制步驟2 -->
-        <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[142px]">
-          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step2.svg" />
+        <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[132px]">
+          <img class="w-full" src="../../assets/images/svg/crocodiles_step2.svg" />
         </div>
         <!-- 使用 v-show 控制步驟3 -->
-        <div v-show="crocodileStep === 'step3'" class="absolute top-[20px] left-[120px]">
-          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step3.svg" />
+        <div v-show="crocodileStep === 'step3'" class="absolute top-[20px] left-[110px]">
+          <img class="w-full" src="../../assets/images/svg/crocodiles_step3.svg" />
         </div>
         <!-- 使用 v-show 控制步驟1 -->
-        <div v-show="crocodileStep === 'step1'" class="absolute top-[65px] left-[80px] animate-move">
-          <img class="w-[80%]" src="../../assets/images/svg/crocodiles_step1.svg" />
+        <div v-show="crocodileStep === 'step1'" class="absolute top-[53px] left-[50px] animate-move">
+          <img class="w-full" src="../../assets/images/svg/crocodiles_step1.svg" />
         </div>
       </div>
       </div>
-    <div class="absolute left-[2%] top-1/4 -translate-y-1/2">
+    <div class="absolute left-[2%] top-[28%] -translate-y-1/2">
       <LastWins />
     </div>
    
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .pin {
   position: absolute;
-  width: 8px;
-  height: 8px;
-  /* background: gray;  */
+  width: 10px;
+  height: 10px;
+  // background: gray; 
   border-radius: 50%;
   transition: box-shadow 0.2s;
 }
@@ -508,4 +522,25 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
 .animate-move {
   animation: moveSideways 5s ease-in-out infinite; /* 每2秒完成一次動畫，平滑往返 */
 }
+.pinStyle8{
+  padding:  0 50px;
+}
+.pinStyle10{
+  padding: 0 20px;
+}
+.pinsState{
+  &.pinStyle8{
+    position: absolute;
+    transform: scaleX(0.74);
+    left: 10%;
+    top: -1px;
+  }
+  &.pinStyle10{
+    position: absolute;
+    transform: scaleX(0.9);
+    left: 5%;
+    top: 0%;
+  }
+}
+
 </style>

@@ -3,7 +3,7 @@
   <div
     class="flex w-[clamp(1.5rem,0.893rem+2.857vw,32px)] flex-col  rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 lg:text-sm">
     <div  v-for="item in lastWins" class="flex items-center">
-      <div class=" mb-[5px]">
+      <div class=" mb-[5px] flex">
     <div
      
       :key="item.id"

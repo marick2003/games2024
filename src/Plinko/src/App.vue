@@ -160,7 +160,7 @@ watch(
     @apply bg-gray-800;
   }
   .gamebg{
-    background: url(./assets/images/background.png) no-repeat;
+    background: url(./assets/images/svg/background.svg) no-repeat;
     background-size: cover;
   }
   .fade-enter-active,

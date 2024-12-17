@@ -179,7 +179,10 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
        @click.self="appStore.settingDialog.visible = false; appStore.settingDialog.section = ''"
        class="fixed flex flex-col items-center left-[50%] top-0 -translate-x-[50%] w-[376px] h-[100%] overflow-hidden z-20">
     <div
-         :class="[appStore.settingDialog.section === 'main' ? 'opacity-1 pointer-events-auto' : 'opacity-0 pointer-events-none']"
+         :class="[
+           appStore.settingDialog.section === '' ? 'opacity-0 pointer-events-none' : appStore.settingDialog.section === 'main' ? 'opacity-1 pointer-events-auto' : '',
+           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? '!translate-x-[-100vw] !translate-y-[-50%]' : ''
+           ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
       <div class="relative">
         <button class="absolute right-4 top-0" @click.prevent="appStore.settingDialog.visible = false; appStore.settingDialog.section = ''"><img src="@/assets/images/close-button.svg" /></button>
@@ -205,11 +208,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
     </div>
 
     <div
-      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]',
+      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]',
       isShowBetDetail ? '!translate-x-[-100vw] !translate-y-[-50%] active-container' : '']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetHistory')}} </h1>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left relative h-[calc(100%-60px)] !pr-2'>
         <div class="h-[100%] overflow-y-auto pt-4 pr-[6px]">
@@ -327,33 +331,34 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]']"
+      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetLimit')}}</h1>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-72px)]' v-if="returnCurrentLimitByCurrency(gameStore.currency)">
         <div class="card-row my-3 text-xs flex flex-row justify-between">
-          <div class="flex flex-row flex-1 justify-between">
+          <div class="flex flex-row flex-[2] justify-between">
             {{$t('MaximumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
-          <div class="flex-1 text-right">
+          <div class="flex-[3] text-right">
             {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MaxBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
           </div>
         </div>
         <div class="card-row my-3 text-xs flex flex-row justify-between">
-          <div class="flex flex-row flex-1 justify-between">
+          <div class="flex flex-row flex-[2] justify-between">
             {{$t('MinimumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
-          <div class="flex-1 text-right">
+          <div class="flex-[3] text-right">
             {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MinBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
           </div>
         </div>
         <div class="card-row text-xs flex flex-row justify-between">
-          <div class="flex flex-row flex-1 justify-between">
+          <div class="flex flex-row flex-[2] justify-between">
             {{$t('MaximumProfit')}}<img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
-          <div class="flex-1 text-right">
+          <div class="flex-[3] text-right">
             {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).AmountUnit).toFixed(8) || new Decimal(0).toFixed(8)}}
           </div>
         </div>
@@ -363,12 +368,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       </div>
     </div>
 
-
     <div
-      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-50%] !translate-y-[100%]']"
+      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('GameInstruction')}}</h1>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
         <div class="h-[100%] overflow-y-auto overflow-x-hidden pt-0 ">
@@ -382,10 +387,11 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
     <div
       :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
-      class='modal-container !z-[51]'>
+      class='modal-container z-50'>
       <div class="relative modal-header">
         {{$t('Fairness')}}
         <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
         <div class="h-[100%] overflow-y-auto pt-4 pr-[6px]">
@@ -462,7 +468,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       </div>
     </div>
 
-    <div class="modal-container h-[640px]  pt-3 pb-8 transition-all z-50" :class="isShowBetDetail ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[50%] !translate-y-[-50%]'">
+    <div
+      :class="isShowBetDetail ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]'"
+      class="modal-container z-50" >
       <div class="relative modal-header">
         <h1>
           {{$t('BetDetail')}}

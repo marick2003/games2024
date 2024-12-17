@@ -54,7 +54,7 @@ watch(
       if (newVal) {
         if (childRef.value) {
           childRef.value.callToDrop();
-        }        
+        }
       }
     }
   );
@@ -109,7 +109,7 @@ watch(
 
     <div class="flex-1 flex items-center justify-center relative">
 
-      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[354px] text-white z-10 flex gap-2">
+      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
         <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
           <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
           <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">

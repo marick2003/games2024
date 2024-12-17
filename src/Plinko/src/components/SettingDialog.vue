@@ -603,9 +603,10 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       padding: 0 1.4rem;
     }
   }
-  @media(min-height:734px){
-    top: calc(50% + 28px);
-    height: calc(706px - 28px);
+  @media(min-height:688px){
+    top: calc(50% + 26px);
+    height: 638px;
+    &.main-menu{height: 688px;}
   }
 }
 button{

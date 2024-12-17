@@ -244,6 +244,7 @@ const canvasPaddingX = computed(() => {
       
     if(response.IsSuccess){
       const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
+      console.log(`output->point 落球點`,point)
        // response.Data.ColorMultiplier 0 爆炸  1 正常
        game.setDropBall(false);  
         await dropABall(point
@@ -335,7 +336,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
   }
 
   const placePinsAndWalls = () => {
-    console.log(`output->pinRadius.value`,pinRadius.value)
+    
     pinsState.value=[];
     const pinTexture = new Image();
     pinTexture.src = new URL(`../../assets/images/pin.png`, import.meta.url).href; // 確保圖片路徑正確
@@ -470,7 +471,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
       <BinsRow :binsWidthPercentage="binsWidthPercentage" class="z-[1] absolute bottom-[33%]"   />
       <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
         <!-- 使用 v-show 控制步驟2 -->
-        <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[132px]">
+        <div v-show="crocodileStep === 'step2'" class="absolute top-[8px] left-[132px]">
           <img class="w-full" src="../../assets/images/svg/crocodiles_step2.svg" />
         </div>
         <!-- 使用 v-show 控制步驟3 -->
@@ -483,7 +484,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
         </div>
       </div>
       </div>
-    <div class="absolute left-[2%] top-[28%] -translate-y-1/2">
+    <div class="absolute left-[2%] top-[26%] -translate-y-1/2">
       <LastWins />
     </div>
    

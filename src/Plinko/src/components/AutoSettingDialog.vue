@@ -21,7 +21,6 @@
               <input
                 type="number"
                 v-model="formattedBetAmount"
-                :disabled='true'
                 :step="game.oneBetAmount"
                 class="input w-full"
                 placeholder="0.00001"
@@ -181,10 +180,17 @@ const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]) // Sto
 
 // 使用 computed 將 form 綁定到 store
 const form = computed(() => game.autoBetSetting)
-const formattedBetAmount = useFormattedNumber(
-  () => game.betAmount,
-  (value) => (game.betAmount = value)
-);
+const formattedBetAmount = computed({
+  get() {
+    return   game.betAmount.toFixed(8)
+  },
+  set(newValue) {
+    // 轉換輸入值並限制最小值為0
+    const numericValue = Math.max(Number(newValue), 0);
+    game.setBetAmount(numericValue);
+  },
+});
+
 
 const formattedSingleBetProfitLimit = useFormattedNumber(
   () => form.value.singleBetProfitLimit,
@@ -239,26 +245,21 @@ const submitSettings = async () => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .modal-container {
-  background: rgba(38, 38, 38, 0.7);
   border-radius: 6px;
-  width: 375px;
-  height: 700px;
-  max-height: 580px;
-  margin: 0 auto;
+  width: 376px;
+  height: calc(706px - 118px);
+  min-height: 660px;
   position: absolute;
   color: #fff;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  transition: all .35s cubic-bezier(0,.86,.37,1);
   padding: 1rem 25px;
-  backdrop-filter: blur(96.97049713134766px);
-  box-shadow: 0.61px 0.61px 1.21px 0px rgba(116, 120, 121, 1) inset;
-  box-shadow: -0.61px -0.61px 1.21px 0px rgba(116, 120, 121, 1) inset;
-  box-shadow: 0px 15px 20px 0px rgba(0, 0, 0, 0.35);
-  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  background: rgba(38, 38, 38, 0.7);
 }
 
 button {

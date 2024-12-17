@@ -93,7 +93,9 @@ watch(
 
 <template>
   <transition name="fade">
-    <Preloader v-show='appStore.isLoading.appAssets' />
+   
+      <Preloader class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[376px] h-[688px] drop-shadow-xl z-50" v-show='appStore.isLoading.appAssets' />
+
   </transition>
   <transition name="fade">
 
@@ -124,7 +126,7 @@ watch(
             <!-- 顯示當前金額 -->
           <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(8) }}</span>
            <!-- 顯示加減金額 -->
-          <transition name="fade">
+          <transition name="fade-move">
             <span v-if="isAnimating" class="mx-2  font-bold" :class="isWin ? 'text-orange-500' : 'text-orange-300'">
               {{ payoutDelta }}
             </span>
@@ -144,21 +146,10 @@ watch(
       </div>
     </div>
 
-    <!-- <SettingsWindow />
-    <LiveStatsWindow /> -->
-
-    <!-- <footer class="px-5 pb-4 pt-16">
-      <div class="mx-auto max-w-[40rem]">
-        <div aria-hidden="true" class="h-[1px] bg-slate-700" />
-        <div class="flex items-center justify-center p-2">
-          <p class="text-sm text-slate-500">
-            © Build from 2024
-          </p>
-        </div>
-      </div>
-    </footer> -->
       <SettingDialog />
-      <AutoSettingDialog class="z-1" v-if="game.autoSettingDialog.visible" />
+      <transition name="fade">
+        <AutoSettingDialog class="z-1" v-if="game.autoSettingDialog.visible" />
+      </transition>
   </div>
   </transition>
 
@@ -174,26 +165,32 @@ watch(
   }
   .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.5s ease;
+  transition: opacity 0.3s ease; /* 只有透明度淡入淡出 */
 }
 
-.fade-enter-from {
-  opacity: 0;
-  transform: translateY(20px); /* 从下往上 */
-}
-
-.fade-enter-to {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.fade-leave-from {
-  opacity: 1;
-  transform: translateY(0);
-}
-
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(20px); /* 往下淡出 */
+}
+
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+.fade-move-enter-active,
+.fade-move-leave-active {
+  transition: opacity 0.3s ease, transform 0.5s ease; /* 同時過渡透明度與位移 */
+}
+
+.fade-move-enter-from,
+.fade-move-leave-to {
+  opacity: 0;
+  transform: translateY(20px); /* 往下移 */
+}
+
+.fade-move-enter-to,
+.fade-move-leave-from {
+  opacity: 1;
+  transform: translateY(0); /* 移回原位 */
 }
 </style>

@@ -191,8 +191,8 @@
 
     const ball = Bodies.circle(
       getRandomBetween(
-        canvas.value!.width / 2 - 150,
-        canvas.value!.width / 2 + 150,
+        canvas.value!.width / 2 - 100,
+        canvas.value!.width / 2 + 100,
       ),
       0,
       ballRadius,
@@ -384,7 +384,7 @@
     </div>
     <div class="absolute right-[5%] top-1/2 -translate-y-1/2 z-[3]" >
       <div v-for="(value, key) in simulation.outputs" :key="key"
-        class="text-[white] text-[10px] border-[white] border-[2px] w-[60px] h-[25px] flex items-center justify-center">
+        class="text-[white]  text-xs border-[white] border-[2px] w-[60px] h-[25px] flex items-center justify-center">
         {{key + ':' + value.length}}
       </div>
       <!-- <LastWins /> -->

@@ -374,6 +374,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
       Composite.remove(engine.world, pins.value);
       pins.value = [];
       game.isBallEnterBins = [];
+      game.isDoubleBet=[];
     }
 
     if (pinsLastRowXCoords.value.length > 0) {
@@ -424,6 +425,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
         }
       }
       game.isBallEnterBins.push(false);
+      game.isDoubleBet.push(false);
     }
     Composite.add(engine.world, pins.value);
   }

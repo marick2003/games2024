@@ -107,7 +107,11 @@ export const useGameStore = defineStore('game', () => {
    const setDropBall = (value: boolean) => {
     isDropBall.value = value;
    }
-
+   const isDoubleBet=ref<boolean[]>([]);
+   const setIsDoubleBet= (index: number, value: boolean) => {
+    if (isDoubleBet.value.length > 0)
+      isDoubleBet.value[index] = value;
+  }
    const isBallEnterBins = ref<boolean[]>([]);
 
    const setIsBallEnterBins = (index: number, value: boolean) => {
@@ -427,6 +431,8 @@ const getBalance= async()=>{
     autoBetDropBall,
     autoBetIntervalMs,
     resetAutoBetInterval,
-    getBalance
+    getBalance,
+    setIsDoubleBet,
+    isDoubleBet,
    }
 })

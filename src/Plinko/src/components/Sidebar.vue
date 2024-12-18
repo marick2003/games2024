@@ -43,7 +43,7 @@
                 <!-- {{$t('BetAmount')}} -->
                 <div class="flex items-center">
     
-                  <input :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                  <input :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model.number="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
               </div>
               <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>

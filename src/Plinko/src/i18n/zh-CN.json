@@ -62,5 +62,22 @@
   "GameInstructionContent": "<ol>\n\t<li><strong>游戏概述:</strong>\n\t<p>鳄鱼是一款下落球游戏，选择球从顶端落下，掉入底部决定返还倍率。</p>\n\t</li>\n\t<li><strong>游戏选项:</strong>\n\t<p>玩家透过选择弹珠层数、球与鳄鱼模式改变游戏乘数与风险值。</p>\n\t\t<ul>\n\t\t\t<li><strong>层数选择: </strong>玩家可选择8层, 10层或12层。</li>\n\t\t\t<li><strong>球的种类:</strong>\n\t\t\t\t<ul>\n\t\t\t\t<li><strong>红球(一般球): </strong>红球落下后获得对应返还乘数。无特殊效果。</li>\n\t\t\t\t<li><strong>彩色球(特别球): </strong>彩色球下落有20%机率乘数2x，有20%机率0x，其馀60%机率维持1x。</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t\t<li><strong>鳄鱼模式：</strong>\n\t\t\t\t<ul>\n\t\t\t\t<li><strong>一般模式:</strong> 球掉落底部决定返还倍率。</li>\n\t\t\t\t<li><strong>开口模式:</strong> 底部新增鳄鱼嘴区域，若球掉入该区域倍率0x，其他区域乘数提高。</li>\n\t\t\t\t</ul>\n\t\t\t</li>\n\t\t</ul>\t\n\t</li>\n\t<li><strong>下注:</strong>\n\t<p>输\u200B\u200B入有效下注金额，选择红球或彩色球按下。</p>\n\t</li>\n\t<li><strong>RTP:</strong>\n\t<p>鳄鱼游戏中RTP至少为95.9%。</p>\n\t</li>\n\n\t<li><strong>断线说明:</strong>\n\t<p>\n\t如果游戏进行过程中出现断线，伺服器上的游戏状态将保持不变。一旦连线恢復，玩家就可以继续游戏。\n\t</p>\n\t<p>\n\t若断线后下注，不会扣除任何资金，也不会发送请求到伺服器，游戏也不会继续进行。\n\t</p>\n\t</li>\n</ol>",
   "MaximumBetAmount": "最大下注额",
   "MinimumBetAmount": "最小下注额",
-  "MaximumProfit": "单注最大获利"
+  "MaximumProfit": "单注最大获利",
+  "BetID": "注单编号",
+  "BetTime": "下注时间",
+  "Cashout": "兑现",
+  "Row": "排数",
+  "Crocodile": "鳄鱼",
+  "Ball": "球",
+  "ChangeSeed": "更换游戏种子",
+  "FairnessInstruction": {
+    "Title": "关于游戏公平性",
+    "Paragraph1": "游戏透过公平加密机制，确保游戏结果的公平性和透明度。这种机制的目的是让玩家能够验证游戏过程没有被操纵，并建立对游戏的信任。",
+    "Method": "运作方式",
+    "Paragraph2": "每回合游戏结果由伺服器种子和三个最先下注用户种子，通过加密函数HMAC-SHA256生成随机数。",
+    "ServerSeedInstruction": "服务器种子是系统通过哈希链产生，并作为\nHMAC-SHA256 的密钥使用。在每局游戏中，系统使用当前的服务器种子，皆为下一局的服务器种子SHA256加密后生成。玩家可在该局游戏结束后验证，以确认游戏结果的公平性。",
+    "ClientSeedInstruction": "玩家可以随时更改自己的用户种子，并有机会参与随机生成游戏结果。",
+    "GameResult": "游戏结果：",
+    "GameResultContent": "每局下注结束时，游戏会将前三位下注玩家的用户种子合并为一个字串作为加密讯息，并以服务器种子作为密钥，使用 HMAC-SHA256 生成一个随机的64 字元十六进位字串，进而转换为游戏结果。"
+  }
 }

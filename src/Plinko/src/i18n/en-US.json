@@ -76,7 +76,12 @@
     "Paragraph2": "每回合游戏结果由伺服器种子和三个最先下注用户种子，通过加密函数HMAC-SHA256生成随机数。",
     "ServerSeedInstruction": "服务器种子是系统通过哈希链产生，并作为\nHMAC-SHA256 的密钥使用。在每局游戏中，系统使用当前的服务器种子，皆为下一局的服务器种子SHA256加密后生成。玩家可在该局游戏结束后验证，以确认游戏结果的公平性。",
     "ClientSeedInstruction": "玩家可以随时更改自己的用户种子，并有机会参与随机生成游戏结果。",
+    "NonceInstruction": "随机数是一个随每次新下注而递增的数字，用于改变加密讯息，成为影响结果的因子。由于家密函数的特性，每次都能生成全新的结果，而无需更改服务器种子或用户种子。",
     "GameResult": "游戏结果：",
     "GameResultContent": "每局下注结束时，游戏会将前三位下注玩家的用户种子合并为一个字串作为加密讯息，并以服务器种子作为密钥，使用 HMAC-SHA256 生成一个随机的64 字元十六进位字串，进而转换为游戏结果。"
-  }
+  },
+  "DefaultOrDefine": "Default Or Define",
+  "Update": "Update",
+  "Updating": "Updating",
+  "UpdateSuccess": "Update Successfully"
 }

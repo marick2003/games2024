@@ -120,14 +120,20 @@ const returnCurrency = (img:string):string => {
   if (img === '0') return
   return `/${img.toLowerCase()}.svg`
 }
-
+const submittingForm = ref(false)
+const showSuccessMessage = ref(false)
 const onSubmit = handleSubmit(async(values)=> {
+  submittingForm.value = true
   const { IsSuccess } = await appStore.updateSeed({ NewClientSeed: seedType.value, NewServiceSeed: updateSeedData.NewServerSeed})
   if (IsSuccess){
-    alert('update success')
+    showSuccessMessage.value = true
     getSeedInfo()
     getServerRefreshSeed()
   }
+
+  setTimeout(()=> showSuccessMessage.value = false, 1000)
+  submittingForm.value = false
+
 })
 const betRecordDetail = async(item:BetHistoryResponse) => {
   const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: item.Id, Time: item.Time})
@@ -169,8 +175,10 @@ const backButtonControl = (): void => {
   if (appStore.settingDialog.section === 'fairness-history') {
     appStore.settingDialog.section = 'history'
   }
-  if (appStore.settingDialog.section === 'what-is-instruction') {
+  if (appStore.settingDialog.section === 'what-is-instruction' && isShowBetDetail.value) {
     appStore.settingDialog.section = 'history'
+  }else if (appStore.settingDialog.section === 'what-is-instruction' && !isShowBetDetail.value){
+    appStore.settingDialog.section = 'fairness'
   }
 }
 
@@ -361,76 +369,113 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       class='modal-container !z-[51]'>
       <div class="relative modal-header">
         <h1>{{$t('Fairness')}}</h1>
-        <p class="my-2 text-xs opacity-70 font-normal px-4">{{$t('FairnessCaption')}}</p>
+
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
-        <div class="h-[100%] overflow-y-auto pt-4">
-          <h1 class="text-center font-bold">{{$t('CurrentSeed')}}</h1>
-          <div class="mb-4">
-            <div class="font-bold">{{$t('ClientSeed')}}</div>
-            <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-            <div class="relative">
-              <template v-if="isSupported ">
-                <button @click="()=>{source = seedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
-                  <span v-if="source === seedData.ClientSeed && source !==''">copied</span>
-                  <span v-else>copy</span>
+        <div class="h-[100%] overflow-y-auto">
+          <p class="my-2 text-center text-xs opacity-70 font-normal mt-4 px-4">{{$t('FairnessCaption')}}</p>
+          <h1 class="text-center font-bold my-1">{{$t('CurrentSeed')}}</h1>
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+            <div class="flex items-center gap-2">
+              <img src="/clientseed.svg" alt="">
+              {{ $t('ClientSeed') }}
+            </div>
+            <div class="input-bg">
+              <input type="text" readonly :value="seedData.ClientSeed"  />
+              <template v-if="isSupported && seedData.ClientSeed">
+                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                 </button>
               </template>
             </div>
           </div>
-
-          <div class="mb-4">
-            <div class="font-bold">{{ $t('ServerSeedHashing') }}</div>
-            <input type="text" readonly :value="seedData.ServerSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-            <div class="relative">
-              <template v-if="isSupported ">
-                <button @click="()=>{ source= seedData.ServerSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
-                  <span v-if="source === seedData.ServerSeed && source !==''">copied</span>
-                  <span v-else>copy</span>
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
+            <div class="flex items-center gap-2">
+              <img src="/serverseedhash.svg" alt="">
+              {{ $t('ServerSeedHashing') }}
+            </div>
+            <div class="input-bg">
+              <input type="text" readonly :value="seedData.ServerSeed"  />
+              <template v-if="isSupported && seedData.ServerSeed">
+                <button @click="()=>{ source = seedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ServerSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                 </button>
               </template>
             </div>
           </div>
-
-          <div class="my-4">
-            <div class="font-bold">{{ $t('Nonce') }}</div>
-            <input type="text" readonly :value="seedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+            <div class="flex items-center gap-2">
+              {{ $t('Nonce') }}
+            </div>
+            <div class="input-bg">
+              <input type="text" readonly :value="seedData.Nonce"  />
+              <template v-if="isSupported && seedData.Nonce">
+                <button @click="()=>{ source = seedData.Nonce || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.Nonce && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.Nonce ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                </button>
+              </template>
+            </div>
           </div>
-          <h1 class="text-center font-bold">{{$t('UpdateSeed')}}</h1>
+          <h1 class="text-center font-bold mt-4 mb-1">{{$t('UpdateSeed')}}</h1>
           <form @submit.prevent='onSubmit' class='flex flex-col'>
-            <div class="mb-6">
-              <div class="font-bold">{{$t('NewClientSeed')}}</div>
-              <input type="text"  :value="seedType" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col relative">
+              <div class="flex items-center gap-2">
+                <img src="/clientseed.svg" alt="">
+                {{ $t('NewClientSeed') }}
+              </div>
               <div class="relative">
-                <template v-if="isSupported ">
-                  <button @click="()=>{ source = seedType; copy(source)}" class="!p-0 absolute top-0 right-0">
-                    <span v-if="source === seedType && source !==''">copied</span>
-                    <span v-else>copy</span>
-                  </button>
-                </template>
-                <button @click.prevent="seedType = generateRandom()" class="!p-0 absolute top-0 right-16">random</button>
+                <div class="input-bg !bg-[#414350] w-[90%] after:!w-[0]">
+                  <input v-model="seedType"  />
+                  <template v-if="isSupported">
+                    <button @click.prevent="()=>{ source = seedType || ''; copy(source)}" class="!p-0 absolute top-1 right-2 w-[12px]">
+                      <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedType && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                      <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedType ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                    </button>
+                  </template>
+                </div>
+                <button @click.prevent="seedType = generateRandom()" class="p-1 absolute top-[-2px] right-2 transition-all opacity-70 hover:opacity-100">
+                  <img src="/generate-random.svg" />
+                </button>
               </div>
             </div>
 
-            <div class="mb-6">
-              <div class="font-bold">{{$t('ServerSeedHashing')}}</div>
-              <input type="text" :value="updateSeedData.NewServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-              <div class="relative">
-                <template v-if="isSupported ">
-                  <button @click="()=>{ source = updateSeedData.NewServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
-                    <span v-if="source === updateSeedData.NewServerSeedHash && source !==''">copied</span>
-                    <span v-else>copy</span>
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
+              <div class="flex items-center gap-2">
+                <img src="/serverseedhash.svg" alt="">
+                {{ $t('ServerSeedHashing') }}
+              </div>
+              <div class="input-bg">
+                <input type="text" readonly :value="updateSeedData.NewServerSeedHash"  />
+                <template v-if="isSupported && updateSeedData.NewServerSeedHash">
+                  <button @click.prevent="()=>{ source = updateSeedData.NewServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === updateSeedData.NewServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== updateSeedData.NewServerSeedHash ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                   </button>
                 </template>
-                <button @click.prevent="getServerRefreshSeed()" class="!p-0 absolute top-0 right-16">get new server seed</button>
               </div>
             </div>
 
             <div class="w-full mt-2">
-              <button @click.prevent="onSubmit" class="bg-white text-black mx-auto">Update</button>
+              <button
+                @click.prevent="onSubmit" class="update-button"
+                :disabled="submittingForm"
+              >
+                <template v-if="!submittingForm">{{$t('Update')}}</template>
+                <template v-else>{{$t('Updating')}}...</template>
+
+              </button>
             </div>
           </form>
+          <div class="success-message" :class="showSuccessMessage ? 'active': ''">
+            {{$t('UpdateSuccess')}}
+          </div>
+          <div class="drawer-action !border-none mb-4">
+            <button @click.prevent="appStore.settingDialog.section = 'what-is-instruction'" class="blue-gradient-link">{{$t('WhatIsFairness')}}</button>
+          </div>
         </div>
 
       </div>
@@ -465,7 +510,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
               <div>
                 {{$t('BetID')}}
               </div>
-              <div class="pr-2.5">
+              <div class="pr-[13px]">
                 {{selectedBetDetail.Id}}
 
                 <template v-if="isSupported && selectedBetDetail.Id">
@@ -542,7 +587,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
                 {{ $t('ServerSeed') }}
               </div>
               <div class="input-bg">
-                <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : ''"  />
+                <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : $t('Unannounced')" :class="betDetailSeedData.ServerSeed ==='' ? 'text-center':''"  />
                 <template v-if="isSupported && betDetailSeedData.ServerSeed">
                   <button @click="()=>{ source = betDetailSeedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
                     <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
@@ -571,7 +616,14 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
             <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-2">
               <div class="flex items-center gap-2">
                 <img src="/clientseed.svg" alt="">
-                {{ $t('ClientSeed') }}
+                <div class="flex flex-col">
+                  <div>
+                    {{ $t('ClientSeed') }}
+                  </div>
+                  <div class="text-xs opacity-50 font-normal">
+                    {{ $t('DefaultOrDefine') }}
+                  </div>
+                </div>
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="betDetailSeedData.ClientSeed !== '' ? betDetailSeedData.ClientSeed : ''"  />
@@ -585,6 +637,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
             </div>
             <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col mt-2 mb-0">
               <div class="flex items-center gap-2">
+                <img src="/nonce.svg" alt="">
                 {{ $t('RandomNumber') }}
               </div>
               <div class="input-bg">
@@ -654,6 +707,21 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
                />
             </div>
             <p class="my-2 text-xs opacity-70">{{$t('FairnessInstruction.ClientSeedInstruction')}}</p>
+          </div>
+
+          <div class="card-row text-xs !px-4 !py-2 flex gap-1.5 flex-col mt-2">
+            <div class="flex items-center gap-2">
+              <img src="/nonce.svg" alt="" class="py-1 px-0.5">
+              {{ $t('RandomNumber') }}
+            </div>
+            <div class="input-bg after:!w-0">
+              <input
+                class="tiny-text scale-90 -translate-x-2 break-all !pr-0 !pt-1 !w-[calc(100%+1.25rem)]"
+                readonly
+                value="24"
+              />
+            </div>
+            <p class="my-2 text-xs opacity-70">{{$t('FairnessInstruction.NonceInstruction')}}</p>
           </div>
 
           <div class="card-row text-xs !px-4 !py-3 flex gap-1.5 flex-col mt-2 mb-8">
@@ -898,6 +966,38 @@ form{
     background: linear-gradient(to right, #6DDCFF -20%, #7F60F9 210%);
     background-clip: text;
     -webkit-text-fill-color: transparent;
+  }
+}
+.update-button{
+  background: linear-gradient(90deg, #FFCB52 0%, #FF7B02 100%);
+  box-shadow: 0 1px 2px 2px #DF891259 inset,  0 0 3px 0 #00000059;
+  width: 135px;
+  height:40px;
+  text-align:center;
+  margin:0 auto 1rem;
+  justify-content: center;
+  padding: .6rem 0;
+  border-radius:25px;
+  font-weight:700;
+  &:disabled{
+    pointer-events: none;
+    opacity:.7;
+  }
+}
+.success-message{
+  position:fixed;
+  top: 50%;
+  left:50%;
+  transform: translate(-50%, -80%);
+  background: linear-gradient(to right, #6DDCFF -50%, #7F60F9 180%);
+  padding: 1rem 2rem;
+  opacity:0;
+  border-radius:10px;
+  pointer-events: none;
+  transition: all .25s ease-out;
+  &.active{
+    transform: translate(-50%, -50%);
+    opacity: .9
   }
 }
 </style>

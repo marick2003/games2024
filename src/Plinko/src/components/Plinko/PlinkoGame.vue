@@ -512,7 +512,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
             <video autoplay loop muted playsinline src="../../assets/video/close_mouth.mp4"></video>
           </div> -->
         </div>
-        <div v-if="game.riskLevel===RiskLevel.SmallMouth">
+        <div v-if="game.riskLevel===RiskLevel.SmallMouth" class="animate-move">
             <!-- 使用 v-show 控制步驟2 -->
           <div v-show="crocodileStep === 'step1'" class="absolute top-[15px] left-[132px]">
             <img class="w-full" src="../../assets/images/svg/crocodiles_step2.svg" />
@@ -523,7 +523,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
           </div>
         
         </div>
-        <div v-if="game.riskLevel===RiskLevel.BigMouth">
+        <div v-if="game.riskLevel===RiskLevel.BigMouth" class="animate-move">
     
           <div v-show="crocodileStep === 'step1'" class="absolute top-[10px] left-[100px]">
             <img class="w-full" src="../../assets/images/svg/crocodiles_step3.svg" />

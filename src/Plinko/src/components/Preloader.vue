@@ -82,7 +82,9 @@ onMounted(async () => {
 <template>
   <div class='preloader-container z-50  px-7'>
     <template v-if='loading'>
-      
+      <div class="title my-[90px]">
+         <img src="../assets/images/crocodilepinko.png">
+      </div>
       <div class='progress-bar '>
         <div class='progress-width' :style='{width: loadingPercentage +"%"}'></div>
       </div>

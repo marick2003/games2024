@@ -361,7 +361,7 @@ const autoBetDropBall = () => {
     ) {
 
       resetAutoBetInterval();
-      return;
+      
     }
   }
 

@@ -63,3 +63,13 @@ input:focus {
   opacity: .5;
   top:-1px;
 }
+
+/* 隱藏步進按鈕 */
+.no-step::-webkit-inner-spin-button,
+.no-step::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.no-step {
+  -moz-appearance: textfield; /* 對 Firefox 隱藏步進按鈕 */
+}

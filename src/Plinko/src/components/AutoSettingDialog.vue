@@ -6,17 +6,23 @@
   ></div>
 
   <div
-    class="modal-container mx-auto text-left pt-1 mt-4 pb-6 flex flex-col gap-5 z-20 h-[530px] overflow-y-auto"
+    class="modal-container  mx-auto text-left pt-1 pb-6 flex flex-col overflow-x-hidden z-20 overflow-y-auto"
   >
-    <div class="flex flex-col">
-      <h2 class="text-center text-lg font-bold">
+    <div class="modal-content flex flex-col">
+      <div class="flex items-center justify-center">
+        <h2 class="text-center text-lg font-bold">
         {{ $t('AutomaticBettingSettings') }}
       </h2>
+      <div class=" absolute right-6 cursor-pointer w-[24px] h-[24px]" @click.prevent="game.autoSettingDialog.visible = false; ">
+        <img  src="@/assets/images/close-button.svg" />
+      </div>
+      </div>
+
       <div class="divider"></div>
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
           <p class="text-xs">{{ $t('InitialBetAmount') }}</p>
-          <label class="flex items-center justify-start my-1">
+          <label class="flex items-center justify-start my-1">  
             <div class="flex items-center w-full">
               <input
                 type="number"
@@ -182,7 +188,8 @@ const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]) // Sto
 const form = computed(() => game.autoBetSetting)
 const formattedBetAmount = computed({
   get() {
-    return   game.betAmount.toFixed(8)
+    const value = Number(game.betAmount.toFixed(8));
+    return value % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
   },
   set(newValue) {
     // 轉換輸入值並限制最小值為0
@@ -235,7 +242,8 @@ const selectWinAdjustmentMode = (mode: 'initial' | 'percentage') => {
 // 提交設置
 const submitSettings = async () => {
   game.setAutoBetSetting({ ...form.value }) // 更新 store 中的設定
-    
+    // 立即執行一次 autoBetDropBall
+    game.autoBetDropBall();
     game.autoBetInterval = setInterval(
     game.autoBetDropBall,
     game.autoBetIntervalMs,
@@ -249,17 +257,16 @@ const submitSettings = async () => {
 .modal-container {
   border-radius: 6px;
   width: 376px;
-  height: calc(706px - 118px);
-  min-height: 660px;
+  height: 625px;
   position: absolute;
   color: #fff;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: all .35s cubic-bezier(0,.86,.37,1);
+  bottom: 0; /* 置底 */
+  left: 50%; /* 水平置中 */
+  transform: translateX(-50%); /* 只需水平居中 */
+  transition: all 0.35s cubic-bezier(0, 0.86, 0.37, 1);
   padding: 1rem 25px;
   backdrop-filter: blur(20px);
-  background: rgba(38, 38, 38, 0.7);
+  background: #2c2c2cde;
 }
 
 button {

@@ -30,7 +30,17 @@ function preloadAssets(assetUrls: Record<string, string>) {
         audio.addEventListener('error', () => {
           reject(audio)
         })
-      }
+      } else if (/mp4$/.test(src)) {
+        const video = document.createElement('video');
+        video.src = src;
+        video.addEventListener('canplaythrough', () => {
+          assetsPending.value--;
+          resolve(video);
+        }, { once: true });
+        video.addEventListener('error', () => {
+          reject(video);
+        });
+      } 
     })
   }
 

@@ -93,9 +93,7 @@ watch(
 
 <template>
   <transition name="fade">
-   
       <Preloader class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[376px] h-[688px] drop-shadow-xl z-50" v-show='appStore.isLoading.appAssets' />
-
   </transition>
   <transition name="fade">
 
@@ -111,16 +109,20 @@ watch(
 
     <div class="flex-1 flex items-center justify-center relative">
 
-      <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
-        <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
-          <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
-          <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">
-        </button>
-        <button @click.prevent="showSetting" class="active:translate-y-[1px]">
-          <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">
-        </button>
-      </div>
+     
       <div class="mx-auto w-[375px]  drop-shadow-xl">
+        <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
+          <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px]">
+            <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
+            <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">
+          </button>
+          <button @click.prevent="showSetting" class="active:translate-y-[1px]">
+            <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">
+          </button>
+        </div>
+          <transition name="fade-move">
+            <AutoSettingDialog class="z-50" v-if="game.autoSettingDialog.visible" />
+          </transition>
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
            <img src="@/assets/images/svg/icon_btc.svg"/>
             <!-- 顯示當前金額 -->
@@ -142,14 +144,14 @@ watch(
               <Plinko ref="childRef" />
             </template>
           </div>
+        
         </div>
       </div>
+     
     </div>
 
       <SettingDialog />
-      <transition name="fade">
-        <AutoSettingDialog class="z-1" v-if="game.autoSettingDialog.visible" />
-      </transition>
+    
   </div>
   </transition>
 

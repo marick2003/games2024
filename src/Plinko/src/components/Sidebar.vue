@@ -39,11 +39,10 @@
               <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
               <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
-                <label for="betAmount" class="text-xs text-[#45698C] font-bold">{{$t('BetAmount')}}</label>
+                <label for="betAmount" class="text-xs text-[#45698C] font-bold"> Bet Amount </label>
+                <!-- {{$t('BetAmount')}} -->
                 <div class="flex items-center">
-                  <div class="absolute  w-[4%] mx-[5px]">
-                    <img class="" src="@/assets/images/svg/icon_btc.svg"/>
-                  </div>
+    
                   <input :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
               </div>
@@ -131,7 +130,8 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
 const currentBetAmount = computed<any>({
   get() {
-    return (game.betAmount.toFixed(8));
+    const value = Number(game.betAmount.toFixed(8));
+    return value % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
   },
   set(newValue: number) {
     game.setBetAmount(newValue);

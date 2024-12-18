@@ -80,7 +80,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class='preloader-container z-50 w-full h-full px-7'>
+  <div class='preloader-container z-50  px-7'>
     <template v-if='loading'>
       
       <div class='progress-bar '>

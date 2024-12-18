@@ -370,6 +370,9 @@ const closeSettingDialog = ():void => {
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
         <div class="h-[100%] overflow-y-auto overflow-x-hidden pt-0 ">
+          <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto mt-4 mb-2 rounded">
+            <img src="/plinko.png" class="absolute w-full h-full" />
+          </div>
           <div class='game-instruction' v-html="$t('GameInstructionContent')"></div>
         </div>
       </div>

@@ -299,6 +299,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
               </div>
             </template>
+
+            <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length === 0">
+              <div class="flex items-center justify-center mt-48 text-lg font-bold opacity-50">
+                {{$t('NoRecord')}}
+              </div>
+            </template>
           </div>
         </div>
       </div>

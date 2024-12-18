@@ -84,5 +84,6 @@
   "DefaultOrDefine": "使用预设或是自订",
   "Update": "更新",
   "Updating": "更新中",
-  "UpdateSuccess": "更新成功"
+  "UpdateSuccess": "更新成功",
+  "NoRecord": "暂无资料"
 }

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex w-[clamp(1.5rem,0.893rem+2.857vw,32px)] flex-col rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 lg:text-sm">
+    class="flex w-[clamp(1.5rem,0.893rem+2.857vw,32px)] flex-col rounded-sm text-[clamp(8px,5.568px+0.714vw,10px)] md:rounded-md lg:w-12 ">
     <div v-for="(item, index) in lastWins" :key="item.id" class="flex items-center">
       <div class="mb-[5px] flex">
         <div
@@ -10,7 +10,7 @@
           {{ item.payout.multiplier + (item.payout.multiplier < 100 && item.payout.multiplier > 0 ? '×' : '') }}
         </div>
         <span
-          v-if="item.ballType === BallType.COLOR && item.payout.colorMultiplier > 1"
+          v-if="item.ballType === BallType.COLOR && item.payout.colorMultiplier > 1 && item.payout.multiplier > 0"
           class="text-[#fff] text-center absolute left-[1.7rem] z-0 w-[32px] h-[17px] px-[3px] rounded-tr-xl rounded-br-xl bg-[rgba(0,0,0,0.2)] text-[12px]"
         >
           2x

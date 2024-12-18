@@ -43,7 +43,7 @@
                 <!-- {{$t('BetAmount')}} -->
                 <div class="flex items-center">
     
-                  <input :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model.number="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
+                  <input type="number"  :step="game.oneBetAmount" :disabled="hasOutstandingBalls || game.autoBetInterval !== null" @blur="validateBetAmount" v-model.number="currentBetAmount" class="text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold"></input>
                 </div>
               </div>
               <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
@@ -114,6 +114,7 @@ import Switch from '../components/UI/Switch.vue';
 import SlideSwitcher from '../components/UI/SlideSwitcher.vue';
 import { truncateToDecimals } from '@/utils/numbers';
 import { useI18n } from 'vue-i18n'
+import Decimal from 'decimal.js';
 const { t: $t  } = useI18n()
 const game = useGameStore();
 const simulation = useSimulationStore();
@@ -130,25 +131,25 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
 const currentBetAmount = computed<any>({
   get() {
-    const value = Number(game.betAmount.toFixed(8));
-    return value % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
+    const value = new Decimal(game.betAmount).toFixed(8);
+    return value.includes('.') ? value.replace(/(\.\d*?)0+$/, "$1") : value;
   },
   set(newValue: number) {
-    game.setBetAmount(newValue);
+    game.setBetAmount(new Decimal(newValue).toNumber());
   }
 });
 
 const isBetAmountNegative = computed(() => {
-    return currentBetAmount.value < 0;
+  return new Decimal(currentBetAmount.value).isNegative();
 });
 
 const isBetExceedBalance = computed(() => {
-    return currentBetAmount.value > game.balance;
+  return new Decimal(currentBetAmount.value).greaterThan(game.balance);
 });
 
 
 const isDropBallDisabled = computed(() => {
-    return isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
+  return isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
 });
 
 const hasOutstandingBalls = computed(() => {
@@ -185,23 +186,23 @@ watch(currentRowCount, (newRowCount) => {
 });
 
 const handleHalfBet = () => {
-  const newBetAmount = truncateToDecimals(Math.max((game.betAmount / 2), game.minBetAmount));
-  game.setBetAmount(newBetAmount);
+  const newBetAmount = Decimal.max(new Decimal(game.betAmount).div(2), game.minBetAmount);
+  game.setBetAmount(newBetAmount.toNumber());
 };
 
 const handleReduceBet = () => {
-  const newBetAmount = truncateToDecimals(Math.max((game.betAmount - game.oneBetAmount), game.minBetAmount));
-  game.setBetAmount(newBetAmount);
+  const newBetAmount = Decimal.max(new Decimal(game.betAmount).minus(game.oneBetAmount), game.minBetAmount);
+  game.setBetAmount(newBetAmount.toNumber());
 };
 
 const handleAddBet = () => {
-  const newBetAmount = truncateToDecimals(Math.min((game.betAmount +  game.oneBetAmount) , game.maxBetAmount));
-  game.setBetAmount(newBetAmount);
+  const newBetAmount = Decimal.min(new Decimal(game.betAmount).plus(game.oneBetAmount), game.maxBetAmount);
+  game.setBetAmount(newBetAmount.toNumber());
 };
 
 const handleDoubleBet = () => {
-  const newBetAmount = truncateToDecimals(Math.min((game.betAmount * 2), game.maxBetAmount));
-  game.setBetAmount(newBetAmount);
+  const newBetAmount = Decimal.min(new Decimal(game.betAmount).times(2), game.maxBetAmount);
+  game.setBetAmount(newBetAmount.toNumber());
 };
 const handleMinBet = ()=>{
   game.setBetAmount(game.minBetAmount);
@@ -211,9 +212,10 @@ const handleMaxBet = () => {
 };
 
 const validateBetAmount = () => {
-  if (game.betAmount < game.minBetAmount) {
+  const betAmount = new Decimal(game.betAmount);
+  if (betAmount.lessThan(game.minBetAmount)) {
     game.setBetAmount(game.minBetAmount);
-  } else if (game.betAmount > game.maxBetAmount) {
+  } else if (betAmount.greaterThan(game.maxBetAmount)) {
     game.setBetAmount(game.maxBetAmount);
   }
 };

@@ -106,11 +106,18 @@ watch(
         </div>
       </div>
     </nav> -->
-
+            <div class=" flex text-white hidden">
+              {{ $t('CumulativeStopLossAmount') }} : {{ game.autoBetSetting.cumulativeStopLoss }}
+            
+            <div class="mx-2">
+              {{ $t('CumulativeStopWinAmount') }} : {{ game.autoBetSetting.cumulativeStopWin }}
+            </div>
+          </div>
     <div class="flex-1 flex items-center justify-center relative">
 
 
       <div class="mx-auto w-[375px]  drop-shadow-xl">
+        
         <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
           <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px] opacity-0 pointer-events-none">
             <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
@@ -133,6 +140,8 @@ watch(
               {{ payoutDelta }}
             </span>
           </transition>
+            <!-- --->
+           
         </div>
         <div class="gamebg flex flex-col-reverse overflow-hidden rounded-lg lg:w-full ">
           <Sidebar  />

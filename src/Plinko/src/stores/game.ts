@@ -15,7 +15,7 @@ import {
 import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
 import { serviceInit,serviceDoBet, serviceGetBalance } from '@/stores/service';
-
+import Decimal from 'decimal.js';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
     const amount =ref<number>(0)
@@ -143,7 +143,7 @@ export const useGameStore = defineStore('game', () => {
   balance.value = value;
  }
  const updateBalance = (value:number) => {
-  balance.value += value;
+  balance.value = new Decimal(balance.value).plus(new Decimal(value)).toNumber();
  }
 
 /**
@@ -324,33 +324,40 @@ const autoBetDropBall = () => {
     resetAutoBetInterval();
     return;
   }
-  console.log(`output->currentBallTypeIndex`,currentBallTypeIndex.value)
-  console.log(`output->autoBetCount`,autoBetCount)
-  console.log(`output->autoBetData`,autoBetData.value)
   if ((currentBallTypeIndex.value >= 0 || autoBetCount === Infinity) && autoBetData.value) {
-    const { Amount, PayoutMultiplier ,Payout } = autoBetData.value;
+    const { Amount, PayoutMultiplier ,Payout ,Balance} = autoBetData.value;
     const isWin = PayoutMultiplier > 1;
     
     if (isWin) {
-      autoBetSetting.value.cumulativeStopWin += Payout - Amount;
+      autoBetSetting.value.cumulativeStopWin = new Decimal(autoBetSetting.value.cumulativeStopWin)
+      .plus(new Decimal(Payout).minus(new Decimal(Amount)))
+      .toNumber();
       console.log(`output->autoBetSetting.value.cumulativeStopWin`,autoBetSetting.value.cumulativeStopWin)
       if (winAdjustmentMode !== 'initial') {
-        setBetAmount(betAmount.value + betAmount.value * (winAdjustmentPercentage / 100));
-        console.log(`output->winAdjustmentMode betAmount`,betAmount.value)
+        setBetAmount(
+          new Decimal(betAmount.value)
+            .plus(new Decimal(betAmount.value).times(new Decimal(winAdjustmentPercentage).div(100)))
+            .toNumber()
+        );
       }
     } else {
-      autoBetSetting.value.cumulativeStopLoss += Amount - Payout;
+      autoBetSetting.value.cumulativeStopLoss = new Decimal(autoBetSetting.value.cumulativeStopLoss)
+      .plus(new Decimal(Amount).minus(new Decimal(Payout)))
+      .toNumber();
       console.log(`output->autoBetSetting.value.cumulativeStopLoss`,autoBetSetting.value.cumulativeStopLoss)
       if (loseAdjustmentMode !== 'initial') {
-        setBetAmount(betAmount.value - betAmount.value * (loseAdjustmentPercentage / 100));
-        console.log(`output->loseAdjustmentMode betAmount`,betAmount.value)
+        setBetAmount(
+          new Decimal(betAmount.value)
+            .minus(new Decimal(betAmount.value).times(new Decimal(loseAdjustmentPercentage).div(100)))
+            .toNumber()
+        );
       }
     }
-
+    // TODO 止贏止損 待完成
     if (
       (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
-      (isCumulativeStopLoss && autoBetSetting.value.cumulativeStopLoss >= setCumulativeStopLoss) ||
-      (isCumulativeStopWin && autoBetSetting.value.cumulativeStopWin >= setCumulativeStopWin)
+      (isCumulativeStopLoss && autoBetSetting.value.cumulativeStopLoss - autoBetSetting.value.cumulativeStopWin >= setCumulativeStopLoss) ||
+      (isCumulativeStopWin && autoBetSetting.value.cumulativeStopWin - autoBetSetting.value.cumulativeStopLoss >= setCumulativeStopWin)
     ) {
 
       resetAutoBetInterval();
@@ -433,6 +440,7 @@ const getBalance= async()=>{
     resetAutoBetInterval,
     getBalance,
     setIsDoubleBet,
+    defaultAutoBetSetting,
     isDoubleBet,
    }
 })

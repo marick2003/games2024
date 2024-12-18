@@ -41,7 +41,7 @@
           <div class="flex justify-start items-center my-1 gap-2">
             <button
               type="button"
-              class="selectBtn"
+              class="selectBtn w-full"
               :class="{ active: form.ballType.includes('red') }"
               @click="toggleBallType('red')"
             >
@@ -49,7 +49,7 @@
             </button>
             <button
               type="button"
-              class="selectBtn"
+              class="selectBtn w-full"
               :class="{ active: form.ballType.includes('color') }"
               @click="toggleBallType('color')"
             >
@@ -133,7 +133,8 @@
               :disabled="!form.isSingleBetProfitLimit"
               :step="game.oneBetAmount"
               v-model="formattedSingleBetProfitLimit"
-              min="0"
+              :min="game.minBetAmount"
+              :max="game.maxBetAmount"
               class="input w-full"
               placeholder="0.00"
             />
@@ -149,7 +150,7 @@
               :disabled="!form.isCumulativeStopLoss"
               :step="game.oneBetAmount"
               v-model="formattedCumulativeStopLoss"
-              min="0"
+              :min="game.minBetAmount"
               class="input w-full"
               placeholder="0.00"
             />
@@ -161,7 +162,8 @@
           <label class="flex items-center justify-between">
             <Switch v-model="form.isCumulativeStopWin" class="mr-8" />
             <input type="number" :disabled="!form.isCumulativeStopWin" :step="game.oneBetAmount" 
-            v-model="formattedCumulativeStopWin" min="0" class="input w-full" placeholder="0.00" />
+            v-model="formattedCumulativeStopWin"
+             :min="game.minBetAmount" class="input w-full" placeholder="0.00" />
           </label>
         </div>
 
@@ -174,12 +176,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue' // 使用 computed 來簡化綁定
+import { computed, ref ,onMounted} from 'vue' // 使用 computed 來簡化綁定
 import { useI18n } from 'vue-i18n'
 import { useGameStore } from '../stores/game'
 import Switch from '@/components/UI/Switch.vue'
 import Percentage from '@/components/UI/Percentage.vue'
 import { useFormattedNumber } from '@/utils/numbers'
+
 const { t: $t } = useI18n()
 const game = useGameStore()
 const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]) // Store counts in an array
@@ -213,7 +216,9 @@ const formattedCumulativeStopWin = useFormattedNumber(
   () => form.value.setCumulativeStopWin,
   (value) => (form.value.setCumulativeStopWin = value)
 );
-
+onMounted(()=>{
+  game.setAutoBetSetting(game.defaultAutoBetSetting)
+})
 // 切換球類型的邏輯
 const toggleBallType = (type: string) => {
   const currentBallType = form.value.ballType || []

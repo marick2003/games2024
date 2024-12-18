@@ -169,6 +169,9 @@ const backButtonControl = (): void => {
   if (appStore.settingDialog.section === 'fairness-history') {
     appStore.settingDialog.section = 'history'
   }
+  if (appStore.settingDialog.section === 'what-is-instruction') {
+    appStore.settingDialog.section = 'history'
+  }
 }
 
 const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 45
@@ -226,11 +229,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
                 <div v-if='index === (betHistoryResult.length - 1)'
                      v-intersection-observer="onIntersectionObserver"
                      class="absolute text-center w-[200px] left-[60px] pointer-events-none">
-
                 </div>
                 <div class="flex flex-row justify-between">
                   <div class="flex flex-[2]">
-                    <div class="bg-gray-600 aspect-square w-full max-w-[30px] max-h-[30px] mx-auto rounded"></div>
+                    <div class="bg-gray-600 aspect-square relative w-full max-w-[30px] max-h-[30px] mx-auto rounded">
+                      <img src="/plinko.png" class="absolute w-full h-full" />
+                    </div>
                     <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
                       <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
                       <div class="flex items-center text-xs leading-4" >
@@ -354,16 +358,15 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
     <div
       :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
-      class='modal-container z-50'>
+      class='modal-container !z-[51]'>
       <div class="relative modal-header">
         <h1>{{$t('Fairness')}}</h1>
-
-        <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
-        <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
+        <p class="my-2 text-xs opacity-70 font-normal px-4">{{$t('FairnessCaption')}}</p>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
         <div class="h-[100%] overflow-y-auto pt-4">
-          <h1 class="text-center">{{$t('CurrentSeed')}}</h1>
+          <h1 class="text-center font-bold">{{$t('CurrentSeed')}}</h1>
           <div class="mb-4">
             <div class="font-bold">{{$t('ClientSeed')}}</div>
             <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
@@ -394,7 +397,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
             <div class="font-bold">{{ $t('Nonce') }}</div>
             <input type="text" readonly :value="seedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
           </div>
-          <h1 class="text-center mt-6 mb-2">{{$t('UpdateSeed')}}</h1>
+          <h1 class="text-center font-bold">{{$t('UpdateSeed')}}</h1>
           <form @submit.prevent='onSubmit' class='flex flex-col'>
             <div class="mb-6">
               <div class="font-bold">{{$t('NewClientSeed')}}</div>
@@ -437,7 +440,10 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
     </div>
 
     <div
-      :class="isShowBetDetail ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]'"
+      :class="[
+        isShowBetDetail ? (appStore.settingDialog.section === 'what-is-instruction' || appStore.settingDialog.section === 'fairness-history')
+        ? '!translate-x-[-150%] !translate-y-[-50%] active-container' :'!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]'
+      ]"
       class="modal-container z-50" >
       <div class="relative modal-header">
         <h1>
@@ -448,87 +454,153 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]' v-if="selectedBetDetail">
         <div class="h-[100%] overflow-y-auto pt-4">
-          <h1 class="text-center font-bold text-lg ">Crocodile Plinko</h1>
-          <div class="bg-gray-600 aspect-square w-full max-w-[65px] mx-auto my-[10px] rounded"></div>
+          <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
-          <div class="relative card-row">
-            {{selectedBetDetail.Id}}
-            <template v-if="isSupported && selectedBetDetail.Id">
-              <button @click="()=>{ source = selectedBetDetail?.Id || ''; copy(source)}" class="!p-0 absolute top-0 right-0 border-white border">
-                <span v-if="source === selectedBetDetail.Id && source !==''">copied</span>
-                <span v-else>copy</span>
-              </button>
-            </template>
-          </div>
-          <div class="relative">
-            {{getCurrentDateTimeWithTimezone(selectedBetDetail.Time)}}
+          <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto my-[10px] rounded">
+            <img src="/plinko.png" class="absolute w-full h-full" />
           </div>
 
-          <div class="bg-slate-600 text-black p-1">
-            amount: {{ new Decimal(selectedBetDetail.Amount ).toFixed(8) }} <br>
-            payout: {{selectedBetDetail.Payout}} <br>
-            multiplier: {{selectedBetDetail.PayoutMultiplier}} <br>
-          </div>
-          <div class="bg-slate-600 my-6 text-black p-1">
-            row: {{selectedBetDetail.Rows}} <br>
-            crocodile: {{selectedBetDetail.Risk}} <br>
-            ball: {{selectedBetDetail.Ball}} <br>
+          <div class="card-row text-xs !px-3 !py-3 flex gap-3 flex-col text-nowrap mb-3">
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('BetID')}}
+              </div>
+              <div class="pr-2.5">
+                {{selectedBetDetail.Id}}
+
+                <template v-if="isSupported && selectedBetDetail.Id">
+                  <button @click="()=>{ source = selectedBetDetail?.Id || ''; copy(source)}" class="!p-0 absolute top-[1px] -right-0.5 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === selectedBetDetail.Id && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== selectedBetDetail.Id  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('BetAmount')}}
+              </div>
+              <div class="flex gap-2 items-center"><img :src='returnCurrency(selectedBetDetail.Currency)' /> {{ selectedBetDetail.Amount === 0 ? '0' : new Decimal(selectedBetDetail.Amount).toFixed(8) }}</div>
+            </div>
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('BetTime')}}
+              </div>
+              <div>{{ getCurrentDateTimeWithTimezone(selectedBetDetail.Time) }}</div>
+            </div>
+
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('Multiplier')}}
+              </div>
+              <div>{{ selectedBetDetail.PayoutMultiplier || '--' }}x</div>
+            </div>
           </div>
 
-          <button class="text-center border-white border mx-auto" @click.prevent="isShowGameFairness = !isShowGameFairness">{{$t('GameFairness')}}</button>
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('Cashout')}}
+              </div>
+              <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
+                {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(8) }}
+              </div>
+            </div>
+
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('Row')}}
+              </div>
+              <div>{{ selectedBetDetail.Rows}}</div>
+            </div>
+
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('Crocodile')}}
+              </div>
+              <div>{{ selectedBetDetail.Risk}}</div>
+            </div>
+
+            <div class="flex justify-between relative">
+              <div>
+                {{$t('Ball')}}
+              </div>
+              <div>{{ selectedBetDetail.Ball}}</div>
+            </div>
+          </div>
+
+          <button class="relative my-5 bevel-button w-full text-center" @click.prevent="isShowGameFairness = !isShowGameFairness">
+            <span class="tiny-text scale-90 block mx-auto">
+            {{$t('GameFairness')}}
+            </span>
+            <img class='absolute right-3 transition-transform' :class="[isShowGameFairness ? 'rotate-180':'']" src="/arrow.svg" alt="">
+          </button>
           <div v-if="isShowGameFairness">
-            <div class="mb-4">
-              <div class="font-bold">{{ $t('ServerSeed') }}</div>
-              <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : ''" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-              <div class="relative" v-if="betDetailSeedData.ServerSeed !== ''">
-                <template v-if="isSupported ">
-                  <button @click="()=>{ source= betDetailSeedData.ServerSeed; copy(source)}" class="!p-0 absolute top-0 right-0">
-                    <span v-if="source === betDetailSeedData.ServerSeed && source !==''">copied</span>
-                    <span v-else>copy</span>
-                  </button>
-                </template>
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+              <div class="flex items-center gap-2">
+                <img src="/serverseed.svg" alt="" class="py-1 px-0.5">
+                {{ $t('ServerSeed') }}
               </div>
-            </div>
-            <div class="mb-4">
-              <div class="font-bold">{{ $t('ServerSeedHashing') }}</div>
-              <input type="text" readonly :value="betDetailSeedData.ServerSeedHash" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-              <div class="relative">
-                <template v-if="isSupported ">
-                  <button @click="()=>{ source= betDetailSeedData.ServerSeedHash; copy(source)}" class="!p-0 absolute top-0 right-0">
-                    <span v-if="source === betDetailSeedData.ServerSeedHash && source !==''">copied</span>
-                    <span v-else>copy</span>
+              <div class="input-bg">
+                <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : ''"  />
+                <template v-if="isSupported && betDetailSeedData.ServerSeed">
+                  <button @click="()=>{ source = betDetailSeedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ServerSeed  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                   </button>
                 </template>
               </div>
             </div>
 
-            <div class="mb-4">
-              <div class="font-bold">{{$t('ClientSeed')}}</div>
-              <input type="text" readonly :value="betDetailSeedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-              <div class="relative">
-                <template v-if="isSupported ">
-                  <button @click="()=>{source = betDetailSeedData.ClientSeed; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
-                    <span v-if="source === betDetailSeedData.ClientSeed && source !==''">copied</span>
-                    <span v-else>copy</span>
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-2">
+              <div class="flex items-center gap-2">
+                <img src="/serverseedhash.svg" alt="">
+                {{ $t('ServerSeedHashing') }}
+              </div>
+              <div class="input-bg">
+                <input type="text" readonly :value="betDetailSeedData.ServerSeedHash !== '' ? betDetailSeedData.ServerSeedHash : ''"  />
+                <template v-if="isSupported && betDetailSeedData.ServerSeedHash">
+                  <button @click="()=>{ source = betDetailSeedData.ServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ServerSeedHash  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                   </button>
                 </template>
               </div>
             </div>
 
-            <div class="my-4">
-              <div class="font-bold">{{ $t('RandomNumber') }}</div>
-              <input type="text" readonly :value="betDetailSeedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
-              <div class="relative">
-                <template v-if="isSupported ">
-                  <button @click="()=>{source = betDetailSeedData.Nonce; copy(source)}" class="!p-0 absolute top-0 right-0" :disabled="source === ''">
-                    <span v-if="source === betDetailSeedData.Nonce && source !==''">copied</span>
-                    <span v-else>copy</span>
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-2">
+              <div class="flex items-center gap-2">
+                <img src="/clientseed.svg" alt="">
+                {{ $t('ClientSeed') }}
+              </div>
+              <div class="input-bg">
+                <input type="text" readonly :value="betDetailSeedData.ClientSeed !== '' ? betDetailSeedData.ClientSeed : ''"  />
+                <template v-if="isSupported && betDetailSeedData.ClientSeed">
+                  <button @click="()=>{ source = betDetailSeedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ClientSeed  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                   </button>
                 </template>
               </div>
             </div>
-            <div class="drawer-action">
-              <button @click.prevent="appStore.settingDialog.section = 'fairness-history'">{{$t('WhatIsFairness')}}</button>
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col mt-2 mb-0">
+              <div class="flex items-center gap-2">
+                {{ $t('RandomNumber') }}
+              </div>
+              <div class="input-bg">
+                <input type="text" readonly :value="betDetailSeedData.Nonce !== '' ? betDetailSeedData.Nonce : ''"  />
+                <template v-if="isSupported && betDetailSeedData.Nonce">
+                  <button @click="()=>{ source = betDetailSeedData.Nonce || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.Nonce && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.Nonce  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <div class="drawer-action !border-none">
+              <button @click.prevent="appStore.settingDialog.section = 'what-is-instruction'" class="blue-gradient-link">{{$t('WhatIsFairness')}}</button>
+              <button @click.prevent="appStore.settingDialog.section = 'fairness-history'" class="blue-gradient-link">{{$t('ChangeSeed')}}</button>
             </div>
           </div>
         </div>
@@ -537,6 +609,61 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
       <div class="drawer-action">
         <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = '';isShowBetDetail = false; isShowGameFairness = false">{{ $t('Close') }}</button>
+      </div>
+    </div>
+
+    <div
+      :class="[appStore.settingDialog.section === 'what-is-instruction' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      class='modal-container z-50'>
+      <div class="relative modal-header">
+        <h1>{{$t('FairnessInstruction.Title')}}</h1>
+        <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
+      </div>
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
+        <div class="h-[100%] overflow-y-auto overflow-x-hidden pt-0">
+          <div class='game-instruction'>
+            <p class="text-center opacity-50 !leading-6">{{$t('FairnessInstruction.Paragraph1')}}</p>
+            <h4 class="text-center font-bold mt-3 mb-2">{{$t('FairnessInstruction.Method')}}</h4>
+            <p class="text-center opacity-50 !leading-6 !mb-3">{{$t('FairnessInstruction.Paragraph2')}}</p>
+          </div>
+
+          <div class="card-row text-xs !px-4 !py-2 flex gap-1.5 flex-col">
+            <div class="flex items-center gap-2">
+              <img src="/serverseed.svg" alt="" class="py-1 px-0.5">
+              {{ $t('ServerSeed') }}
+            </div>
+            <div class="input-bg after:!w-0">
+              <textarea
+                rows="2"
+                class="tiny-text scale-90 -translate-x-2 break-all !pr-0 !pt-1 !w-[calc(100%+1.25rem)]"
+                readonly>b95137361b7700e02cdc2d34d65f755236ba57cf3064cd072eadd55e5a191ed3</textarea>
+            </div>
+            <p class="my-2 text-xs opacity-70">{{$t('FairnessInstruction.ServerSeedInstruction')}}</p>
+          </div>
+
+          <div class="card-row text-xs !px-4 !py-2 flex gap-1.5 flex-col mt-2">
+            <div class="flex items-center gap-2">
+              <img src="/clientseed.svg" alt="" class="py-1 px-0.5">
+              {{ $t('ClientSeed') }}
+            </div>
+            <div class="input-bg after:!w-0">
+              <input
+                class="tiny-text scale-90 -translate-x-2 break-all !pr-0 !pt-1 !w-[calc(100%+1.25rem)]"
+                readonly
+                value="A12bsle9-L"
+               />
+            </div>
+            <p class="my-2 text-xs opacity-70">{{$t('FairnessInstruction.ClientSeedInstruction')}}</p>
+          </div>
+
+          <div class="card-row text-xs !px-4 !py-3 flex gap-1.5 flex-col mt-2 mb-8">
+            <h5>{{$t('FairnessInstruction.GameResult')}}</h5>
+            <p class="my-0 text-xs opacity-70">{{$t('FairnessInstruction.GameResultContent')}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="drawer-action">
+        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
       </div>
     </div>
   </div>
@@ -658,7 +785,7 @@ button{
   font-size:14px;
   position:relative;
   z-index:1;
-  padding: 0  1.85rem;
+  padding: 0  1.7rem;
 }
 form{
   font-size:14px;
@@ -724,5 +851,53 @@ form{
   height:100%;
   position: absolute;
 }
+.bevel-button{
+  padding: 5px 2rem;
+  border-radius:10px;
+  background: linear-gradient(to bottom, #6b6666 0%,#37383a 100%);
+}
+.input-bg{
+  position:relative;
+  background: #262323;
+  box-shadow: 0 0 0 0 #00000000, 1px 1px 2px 0 #02161A59 inset;
+  border-radius: 2px;
+  padding:4px 6px 2px;
 
+  input, textarea{
+    background:transparent;
+    color:#fff;
+    opacity: .7;
+    width:100%;
+    padding-right:18px;
+    resize:none;
+    overflow:hidden;
+    &:focus{outline:none}
+  }
+  &:after{
+    content:'';
+    width:35px;
+    height:20px;
+    position:absolute;
+    right:17px;
+    top:0;
+    background: linear-gradient(to right, rgba(38,35,35,0) 0%,rgba(38,35,35,0.32) 35%,rgba(38,35,35,1) 100%);
+    pointer-events:none;
+  }
+}
+.blue-gradient-link{
+  font-size: 12px;
+  color:#7F60F9;
+  background: linear-gradient(to right, #6DDCFF -50%, #7F60F9 180%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding: 2px 1rem;
+  margin: .5rem auto;
+  display:block;
+  transition:all .25s ease-out;
+  &:hover{
+    background: linear-gradient(to right, #6DDCFF -20%, #7F60F9 210%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
 </style>

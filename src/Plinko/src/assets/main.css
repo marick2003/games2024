@@ -1,5 +1,11 @@
 /* @import './base.css'; */
-body{min-height:680px;}
+body{
+  min-height:680px;
+  font-family: PingFang SC, Microsoft YaHei, simhei, Helvetica, Arial, Heiti, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 #app {
   background-color: #1f2937;
 }

@@ -30,7 +30,17 @@ function preloadAssets(assetUrls: Record<string, string>) {
         audio.addEventListener('error', () => {
           reject(audio)
         })
-      }
+      } else if (/mp4$/.test(src)) {
+        const video = document.createElement('video');
+        video.src = src;
+        video.addEventListener('canplaythrough', () => {
+          assetsPending.value--;
+          resolve(video);
+        }, { once: true });
+        video.addEventListener('error', () => {
+          reject(video);
+        });
+      } 
     })
   }
 
@@ -70,7 +80,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class='preloader-container z-50 w-full h-full px-7'>
+  <div class='preloader-container z-50  px-7'>
     <template v-if='loading'>
       
       <div class='progress-bar '>

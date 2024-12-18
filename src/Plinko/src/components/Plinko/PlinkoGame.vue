@@ -183,7 +183,7 @@ const canvasPaddingX = computed(() => {
             id: uuidv4(),
             betAmount: 0,
             rowCount: game.rowCount,
-            binIndex:0,
+            binIndex: 999,
             ballType: game.ballType,
             balance: ball.balance,
             amount: ball.amount,
@@ -232,32 +232,62 @@ const canvasPaddingX = computed(() => {
   );
 
 
-  const callToDrop = async () => {
-    console.log(`output->game.isDropBall`,'newVal')
-    const response :any = await game.doBet({
-        Currency: game.currency,
-        Amount: game.betAmount,
-        Rows: game.rowCount,
-        Risk: game.riskLevel,
-        BallType: game.ballType.toLowerCase()
-      })
-      
-    if(response.IsSuccess){
-      const point = getRandomElement(BallPostionList[game.rowCount][response.Data.FinalPosition-1])
-      console.log(`output->point 落球點`,point)
-       // response.Data.ColorMultiplier 0 爆炸  1 正常
-       game.setDropBall(false);  
-        await dropABall(point
-          ,(game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0)
-          ,response.Data.ColorMultiplier
-          ,response.Data.Payout
-          ,response.Data.Balance
-          ,response.Data.Amount
-        );
-     
+// 添加防呆機制
+let isProcessing = false; // 防止重複執行
+
+const callToDrop = async () => {
+  if (isProcessing) return; // 防止重複執行
+  isProcessing = true; // 設置正在執行狀態
+
+  try {
+   
+
+    // 發送請求
+    const response: any = await game.doBet({
+      Currency: game.currency,
+      Amount: game.betAmount,
+      Rows: game.rowCount,
+      Risk: game.riskLevel,
+      BallType: game.ballType.toLowerCase(),
+    });
+
+    // 判斷 response
+    if (response?.IsSuccess) {
+      const positionIndex = response.Data?.FinalPosition;
+      const point = positionIndex
+        ? getRandomElement(BallPostionList[game.rowCount][positionIndex - 1])
+        : null;
+
+      if (!point) {
+        console.error('無法取得落球點');
+        return;
+      }
+
+      console.log(`output -> point 落球點`, point);
+
+      // 執行 dropABall 並等待完成
+      await dropABall(
+        point,
+        game.ballType === BallType.COLOR && response.Data.ColorMultiplier === 0,
+        response.Data.ColorMultiplier,
+        response.Data.Payout,
+        response.Data.Balance,
+        response.Data.Amount
+      );
+    } else {
+      console.error('投注失敗：', response?.Message || '未知錯誤');
+      game.setDropBall(false);
+      isProcessing = false; // 重置執行狀態
     }
-    
-  };
+  } catch (error) {
+    console.error('執行 callToDrop 時發生錯誤：', error);
+  } finally {
+    // 確保設置 game.setDropBall(false) 並重置狀態
+    game.setDropBall(false);
+    isProcessing = false; // 重置執行狀態
+  }
+};
+
   defineExpose({
     callToDrop,
 });
@@ -473,11 +503,9 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
       <div class="w-full h-[210px] mt-[-45px] crocodileBg relative">
 
         <div v-if="game.riskLevel===RiskLevel.Swimming">
-
-          <div class="absolute top-[53px] left-[50px] animate-move">
-            <img class="w-full" src="../../assets/images/svg/crocodiles_step1.svg" />
+          <div class="absolute">
+            <video autoplay loop muted playsinline src="../../assets/video/close_mouth.mp4"></video>
           </div>
-
         </div>
         <div v-if="game.riskLevel===RiskLevel.SmallMouth">
             <!-- 使用 v-show 控制步驟2 -->
@@ -492,10 +520,10 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
         </div>
         <div v-if="game.riskLevel===RiskLevel.BigMouth">
     
-          <div v-show="crocodileStep === 'step1'" class="absolute top-[20px] left-[110px]">
+          <div v-show="crocodileStep === 'step1'" class="absolute top-[10px] left-[100px]">
             <img class="w-full" src="../../assets/images/svg/crocodiles_step3.svg" />
           </div>
-          <div v-show="crocodileStep === 'step2'" class="absolute top-[20px] left-[110px]">
+          <div v-show="crocodileStep === 'step2'" class="absolute top-[10px] left-[100px]">
             <img class="w-full" src="../../assets/images/svg/crocodiles_step3-1.svg" />
           </div>
 
@@ -508,7 +536,7 @@ const crocodileStep = ref('step1'); // 默認顯示 step1
 
       </div>
       </div>
-    <div class="absolute left-[2%] top-[26%] -translate-y-1/2">
+    <div class="absolute left-[2%] top-[14%] ">
       <LastWins />
     </div>
    

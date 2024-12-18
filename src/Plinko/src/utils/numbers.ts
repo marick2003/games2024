@@ -131,3 +131,28 @@ export const truncateToDecimals = (value: number, decimals: number = 8): number 
   const factor = Math.pow(10, decimals);
   return Math.floor(value * factor) / factor;
 };
+
+
+
+export const filterNonNumeric = (event) => {
+  const input = event.target;
+  const { value, selectionStart } = input; // 保存當前值和游標位置
+
+  // 過濾掉非數字、小數點、+、- 的字符
+  const sanitizedValue = value.replace(/[^0-9.]/g, '');
+
+  // 確保只有一個小數點
+  const decimalMatch = sanitizedValue.match(/\./g);
+  const filteredValue =
+    decimalMatch && decimalMatch.length > 1
+      ? sanitizedValue.substring(0, sanitizedValue.lastIndexOf('.'))
+      : sanitizedValue;
+
+  // 更新輸入框的值
+  input.value = filteredValue;
+
+  // 修復游標位置
+  const cursorOffset = value.length - filteredValue.length; // 計算字符長度變化
+  const newCursorPosition = Math.max(selectionStart - cursorOffset, 0); // 調整游標位置
+  input.setSelectionRange(newCursorPosition, newCursorPosition);
+};

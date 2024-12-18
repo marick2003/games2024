@@ -9,7 +9,7 @@
         <div v-if="game.binPayouts && game.binPayouts[game.rowCount] && game.binPayouts[game.rowCount][game.riskLevel]" 
          v-for="(item, index) in game.binPayouts[game.rowCount][game.riskLevel]" :key="index"
           class="flex binItem  text-[#575757] font-bold min-w-0 flex-1 items-center justify-center rounded-[2px]
-           text-[0.6rem] shadow-[0_5px_var(--shadow-color)]
+           text-[clamp(8px,5.568px+0.714vw,10px)] shadow-[0_5px_var(--shadow-color)]
               lg:shadow-[0_3px_var(--shadow-color)]"
           :class="{'bounce': item > 0 ? game.isBallEnterBins[index] :'',
             'double': item > 0 ? game.isDoubleBet[index] :''

@@ -232,7 +232,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
                 </div>
                 <div class="flex flex-row justify-between">
                   <div class="flex flex-[2]">
-                    <div class="bg-gray-600 aspect-square w-full max-w-[30px] max-h-[30px] mx-auto rounded"></div>
+                    <div class="bg-gray-600 aspect-square relative w-full max-w-[30px] max-h-[30px] mx-auto rounded">
+                      <img src="/plinko.png" class="absolute w-full h-full" />
+                    </div>
                     <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
                       <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
                       <div class="flex items-center text-xs leading-4" >
@@ -359,13 +361,12 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       class='modal-container !z-[51]'>
       <div class="relative modal-header">
         <h1>{{$t('Fairness')}}</h1>
-
-        <p class="my-2 text-sm">{{$t('FairnessCaption')}}</p>
+        <p class="my-2 text-xs opacity-70 font-normal px-4">{{$t('FairnessCaption')}}</p>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
         <div class="h-[100%] overflow-y-auto pt-4">
-          <h1 class="text-center">{{$t('CurrentSeed')}}</h1>
+          <h1 class="text-center font-bold">{{$t('CurrentSeed')}}</h1>
           <div class="mb-4">
             <div class="font-bold">{{$t('ClientSeed')}}</div>
             <input type="text" readonly :value="seedData.ClientSeed" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
@@ -396,7 +397,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
             <div class="font-bold">{{ $t('Nonce') }}</div>
             <input type="text" readonly :value="seedData.Nonce" class="px-2 py-1 border bg-[transparent] text-white border-white w-full" />
           </div>
-          <h1 class="text-center mt-6 mb-2">{{$t('UpdateSeed')}}</h1>
+          <h1 class="text-center font-bold">{{$t('UpdateSeed')}}</h1>
           <form @submit.prevent='onSubmit' class='flex flex-col'>
             <div class="mb-6">
               <div class="font-bold">{{$t('NewClientSeed')}}</div>
@@ -455,7 +456,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         <div class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
-          <div class="bg-gray-600 aspect-square w-full max-w-[65px] mx-auto my-[10px] rounded"></div>
+          <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto my-[10px] rounded">
+            <img src="/plinko.png" class="absolute w-full h-full" />
+          </div>
 
           <div class="card-row text-xs !px-3 !py-3 flex gap-3 flex-col text-nowrap mb-3">
             <div class="flex justify-between relative">
@@ -634,7 +637,6 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
                 rows="2"
                 class="tiny-text scale-90 -translate-x-2 break-all !pr-0 !pt-1 !w-[calc(100%+1.25rem)]"
                 readonly>b95137361b7700e02cdc2d34d65f755236ba57cf3064cd072eadd55e5a191ed3</textarea>
-
             </div>
             <p class="my-2 text-xs opacity-70">{{$t('FairnessInstruction.ServerSeedInstruction')}}</p>
           </div>

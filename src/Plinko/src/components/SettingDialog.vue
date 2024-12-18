@@ -185,6 +185,12 @@ const backButtonControl = (): void => {
 const returnPlaceholderWidth = (): number => (Math.floor(Math.random()* 50) ) + 45
 const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => gameStore.currencyLimit.find((obj:CurrencyLimitType) => obj.Currency === currency)
 
+const closeSettingDialog = ():void => {
+  appStore.settingDialog.visible=false;
+  appStore.settingDialog.section = ''
+  isShowBetDetail.value = false
+  isShowGameFairness.value = false
+}
 </script>
 
 <template>
@@ -309,7 +315,7 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         </div>
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">
+        <button class='back-button' @click.prevent="closeSettingDialog">
           {{ $t('Close') }}
         </button>
       </div>
@@ -349,7 +355,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         </div>
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="closeSettingDialog">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
 
@@ -366,7 +374,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         </div>
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="closeSettingDialog">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
 
@@ -486,7 +496,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
 
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="closeSettingDialog">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
 
@@ -667,7 +679,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
       </div>
 
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = '';isShowBetDetail = false; isShowGameFairness = false">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="closeSettingDialog">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
 
@@ -737,7 +751,9 @@ const returnCurrentLimitByCurrency = (currency:string):CurrencyLimitType => game
         </div>
       </div>
       <div class="drawer-action">
-        <button class='back-button' @click.prevent="appStore.settingDialog.visible=false;appStore.settingDialog.section = ''">{{ $t('Close') }}</button>
+        <button class='back-button' @click.prevent="closeSettingDialog">
+          {{ $t('Close') }}
+        </button>
       </div>
     </div>
   </div>

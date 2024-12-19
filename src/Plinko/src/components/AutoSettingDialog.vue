@@ -218,7 +218,7 @@ const toggleExpand = async () => {
 const form = computed(() => game.autoBetSetting)
 const formattedBetAmount = computed({
   get() {
-    const value = Number(game.betAmount.toFixed(8));
+    const value = Number(game.betAmount.toFixed(6));
     return value % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
   },
   set(newValue) {

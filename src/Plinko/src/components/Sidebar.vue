@@ -135,7 +135,7 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 
 const currentBetAmount = computed<any>({
   get() {
-    const value = new Decimal(game.betAmount).toFixed(8);
+    const value = new Decimal(game.betAmount).toFixed(6);
     return value.includes('.') ? value.replace(/(\.\d*?)0+$/, "$1") : value;
   },
   set(newValue: number) {

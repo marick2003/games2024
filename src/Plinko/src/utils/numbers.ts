@@ -112,7 +112,7 @@ export const getRandomElement = (array) => {
 
 
 
-export function useFormattedNumber(getter: () => number, setter: (value: number) => void, decimals = 8) {
+export function useFormattedNumber(getter: () => number, setter: (value: number) => void, decimals = 6) {
   return computed({
     get() {
       const value = parseFloat(getter());

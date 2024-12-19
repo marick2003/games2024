@@ -161,7 +161,7 @@ watch(
     </div>
 
       <SettingDialog />
-      <div class="flex item-center">
+      <div class="flex item-center fixed bottom-0">
 
       <Switch v-model="game.isTestBetClick" />
       <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />

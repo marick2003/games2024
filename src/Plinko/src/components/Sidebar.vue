@@ -93,8 +93,8 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto ">
-          <div class="flex items-center gap-4 border-t border-slate-600 pt-3 hidden">
+        <div v-if="env === 'development'" class="mt-auto  ">
+          <div class="flex items-center gap-4 border-t border-slate-600 pt-3 ">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
               <Switch v-model="simulation.isSimulationing" />

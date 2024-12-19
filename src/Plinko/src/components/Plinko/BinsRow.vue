@@ -9,7 +9,7 @@
         <div v-if="game.binPayouts && game.binPayouts[game.rowCount] && game.binPayouts[game.rowCount][game.riskLevel]" 
          v-for="(item, index) in game.binPayouts[game.rowCount][game.riskLevel]" :key="index"
           class="flex binItem  text-[#575757] font-bold min-w-0 flex-1 items-center justify-center rounded-[2px]
-           text-[clamp(8px,5.568px+0.28vw,10px)] shadow-[0_5px_var(--shadow-color)]
+           text-[clamp(8px,1.5vw,9px)] shadow-[0_5px_var(--shadow-color)]
               lg:shadow-[0_3px_var(--shadow-color)]"
           :class="{'bounce': item > 0 ? game.isBallEnterBins[index] :'',
             'double': item > 0 ? game.isDoubleBet[index] :''
@@ -67,6 +67,7 @@
 
 <style scoped lang="scss">
 .binItem{
+  
    position: relative;
    &.bounce {
     animation: bounce 300ms cubic-bezier(0.18, 0.89, 0.32, 1.28), colorShift 200ms linear;
@@ -91,11 +92,11 @@
       &:after {
         content: '2x'; 
         position:absolute;
-        top: 113%; 
+        top: 108%; 
         left: 50%; 
         transform: translateX(-50%);
-        font-size: 12px; 
-        font-weight: bold;
+        font-size: 14px; 
+        font-weight: bolder;
         background: linear-gradient(155.35deg, #FA4736 12.55%, #FC9A22 25.26%, #EEE33F 41.71%, #4AC99B 58.16%, #2BBCFF 72.37%, #FC5EFF 87.33%);
         -webkit-background-clip: text; 
         -webkit-text-fill-color: transparent; 

@@ -6,7 +6,6 @@
   import { onMounted, onUnmounted, ref, computed, watch,defineExpose  } from 'vue';
   import Matter, { type IBodyDefinition } from 'matter-js';
   import { v4 as uuidv4 } from 'uuid';
-  import axios from 'axios';
   import { BallPostionList } from '@/test';
   import { getRandomElement } from '@/utils/numbers';
   import { BetMode, RiskLevel , BallType } from '@/types';
@@ -80,7 +79,7 @@ const canvasPaddingX = computed(() => {
   });
 
   const ballFrictions: BallFrictionsByRowCount = {
-    friction: 0.2,// range (0, 1) 0.5
+    friction: 0.1,// range (0, 1) 0.5
     frictionAirByRowCount: {// faster a body slows when moving through space, 0 means never slow, default 0.01
       8: 0.03,//0.0395,
       10: 0.03,//0.038,
@@ -254,9 +253,9 @@ const callToDrop = async () => {
     // 判斷 response
     if (response?.IsSuccess) {
       const positionIndex = response.Data?.FinalPosition;
-      const point = positionIndex
+      const point = game.isTestBetClick ? game.testBetPoint : (positionIndex
         ? getRandomElement(BallPostionList[game.rowCount][positionIndex - 1])
-        : null;
+        : null);
 
       if (!point) {
         console.error('無法取得落球點');
@@ -307,7 +306,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
             0,
             ballRadius,
             {
-                restitution: 0.8, // 彈性
+                restitution: 0.9, // 彈性
                 isExplosion, // 是否爆炸
                 colorMultiplier,
                 collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數

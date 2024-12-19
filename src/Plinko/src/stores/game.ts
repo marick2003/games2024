@@ -96,6 +96,8 @@ export const useGameStore = defineStore('game', () => {
     setCumulativeStopWin: 0,
     cumulativeStopWin: 0
    });
+   const isTestBetClick =ref<boolean>(false);
+   const testBetPoint =ref<number>(0);
    const autoBetSetting = ref<AutoBetSetting>({
     ...defaultAutoBetSetting.value
   });
@@ -288,7 +290,7 @@ const getInitialization = async() => {
   return formattedBinPayouts;
 };
 const autoBetInterval = ref<ReturnType<typeof setInterval> | null>(null);
-const autoBetIntervalMs =ref(1500)
+const autoBetIntervalMs =ref(1000)
 const resetAutoBetInterval = () => {
   if (autoBetInterval.value !== null) {
       clearInterval(autoBetInterval.value);
@@ -442,5 +444,7 @@ const getBalance= async()=>{
     setIsDoubleBet,
     defaultAutoBetSetting,
     isDoubleBet,
+    isTestBetClick,
+    testBetPoint
    }
 })

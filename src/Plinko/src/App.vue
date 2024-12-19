@@ -12,6 +12,7 @@ import Preloader from '@/components/Preloader.vue';
 import SettingDialog from '@/components/SettingDialog.vue';
 import AutoSettingDialog from '@/components/AutoSettingDialog.vue';
 import { useIntervalFn } from '@vueuse/core';
+import Switch from '@/components/UI/Switch.vue'
 const simulation = useSimulationStore();
 const appStore = useAppStore()
 const game=useGameStore();
@@ -164,7 +165,12 @@ watch(
     </div>
 
       <SettingDialog />
+      <div class="flex item-center">
 
+      <Switch v-model="game.isTestBetClick" />
+      <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />
+      <button class="text-white bg-slate-400 rounded-md p-1" :disabled="!game.isTestBetClick" @click="()=>{game.isDropBall=true}" >測試落球點</button>
+      </div>
   </div>
   </transition>
 

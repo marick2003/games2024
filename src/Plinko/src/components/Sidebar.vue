@@ -35,24 +35,22 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-2 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-             <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="minBtn" @click="handleMinBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="minBtn" @click="handleMinBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="halfBtn" @click="handleHalfBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold"> Bet Amount </label>
-                <!-- {{$t('BetAmount')}} -->
-                <div class="flex items-center">
-    
+                <div class="flex items-center">    
                   <input type="number"
-                    :step="game.oneBetAmount" :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                    :step="game.oneBetAmount" :disabled="hasOutstandingBalls || isDropBallDisabled"
                      @blur="validateBetAmount" v-model.number="currentBetAmount" 
                      class="no-step text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold">
                     </input>
                 </div>
               </div>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="towxBtn" @click="handleDoubleBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="maxBtn" @click="handleMaxBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="addBtn" @click="handleAddBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="towxBtn" @click="handleDoubleBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="maxBtn" @click="handleMaxBet"></button>
           </div>
 
         </div>
@@ -63,7 +61,7 @@
                 v-model="currentRowCount"
                 :items="rowCounts"
                 type="vertical"
-                :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                :disabled="isDropBallDisabled || hasOutstandingBalls"
               >
                 <template #default="{ currentItem }">
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
@@ -77,7 +75,7 @@
                   v-model="currentRiskLevel"
                   :items="riskLevels"
                   type="horizontal"
-                  :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                  :disabled="isDropBallDisabled || hasOutstandingBalls"
                 >
                   <template #default="{ currentItem }">
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
@@ -104,12 +102,7 @@
            
           </div>
         </div>
-        <div class="flex item-center">
 
-              <Switch v-model="game.isTestBetClick" />
-              <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />
-              <button class="text-white bg-slate-400 rounded-md p-1" :disabled="!game.isTestBetClick" @click="handleBetClick(BallType.RED)" >測試落球點</button>
-        </div>
     </div>
 
 </template>
@@ -160,7 +153,7 @@ const isBetExceedBalance = computed(() => {
 
 
 const isDropBallDisabled = computed(() => {
-  return isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
+  return  isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
 });
 
 const hasOutstandingBalls = computed(() => {
@@ -275,8 +268,8 @@ select option {
 
     &:disabled,
     &:disabled:active {
-      background: url(../assets/images/svg/redBtn.svg) no-repeat;
-      background-size: cover;
+      background: url(../assets/images/svg/redBtn_disable.svg) no-repeat;
+      background-size: contain;
       pointer-events: none; // 禁用點擊行為
     }
   }
@@ -292,8 +285,8 @@ select option {
 
     &:disabled,
     &:disabled:active {
-      background: url(../assets/images/svg/colorBtn.svg) no-repeat;
-      background-size: cover;
+      background: url(../assets/images/svg/colorBtn_disable.svg) no-repeat;
+      background-size: contain;
       pointer-events: none; // 禁用點擊行為
     }
   }
@@ -305,36 +298,66 @@ select option {
          height: 36px;
          background: url(../assets/images/svg/minBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+            background: url(../assets/images/svg/minBtn_disable.svg) no-repeat;
+            background-size: contain;
+          }
       }
       .halfBtn{
          width: 36px;
          height:36px;
          background: url(../assets/images/svg/halfBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+            background: url(../assets/images/svg/halfBtn_disable.svg) no-repeat;
+            background-size: contain;
+          }
       }
       .reduceBtn{
          width: 26px;
          height: 26px;
          background: url(../assets/images/svg/reduceBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/reduceBtn_disable.svg) no-repeat;
+          background-size: contain;
+          }
       }
       .addBtn{
          width: 26px;
          height: 26px;
          background: url(../assets/images/svg/addBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/addBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
       .towxBtn{
          width: 36px;
          height:36px;
          background: url(../assets/images/svg/2xBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/2xBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
       .maxBtn{
          width: 36px;
          height: 36px;
          background: url(../assets/images/svg/maxBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/maxBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
 }
 </style>

@@ -104,12 +104,7 @@
            
           </div>
         </div>
-        <div class="flex item-center">
 
-              <Switch v-model="game.isTestBetClick" />
-              <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />
-              <button class="text-white bg-slate-400 rounded-md p-1" :disabled="!game.isTestBetClick" @click="handleBetClick(BallType.RED)" >測試落球點</button>
-        </div>
     </div>
 
 </template>
@@ -305,18 +300,30 @@ select option {
          height: 36px;
          background: url(../assets/images/svg/minBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+
+          }
       }
       .halfBtn{
          width: 36px;
          height:36px;
          background: url(../assets/images/svg/halfBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+
+          }
       }
       .reduceBtn{
          width: 26px;
          height: 26px;
          background: url(../assets/images/svg/reduceBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+
+          }
       }
       .addBtn{
          width: 26px;

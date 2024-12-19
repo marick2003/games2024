@@ -8,7 +8,7 @@
   <div
     class="modal-container  mx-auto text-left pt-1 pb-6 flex flex-col overflow-x-hidden z-20"
   >
-    <PerfectScrollbar class='px-2 pt-3' :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}'>
+    <PerfectScrollbar class='px-3 pt-3' :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}'>
     <div class="modal-content flex flex-col">
       <div class="flex items-center justify-center">
         <h2 class="text-center text-lg font-bold">
@@ -271,7 +271,6 @@ const submitSettings = async () => {
   left: 50%; /* 水平置中 */
   transform: translateX(-50%); /* 只需水平居中 */
   transition: all 0.35s cubic-bezier(0, 0.86, 0.37, 1);
-  padding: 1rem 25px;
   backdrop-filter: blur(20px);
   background: #2c2c2cde;
 }

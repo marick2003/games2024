@@ -63,7 +63,7 @@
                 v-model="currentRowCount"
                 :items="rowCounts"
                 type="vertical"
-                :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                :disabled="isDropBallDisabled"
               >
                 <template #default="{ currentItem }">
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
@@ -77,7 +77,7 @@
                   v-model="currentRiskLevel"
                   :items="riskLevels"
                   type="horizontal"
-                  :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                  :disabled="isDropBallDisabled"
                 >
                   <template #default="{ currentItem }">
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
@@ -270,8 +270,8 @@ select option {
 
     &:disabled,
     &:disabled:active {
-      background: url(../assets/images/svg/redBtn.svg) no-repeat;
-      background-size: cover;
+      background: url(../assets/images/svg/redBtn_disable.svg) no-repeat;
+      background-size: contain;
       pointer-events: none; // 禁用點擊行為
     }
   }
@@ -287,8 +287,8 @@ select option {
 
     &:disabled,
     &:disabled:active {
-      background: url(../assets/images/svg/colorBtn.svg) no-repeat;
-      background-size: cover;
+      background: url(../assets/images/svg/colorBtn_disable.svg) no-repeat;
+      background-size: contain;
       pointer-events: none; // 禁用點擊行為
     }
   }
@@ -302,7 +302,8 @@ select option {
          background-size: contain;
          &:disabled,
          &:disabled:active {
-
+            background: url(../assets/images/svg/minBtn_disable.svg) no-repeat;
+            background-size: contain;
           }
       }
       .halfBtn{
@@ -312,7 +313,8 @@ select option {
          background-size: contain;
          &:disabled,
          &:disabled:active {
-
+            background: url(../assets/images/svg/halfBtn_disable.svg) no-repeat;
+            background-size: contain;
           }
       }
       .reduceBtn{
@@ -322,7 +324,8 @@ select option {
          background-size: contain;
          &:disabled,
          &:disabled:active {
-
+          background: url(../assets/images/svg/reduceBtn_disable.svg) no-repeat;
+          background-size: contain;
           }
       }
       .addBtn{
@@ -330,18 +333,33 @@ select option {
          height: 26px;
          background: url(../assets/images/svg/addBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/addBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
       .towxBtn{
          width: 36px;
          height:36px;
          background: url(../assets/images/svg/2xBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/2xBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
       .maxBtn{
          width: 36px;
          height: 36px;
          background: url(../assets/images/svg/maxBtn.svg) no-repeat;
          background-size: contain;
+         &:disabled,
+         &:disabled:active {
+          background: url(../assets/images/svg/maxBtn_disable.svg) no-repeat;
+          background-size: contain;
+         }
       }
 }
 </style>

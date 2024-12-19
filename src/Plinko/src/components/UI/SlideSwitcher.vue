@@ -1,5 +1,5 @@
 <template>
-    <div class="slide-switcher">
+    <div class="slide-switcher" :class="[props.type, props.disabled ? 'disabled' : '']">
       <button
         @click="!disabled && prev()"
         class="btn prev"
@@ -94,9 +94,26 @@
   
   <style scoped lang="scss">
   .slide-switcher {
+    position: relative; // 為了讓 :before 偽元素定位在內部
     display: flex;
     align-items: center;
     justify-content: center;
+    &.horizontal{
+      &.disabled{
+          &:before{
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+            @apply rounded-xl;
+          }
+      }
+
+    }
   }
   
   .content {

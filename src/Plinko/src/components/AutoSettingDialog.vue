@@ -6,8 +6,9 @@
   ></div>
 
   <div
-    class="modal-container  mx-auto text-left pt-1 pb-6 flex flex-col overflow-x-hidden z-20 overflow-y-auto"
+    class="modal-container  mx-auto text-left pt-1 pb-6 flex flex-col overflow-x-hidden z-20"
   >
+    <PerfectScrollbar class='px-2 pt-3' :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}'>
     <div class="modal-content flex flex-col">
       <div class="flex items-center justify-center">
         <h2 class="text-center text-lg font-bold">
@@ -22,7 +23,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-2">
           <p class="text-xs">{{ $t('InitialBetAmount') }}</p>
-          <label class="flex items-center justify-start my-1">  
+          <label class="flex items-center justify-start my-1">
             <div class="flex items-center w-full">
               <input
                 type="number"
@@ -161,7 +162,7 @@
           <p class="text-xs">{{ $t('CumulativeStopWinAmount') }}</p>
           <label class="flex items-center justify-between">
             <Switch v-model="form.isCumulativeStopWin" class="mr-8" />
-            <input type="number" :disabled="!form.isCumulativeStopWin" :step="game.oneBetAmount" 
+            <input type="number" :disabled="!form.isCumulativeStopWin" :step="game.oneBetAmount"
             v-model="formattedCumulativeStopWin"
              :min="game.minBetAmount" class="input w-full" placeholder="0.00" />
           </label>
@@ -172,6 +173,7 @@
         </button>
       </div>
     </div>
+    </PerfectScrollbar>
   </div>
 </template>
 

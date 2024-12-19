@@ -239,8 +239,11 @@ const closeSettingDialog = ():void => {
         <h1>{{$t('BetHistory')}}</h1>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left relative h-[calc(100%-60px)]'>
-        <div class="h-[100%] overflow-y-auto pt-4">
+
+      <div class='modal-content mx-auto text-left relative overflow-hidden h-[calc(100%-60px)]'>
+        <PerfectScrollbar
+          :options='{ minScrollbarLength: 20 }'
+          class="pt-4 h-full overflow-y-auto !overflow-x-hidden">
           <div class="flex flex-col gap-3.5"  ref="root">
             <template v-if="appStore.settingDialog.section==='history' &&  betHistoryResult.length > 0">
               <div v-for="(history, index) in betHistoryResult" :key="history.Id" class="cursor-pointer card-row relative !px-3" @click="betRecordDetail(history)">
@@ -316,8 +319,10 @@ const closeSettingDialog = ():void => {
               </div>
             </template>
           </div>
-        </div>
+        </PerfectScrollbar>
+
       </div>
+
       <div class="drawer-action">
         <button class='back-button' @click.prevent="closeSettingDialog">
           {{ $t('Close') }}
@@ -372,13 +377,16 @@ const closeSettingDialog = ():void => {
         <h1>{{$t('GameInstruction')}}</h1>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="appStore.settingDialog.section='main'"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
-        <div class="h-[100%] overflow-y-auto overflow-x-hidden pt-0 ">
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
+
+        <PerfectScrollbar
+          :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}'
+          class="pt-4 h-full overflow-y-auto !overflow-x-hidden">
           <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto mt-4 mb-2 rounded">
             <img src="/plinko.png" class="absolute w-full h-full" />
           </div>
           <div class='game-instruction' v-html="$t('GameInstructionContent')"></div>
-        </div>
+        </PerfectScrollbar>
       </div>
       <div class="drawer-action">
         <button class='back-button' @click.prevent="closeSettingDialog">
@@ -396,7 +404,7 @@ const closeSettingDialog = ():void => {
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
-        <div class="h-[100%] overflow-y-auto">
+        <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto">
           <p class="my-2 text-center text-xs opacity-70 font-normal mt-4 px-4">{{$t('FairnessCaption')}}</p>
           <h1 class="text-center font-bold my-1">{{$t('CurrentSeed')}}</h1>
 
@@ -509,7 +517,7 @@ const closeSettingDialog = ():void => {
           <div class="drawer-action !border-none mb-4">
             <button @click.prevent="appStore.settingDialog.section = 'what-is-instruction'" class="blue-gradient-link">{{$t('WhatIsFairness')}}</button>
           </div>
-        </div>
+        </PerfectScrollbar>
 
       </div>
       <div class="drawer-action">
@@ -533,7 +541,7 @@ const closeSettingDialog = ():void => {
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]' v-if="selectedBetDetail">
-        <div class="h-[100%] overflow-y-auto pt-4">
+        <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
           <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto my-[10px] rounded">
@@ -691,7 +699,7 @@ const closeSettingDialog = ():void => {
               <button @click.prevent="appStore.settingDialog.section = 'fairness-history'" class="blue-gradient-link">{{$t('ChangeSeed')}}</button>
             </div>
           </div>
-        </div>
+        </PerfectScrollbar>
 
       </div>
 
@@ -709,8 +717,8 @@ const closeSettingDialog = ():void => {
         <h1>{{$t('FairnessInstruction.Title')}}</h1>
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="backButtonControl"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)] !pr-2'>
-        <div class="h-[100%] overflow-y-auto overflow-x-hidden pt-0">
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
+        <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto overflow-x-hidden pt-0">
           <div class='game-instruction'>
             <p class="text-center opacity-50 !leading-6">{{$t('FairnessInstruction.Paragraph1')}}</p>
             <h4 class="text-center font-bold mt-3 mb-2">{{$t('FairnessInstruction.Method')}}</h4>
@@ -765,7 +773,7 @@ const closeSettingDialog = ():void => {
             <h5>{{$t('FairnessInstruction.GameResult')}}</h5>
             <p class="my-0 text-xs opacity-70">{{$t('FairnessInstruction.GameResultContent')}}</p>
           </div>
-        </div>
+        </PerfectScrollbar>
       </div>
       <div class="drawer-action">
         <button class='back-button' @click.prevent="closeSettingDialog">
@@ -973,8 +981,6 @@ form{
   input, textarea{
     background:transparent;
     color:#fff;
-    opacity: .7;
-
     width:100%;
     padding-right:18px;
     resize:none;
@@ -1011,8 +1017,8 @@ form{
   }
 }
 .update-button{
-  background: linear-gradient(90deg, #FFCB52 0%, #FF7B02 100%);
-  box-shadow: 0 1px 2px 2px #DF891259 inset,  0 0 3px 0 #00000059;
+  background: #5173AA;
+  border:none;
   width: 135px;
   height:40px;
   text-align:center;
@@ -1043,4 +1049,7 @@ form{
   }
 }
 .error-msg{font-weight:bold;font-size:12px}
+:deep(.ps__rail-x){
+  display:none
+}
 </style>

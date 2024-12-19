@@ -36,7 +36,7 @@ const betDetailSeedData = reactive({
   ServerSeed: '',
   ServerSeedHash: ''
 })
-const seedType = ref('')
+
 const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
 const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
 const pageIndex:Ref<number> = ref(1)
@@ -107,15 +107,19 @@ const getServerRefreshSeed = async() => {
     Object.assign(updateSeedData, Data)
   }
 }
+const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
 
 const { values, errors, handleSubmit,  defineField } = useForm({
   validationSchema: yup.object({
+    seedType: yup.string().required($t('Validation.Required')).min(6, $t('Validation.Min')).max(20, $t('Validation.Max'))
   }),
   initialValues: {
+    seedType: generateRandom()
   }
 });
+const [ seedType, seedTypeAttrs ] = defineField('seedType');
+const { value, handleChange } = useField('seedType', value => !!value);
 
-const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
 const returnCurrency = (img:string):string => {
   if (img === '0') return
   return `/${img.toLowerCase()}.svg`
@@ -201,7 +205,7 @@ const closeSettingDialog = ():void => {
     <div
          :class="[
            appStore.settingDialog.section === '' ? 'hidden pointer-events-none' : appStore.settingDialog.section === 'main' ? 'pointer-events-auto' : '',
-           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? '!translate-x-[-100vw] !translate-y-[-50%]' : ''
+           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? 'opacity-0 pointer-events-none' : 'opacity-1 pointer-events-auto !delay-200'
            ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
       <div class="relative">
@@ -228,8 +232,8 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]',
-      isShowBetDetail ? '!translate-x-[-100vw] !translate-y-[-50%] active-container' : '']"
+      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]',
+      isShowBetDetail ? '!translate-x-[-600px] !translate-y-[-50%] active-container' : '']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetHistory')}}</h1>
@@ -322,7 +326,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetLimit')}}</h1>
@@ -362,7 +366,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('GameInstruction')}}</h1>
@@ -384,7 +388,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container !z-[51]'>
       <div class="relative modal-header">
         <h1>{{$t('Fairness')}}</h1>
@@ -395,22 +399,8 @@ const closeSettingDialog = ():void => {
         <div class="h-[100%] overflow-y-auto">
           <p class="my-2 text-center text-xs opacity-70 font-normal mt-4 px-4">{{$t('FairnessCaption')}}</p>
           <h1 class="text-center font-bold my-1">{{$t('CurrentSeed')}}</h1>
+
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
-            <div class="flex items-center gap-2">
-              <img src="/clientseed.svg" alt="">
-              {{ $t('ClientSeed') }}
-            </div>
-            <div class="input-bg">
-              <input type="text" readonly :value="seedData.ClientSeed"  />
-              <template v-if="isSupported && seedData.ClientSeed">
-                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                </button>
-              </template>
-            </div>
-          </div>
-          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
             <div class="flex items-center gap-2">
               <img src="/serverseedhash.svg" alt="">
               {{ $t('ServerSeedHashing') }}
@@ -421,6 +411,21 @@ const closeSettingDialog = ():void => {
                 <button @click="()=>{ source = seedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
                   <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
                   <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ServerSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                </button>
+              </template>
+            </div>
+          </div>
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
+            <div class="flex items-center gap-2">
+              <img src="/clientseed.svg" alt="">
+              {{ $t('ClientSeed') }}
+            </div>
+            <div class="input-bg">
+              <input type="text" readonly :value="seedData.ClientSeed"  />
+              <template v-if="isSupported && seedData.ClientSeed">
+                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                 </button>
               </template>
             </div>
@@ -441,28 +446,8 @@ const closeSettingDialog = ():void => {
           </div>
           <h1 class="text-center font-bold mt-4 mb-1">{{$t('UpdateSeed')}}</h1>
           <form @submit.prevent='onSubmit' class='flex flex-col'>
-            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col relative">
-              <div class="flex items-center gap-2">
-                <img src="/clientseed.svg" alt="">
-                {{ $t('NewClientSeed') }}
-              </div>
-              <div class="relative">
-                <div class="input-bg !bg-[#414350] w-[90%] after:!w-[0]">
-                  <input v-model="seedType"  />
-                  <template v-if="isSupported">
-                    <button @click.prevent="()=>{ source = seedType || ''; copy(source)}" class="!p-0 absolute top-1 right-2 w-[12px]">
-                      <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedType && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                      <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedType ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                    </button>
-                  </template>
-                </div>
-                <button @click.prevent="seedType = generateRandom()" class="p-1 absolute top-[-2px] right-2 transition-all opacity-70 hover:opacity-100">
-                  <img src="/generate-random.svg" />
-                </button>
-              </div>
-            </div>
 
-            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
               <div class="flex items-center gap-2">
                 <img src="/serverseedhash.svg" alt="">
                 {{ $t('ServerSeedHashing') }}
@@ -478,10 +463,39 @@ const closeSettingDialog = ():void => {
               </div>
             </div>
 
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col relative  my-3">
+              <div class="flex items-center gap-2">
+                <img src="/clientseed.svg" alt="">
+                {{ $t('NewClientSeed') }}
+              </div>
+              <div class="relative">
+                <div class="input-bg !bg-[#414350] w-[90%] after:!w-[0]" :class='errors.seedType ? "error":""'>
+                  <Field
+
+                    :validateOnInput="true"
+                    :disabled='submittingForm'
+                    name='seedType'
+                  />
+
+                  <template v-if="isSupported">
+                    <button @click.prevent="()=>{ source = seedType || ''; copy(source)}" class="!p-0 absolute top-1 right-2 w-[12px]">
+                      <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedType && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                      <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedType ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                    </button>
+                  </template>
+                </div>
+                <button @click.prevent="seedType = generateRandom()" class="p-1 absolute top-[-2px] right-2 transition-all opacity-70 hover:opacity-100">
+                  <img src="/generate-random.svg" />
+                </button>
+              </div>
+              <ErrorMessage class='error-msg' name='seedType' />
+
+            </div>
+
             <div class="w-full mt-2">
               <button
                 @click.prevent="onSubmit" class="update-button"
-                :disabled="submittingForm"
+                :disabled="Object.keys(errors).length > 0 || submittingForm"
               >
                 <template v-if="!submittingForm">{{$t('Update')}}</template>
                 <template v-else>{{$t('Updating')}}...</template>
@@ -508,7 +522,7 @@ const closeSettingDialog = ():void => {
     <div
       :class="[
         isShowBetDetail ? (appStore.settingDialog.section === 'what-is-instruction' || appStore.settingDialog.section === 'fairness-history')
-        ? '!translate-x-[-150%] !translate-y-[-50%] active-container' :'!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]'
+        ? '!translate-x-[-150%] !translate-y-[-50%] active-container' :'!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-600px] !translate-y-[-50%]'
       ]"
       class="modal-container z-50" >
       <div class="relative modal-header">
@@ -689,7 +703,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'what-is-instruction' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'what-is-instruction' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('FairnessInstruction.Title')}}</h1>
@@ -770,9 +784,10 @@ const closeSettingDialog = ():void => {
     content:'';
     position:absolute;
     top:0;
-    left:-50vw;
-    width:100vw;
-    height:100vh;
+    left:50%;
+    transform: translateX(-50%);
+    width:200vw;
+    height:200vh;
     background: #2c2c2c;
     backdrop-filter: blur(20px);
     z-index:-10;
@@ -955,17 +970,19 @@ form{
   box-shadow: 0 0 0 0 #00000000, 1px 1px 2px 0 #02161A59 inset;
   border-radius: 2px;
   padding:4px 6px 2px;
-
   input, textarea{
     background:transparent;
     color:#fff;
     opacity: .7;
+
     width:100%;
     padding-right:18px;
     resize:none;
     overflow:hidden;
     &:focus{outline:none}
   }
+  &.error{box-shadow:0 0 0 0 #00000000, 0 0 8px 0 #dd161A59 inset}
+
   &:after{
     content:'';
     width:35px;
@@ -1025,4 +1042,5 @@ form{
     opacity: .9
   }
 }
+.error-msg{font-weight:bold;font-size:12px}
 </style>

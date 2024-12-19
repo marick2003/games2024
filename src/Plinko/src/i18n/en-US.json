@@ -16,9 +16,10 @@
   "GreaterThanMessage": "This must be greater than or equal to 0.",
   "Message": "Message",
   "Validation": {
-    "Min": "This must be greater than or equal to {min}",
-    "Max": "Can't bet more than your balance!",
-    "Number": "Please enter number!"
+    "Min": "6-20 characters",
+    "Max": "6-20 characters",
+    "Number": "Please enter number!",
+    "Required": "Required field"
   },
   "Error": {
     "400": "The server cannot process the request, please try again later",

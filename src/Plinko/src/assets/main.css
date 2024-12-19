@@ -46,7 +46,8 @@ input:focus {
   margin-bottom:1rem;
   padding-left:16px;
 }
-.game-instruction ul li{position:relative;}
+.game-instruction ul strong{margin:1rem 0;display:block;}
+.game-instruction ul li{position:relative;margin-bottom:.5rem;line-height:1.5rem;}
 .game-instruction ul li:before{
   content:'●';
   color:#6DDCFF;

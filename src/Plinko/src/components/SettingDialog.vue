@@ -36,7 +36,7 @@ const betDetailSeedData = reactive({
   ServerSeed: '',
   ServerSeedHash: ''
 })
-const seedType = ref('')
+
 const betHistoryResponseList: Ref<BetHistoryResponseList|{}> = ref({})
 const betHistoryResult: Ref<BetHistoryResponse[]> = ref([])
 const pageIndex:Ref<number> = ref(1)
@@ -107,15 +107,19 @@ const getServerRefreshSeed = async() => {
     Object.assign(updateSeedData, Data)
   }
 }
+const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
 
 const { values, errors, handleSubmit,  defineField } = useForm({
   validationSchema: yup.object({
+    seedType: yup.string().required($t('Validation.Required')).min(6, $t('Validation.Min')).max(20, $t('Validation.Max'))
   }),
   initialValues: {
+    seedType: generateRandom()
   }
 });
+const [ seedType, seedTypeAttrs ] = defineField('seedType');
+const { value, handleChange } = useField('seedType', value => !!value);
 
-const generateRandom = () => randomize('?', 10, {chars: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%*+-=_.,:;'})
 const returnCurrency = (img:string):string => {
   if (img === '0') return
   return `/${img.toLowerCase()}.svg`
@@ -465,8 +469,14 @@ const closeSettingDialog = ():void => {
                 {{ $t('NewClientSeed') }}
               </div>
               <div class="relative">
-                <div class="input-bg !bg-[#414350] w-[90%] after:!w-[0]">
-                  <input v-model="seedType"  />
+                <div class="input-bg !bg-[#414350] w-[90%] after:!w-[0]" :class='errors.seedType ? "error":""'>
+                  <Field
+
+                    :validateOnInput="true"
+                    :disabled='submittingForm'
+                    name='seedType'
+                  />
+
                   <template v-if="isSupported">
                     <button @click.prevent="()=>{ source = seedType || ''; copy(source)}" class="!p-0 absolute top-1 right-2 w-[12px]">
                       <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedType && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
@@ -478,12 +488,14 @@ const closeSettingDialog = ():void => {
                   <img src="/generate-random.svg" />
                 </button>
               </div>
+              <ErrorMessage class='error-msg' name='seedType' />
+
             </div>
 
             <div class="w-full mt-2">
               <button
                 @click.prevent="onSubmit" class="update-button"
-                :disabled="submittingForm"
+                :disabled="Object.keys(errors).length > 0 || submittingForm"
               >
                 <template v-if="!submittingForm">{{$t('Update')}}</template>
                 <template v-else>{{$t('Updating')}}...</template>
@@ -958,17 +970,19 @@ form{
   box-shadow: 0 0 0 0 #00000000, 1px 1px 2px 0 #02161A59 inset;
   border-radius: 2px;
   padding:4px 6px 2px;
-
   input, textarea{
     background:transparent;
     color:#fff;
     opacity: .7;
+
     width:100%;
     padding-right:18px;
     resize:none;
     overflow:hidden;
     &:focus{outline:none}
   }
+  &.error{box-shadow:0 0 0 0 #00000000, 0 0 8px 0 #dd161A59 inset}
+
   &:after{
     content:'';
     width:35px;
@@ -1028,4 +1042,5 @@ form{
     opacity: .9
   }
 }
+.error-msg{font-weight:bold;font-size:12px}
 </style>

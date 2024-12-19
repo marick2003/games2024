@@ -201,7 +201,7 @@ const closeSettingDialog = ():void => {
     <div
          :class="[
            appStore.settingDialog.section === '' ? 'hidden pointer-events-none' : appStore.settingDialog.section === 'main' ? 'pointer-events-auto' : '',
-           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? '!translate-x-[-100vw] !translate-y-[-50%]' : ''
+           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? 'opacity-0 pointer-events-none' : 'opacity-1 pointer-events-auto'
            ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
       <div class="relative">
@@ -395,22 +395,8 @@ const closeSettingDialog = ():void => {
         <div class="h-[100%] overflow-y-auto">
           <p class="my-2 text-center text-xs opacity-70 font-normal mt-4 px-4">{{$t('FairnessCaption')}}</p>
           <h1 class="text-center font-bold my-1">{{$t('CurrentSeed')}}</h1>
+
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
-            <div class="flex items-center gap-2">
-              <img src="/clientseed.svg" alt="">
-              {{ $t('ClientSeed') }}
-            </div>
-            <div class="input-bg">
-              <input type="text" readonly :value="seedData.ClientSeed"  />
-              <template v-if="isSupported && seedData.ClientSeed">
-                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                </button>
-              </template>
-            </div>
-          </div>
-          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
             <div class="flex items-center gap-2">
               <img src="/serverseedhash.svg" alt="">
               {{ $t('ServerSeedHashing') }}
@@ -421,6 +407,21 @@ const closeSettingDialog = ():void => {
                 <button @click="()=>{ source = seedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
                   <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
                   <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ServerSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                </button>
+              </template>
+            </div>
+          </div>
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
+            <div class="flex items-center gap-2">
+              <img src="/clientseed.svg" alt="">
+              {{ $t('ClientSeed') }}
+            </div>
+            <div class="input-bg">
+              <input type="text" readonly :value="seedData.ClientSeed"  />
+              <template v-if="isSupported && seedData.ClientSeed">
+                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
                 </button>
               </template>
             </div>
@@ -441,7 +442,24 @@ const closeSettingDialog = ():void => {
           </div>
           <h1 class="text-center font-bold mt-4 mb-1">{{$t('UpdateSeed')}}</h1>
           <form @submit.prevent='onSubmit' class='flex flex-col'>
-            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col relative">
+
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+              <div class="flex items-center gap-2">
+                <img src="/serverseedhash.svg" alt="">
+                {{ $t('ServerSeedHashing') }}
+              </div>
+              <div class="input-bg">
+                <input type="text" readonly :value="updateSeedData.NewServerSeedHash"  />
+                <template v-if="isSupported && updateSeedData.NewServerSeedHash">
+                  <button @click.prevent="()=>{ source = updateSeedData.NewServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === updateSeedData.NewServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
+                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== updateSeedData.NewServerSeedHash ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col relative  my-3">
               <div class="flex items-center gap-2">
                 <img src="/clientseed.svg" alt="">
                 {{ $t('NewClientSeed') }}
@@ -459,22 +477,6 @@ const closeSettingDialog = ():void => {
                 <button @click.prevent="seedType = generateRandom()" class="p-1 absolute top-[-2px] right-2 transition-all opacity-70 hover:opacity-100">
                   <img src="/generate-random.svg" />
                 </button>
-              </div>
-            </div>
-
-            <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
-              <div class="flex items-center gap-2">
-                <img src="/serverseedhash.svg" alt="">
-                {{ $t('ServerSeedHashing') }}
-              </div>
-              <div class="input-bg">
-                <input type="text" readonly :value="updateSeedData.NewServerSeedHash"  />
-                <template v-if="isSupported && updateSeedData.NewServerSeedHash">
-                  <button @click.prevent="()=>{ source = updateSeedData.NewServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === updateSeedData.NewServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== updateSeedData.NewServerSeedHash ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
               </div>
             </div>
 
@@ -770,9 +772,10 @@ const closeSettingDialog = ():void => {
     content:'';
     position:absolute;
     top:0;
-    left:-50vw;
-    width:100vw;
-    height:100vh;
+    left:50%;
+    transform: translateX(-50%);
+    width:200vw;
+    height:200vh;
     background: #2c2c2c;
     backdrop-filter: blur(20px);
     z-index:-10;

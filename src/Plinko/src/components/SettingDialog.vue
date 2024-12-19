@@ -172,6 +172,19 @@ watch(()=> appStore.settingDialog.section,(val)=>{
   }
 })
 
+const returnColorNumber = (number):string => {
+  if (number >= 10 && number < 100) {
+    return "text-gradient-blue";
+  } else if (number >= 100 && number < 1000) {
+    return "text-gradient-bronze";
+  } else if (number >= 1000 && number < 10000) {
+    return "text-gradient-maroon";
+  } else if (number >= 10000){
+    return "text-gradient-orange";
+  }else {
+    return 'text-white'
+  }
+}
 const backButtonControl = (): void => {
   if (appStore.settingDialog.section === 'fairness'){
     appStore.settingDialog.section = 'main'
@@ -269,10 +282,10 @@ const closeSettingDialog = ():void => {
                   </div>
                 </div>
                 <div class="flex flex-row justify-between text-xs mt-0.5">
-                  <div class="text-[#8D8B8A]">
+                  <div class="text-[#8D8B8A] datetime-font">
                     {{getCurrentDateTimeWithTimezone(history.Time)}}
                   </div>
-                  <div class="flex-[3] text-right text-[#FE862C] font-bold">{{ history.PayoutMultiplier }}x</div>
+                  <div class="flex-[3] text-right font-bold" :class="returnColorNumber(history.PayoutMultiplier)">{{ history.PayoutMultiplier }}x</div>
                 </div>
 
               </div>
@@ -574,14 +587,14 @@ const closeSettingDialog = ():void => {
               <div>
                 {{$t('BetTime')}}
               </div>
-              <div>{{ getCurrentDateTimeWithTimezone(selectedBetDetail.Time) }}</div>
+              <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail.Time) }}</div>
             </div>
 
             <div class="flex justify-between relative">
               <div>
                 {{$t('Multiplier')}}
               </div>
-              <div>{{ selectedBetDetail.PayoutMultiplier || '--' }}x</div>
+              <div :class="returnColorNumber(selectedBetDetail.PayoutMultiplier)">{{ selectedBetDetail.PayoutMultiplier || '--' }}x</div>
             </div>
           </div>
 
@@ -1052,4 +1065,33 @@ form{
 :deep(.ps__rail-x){
   display:none
 }
+.text-gradient-blue{
+  color:#7F60F9;
+  background: linear-gradient(to right, #6DDCFF -50%, #7F60F9 180%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-bronze{
+  color:#AA4017;
+  background: linear-gradient(to right, #E36522 -50%, #AA4017 180%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-maroon{
+  color:#8C0B6C;
+  background: linear-gradient(to right, #EA2125 -50%, #8C0B6C 180%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-orange{
+  color:#F76B1C;
+  background: linear-gradient(to right, #FAD961 -50%, #F76B1C 180%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
 </style>

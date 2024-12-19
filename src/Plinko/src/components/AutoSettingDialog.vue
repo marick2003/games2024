@@ -19,7 +19,11 @@
       <div class="divider"></div>
       <div class="flex flex-col gap-4  justify-center">
         <div class="flex flex-col gap-2">
-          <p class="text-xs">{{ $t('BetLimit') }}</p>
+          <div class="flex justify-between items-center">
+              <p class="text-xs">{{ $t('BetLimit') }}</p>
+              <span class="text-xs text-[#FFFFFF80] hidden">US＄99.99</span>
+          </div>
+         
           <label class="flex items-center justify-start my-1">
             <div class="flex items-center w-full">
               <input
@@ -35,6 +39,7 @@
         </div>
 
         <div class="flex flex-col gap-2">
+        
           <p class="text-xs">{{ $t('Ball') }}</p>
           <div class="flex justify-start items-center my-1 gap-2">
             <button
@@ -130,7 +135,11 @@
               </button>
             <div class="overflow-hidden transition-all" :style="{ maxHeight: isExpanded ? '500px' : '0px' }">
                 <div class="flex flex-col gap-4 my-3">
-                  <p class="text-xs">{{ $t('SingleBetProfitLimitAmount') }}</p>
+                  <div class="flex justify-between items-center">
+                      <p class="text-xs">{{ $t('SingleBetProfitLimitAmount') }}</p>
+                      <span class="text-xs text-[#FFFFFF80] hidden">US＄99.99</span>
+                  </div>
+                  
                   <label class="flex items-center justify-between">
                     <Switch v-model="form.isSingleBetProfitLimit" class="mr-8" />
                     <input
@@ -146,7 +155,11 @@
                   </label>
                 </div>
                 <div class="flex flex-col gap-4 my-3">
-                  <p class="text-xs">{{ $t('CumulativeStopLossAmount') }}</p>
+                  <div class="flex justify-between items-center">
+                    <p class="text-xs">{{ $t('CumulativeStopLossAmount') }}</p>
+                      <span class="text-xs text-[#FFFFFF80] hidden">US＄99.99</span>
+                  </div>
+                 
                   <label class="flex items-center justify-between">
                     <Switch v-model="form.isCumulativeStopLoss" class="mr-8" />
                     <input
@@ -161,7 +174,11 @@
                   </label>
                 </div>
                 <div class="flex flex-col gap-4 my-3">
-            <p class="text-xs">{{ $t('CumulativeStopWinAmount') }}</p>
+                  <div class="flex justify-between items-center">
+                    <p class="text-xs">{{ $t('CumulativeStopWinAmount') }}</p>
+                      <span class="text-xs text-[#FFFFFF80] hidden">US＄99.99</span>
+                  </div>
+           
             <label class="flex items-center justify-between">
               <Switch v-model="form.isCumulativeStopWin" class="mr-8" />
               <input type="number" :disabled="!form.isCumulativeStopWin" :step="game.oneBetAmount"
@@ -296,8 +313,9 @@ const submitSettings = async () => {
   left: 50%; /* 水平置中 */
   transform: translateX(-50%); /* 只需水平居中 */
   transition: all 0.35s cubic-bezier(0, 0.86, 0.37, 1);
-  backdrop-filter: blur(20px);
-  background: #2c2c2cde;
+  // backdrop-filter: blur(20px);
+  // background: #2c2c2cde;
+  background: rgb(65 65 65);
   box-shadow: 0px 1px 0px 0 #747879 inset, 0px 0px 1px 0 #747879 inset, 0 15px 20px 0 #00000059, 0 0 15px 0 #00000026;
 }
 
@@ -341,9 +359,10 @@ button {
   border-radius: 15px;
   cursor: pointer;
   font-size: 12px;
-  transform: scale(0.8333); 
+  transform: scale(0.9); 
   transform-origin: left; 
   word-break: keep-all;
+  letter-spacing: 1px;
 }
 
 .selectBtn.active {

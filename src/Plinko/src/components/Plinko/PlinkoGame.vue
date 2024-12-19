@@ -164,10 +164,10 @@ const canvasPaddingX = computed(() => {
         const explosionImg = document.createElement("img");
         explosionImg.src = new URL(`../../assets/images/boom.gif`, import.meta.url).href; // 確保圖片路徑正確
         explosionImg.style.position = "absolute";
-        explosionImg.style.width = "80px";
-        explosionImg.style.height = "80px";
-        explosionImg.style.left = `${explosionX - 40}px`;
-        explosionImg.style.top = `${explosionY - 40}px`;
+        explosionImg.style.width = "90px";
+        explosionImg.style.height = "90px";
+        explosionImg.style.left = `${explosionX - 45}px`;
+        explosionImg.style.top = `${explosionY - 45}px`;
         explosionImg.style.zIndex = "10";
         explosionImg.style.mixBlendMode = "color-dodge";
         // 將爆炸特效添加到畫布容器中
@@ -309,7 +309,7 @@ const dropABall = (point: number, isExplosion: boolean, colorMultiplier:number,p
                 restitution: 0.9, // 彈性
                 isExplosion, // 是否爆炸
                 colorMultiplier,
-                collisionCount: Math.floor(Math.random() * (game.rowCount/2)) + 3, // 碰撞次數
+                collisionCount: Math.floor(Math.random() * (game.rowCount)+4) + 4, // 碰撞次數
                 payout,
                 balance,
                 amount,

@@ -35,24 +35,22 @@
         </div>
         <div v-if="!simulation.isSimulationing" class="relative rounded-md px-2 py-1 border border-[#45698C] text-center">
           <div class="flex justify-between items-center betContent">
-             <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="minBtn" @click="handleMinBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="halfBtn" @click="handleHalfBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="reduceBtn" @click="handleReduceBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="minBtn" @click="handleMinBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="halfBtn" @click="handleHalfBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="reduceBtn" @click="handleReduceBet"></button>
               <div class="flex flex-col mt-[-10px]">
                 <label for="betAmount" class="text-xs text-[#45698C] font-bold"> Bet Amount </label>
-                <!-- {{$t('BetAmount')}} -->
-                <div class="flex items-center">
-    
+                <div class="flex items-center">    
                   <input type="number"
-                    :step="game.oneBetAmount" :disabled="hasOutstandingBalls || game.autoBetInterval !== null"
+                    :step="game.oneBetAmount" :disabled="hasOutstandingBalls || isDropBallDisabled"
                      @blur="validateBetAmount" v-model.number="currentBetAmount" 
                      class="no-step text-center w-28 focus:outline-none bg-transparent border-0 text-[#00F320] text-xs font-bold">
                     </input>
                 </div>
               </div>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="addBtn" @click="handleAddBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="towxBtn" @click="handleDoubleBet"></button>
-              <button :disabled="hasOutstandingBalls || game.autoBetInterval !== null" class="maxBtn" @click="handleMaxBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="addBtn" @click="handleAddBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="towxBtn" @click="handleDoubleBet"></button>
+              <button :disabled="hasOutstandingBalls || isDropBallDisabled" class="maxBtn" @click="handleMaxBet"></button>
           </div>
 
         </div>
@@ -63,7 +61,7 @@
                 v-model="currentRowCount"
                 :items="rowCounts"
                 type="vertical"
-                :disabled="isDropBallDisabled"
+                :disabled="isDropBallDisabled || hasOutstandingBalls"
               >
                 <template #default="{ currentItem }">
                   <div class="risk-item text-[#00F320] min-w-12 text-xs font-bold">{{ currentItem.value }}</div>
@@ -77,7 +75,7 @@
                   v-model="currentRiskLevel"
                   :items="riskLevels"
                   type="horizontal"
-                  :disabled="isDropBallDisabled"
+                  :disabled="isDropBallDisabled || hasOutstandingBalls"
                 >
                   <template #default="{ currentItem }">
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
@@ -155,7 +153,7 @@ const isBetExceedBalance = computed(() => {
 
 
 const isDropBallDisabled = computed(() => {
-  return isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
+  return  isBetAmountNegative.value || isBetExceedBalance.value || game.autoBetInterval !== null;
 });
 
 const hasOutstandingBalls = computed(() => {

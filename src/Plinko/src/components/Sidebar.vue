@@ -95,13 +95,20 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto hidden">
-          <div class="flex items-center gap-4 border-t border-slate-600 pt-3">
+        <div v-if="env === 'development'" class="mt-auto ">
+          <div class="flex items-center gap-4 border-t border-slate-600 pt-3 hidden">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
               <Switch v-model="simulation.isSimulationing" />
             </div>
+           
           </div>
+        </div>
+        <div class="flex item-center">
+
+              <Switch v-model="game.isTestBetClick" />
+              <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />
+              <button class="text-white bg-slate-400 rounded-md p-1" :disabled="!game.isTestBetClick" @click="handleBetClick(BallType.RED)" >測試落球點</button>
         </div>
     </div>
 
@@ -109,7 +116,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import { autoBetIntervalMs, rowCountOptions } from '../constants/game';
+import { rowCountOptions } from '../constants/game';
 import { BetMode, RiskLevel , BallType, type RowCount } from '../types';
 import { PhChartLine, PhGearSix, PhInfinity, PhQuestion } from '@phosphor-icons/vue';
 import { useGameStore } from '../stores/game';

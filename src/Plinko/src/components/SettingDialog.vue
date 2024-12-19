@@ -201,7 +201,7 @@ const closeSettingDialog = ():void => {
     <div
          :class="[
            appStore.settingDialog.section === '' ? 'hidden pointer-events-none' : appStore.settingDialog.section === 'main' ? 'pointer-events-auto' : '',
-           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? 'opacity-0 pointer-events-none' : 'opacity-1 pointer-events-auto'
+           appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? 'opacity-0 pointer-events-none' : 'opacity-1 pointer-events-auto !delay-200'
            ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
       <div class="relative">
@@ -228,8 +228,8 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]',
-      isShowBetDetail ? '!translate-x-[-100vw] !translate-y-[-50%] active-container' : '']"
+      :class="[ /history/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]',
+      isShowBetDetail ? '!translate-x-[-600px] !translate-y-[-50%] active-container' : '']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetHistory')}}</h1>
@@ -322,7 +322,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'bet-limit' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('BetLimit')}}</h1>
@@ -362,7 +362,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'game-rule' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('GameInstruction')}}</h1>
@@ -384,7 +384,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[/fairness/g.test(appStore.settingDialog.section) ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container !z-[51]'>
       <div class="relative modal-header">
         <h1>{{$t('Fairness')}}</h1>
@@ -510,7 +510,7 @@ const closeSettingDialog = ():void => {
     <div
       :class="[
         isShowBetDetail ? (appStore.settingDialog.section === 'what-is-instruction' || appStore.settingDialog.section === 'fairness-history')
-        ? '!translate-x-[-150%] !translate-y-[-50%] active-container' :'!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]'
+        ? '!translate-x-[-150%] !translate-y-[-50%] active-container' :'!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[-600px] !translate-y-[-50%]'
       ]"
       class="modal-container z-50" >
       <div class="relative modal-header">
@@ -691,7 +691,7 @@ const closeSettingDialog = ():void => {
     </div>
 
     <div
-      :class="[appStore.settingDialog.section === 'what-is-instruction' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[100vw] !translate-y-[-50%]']"
+      :class="[appStore.settingDialog.section === 'what-is-instruction' ? '!translate-x-[-50%] !translate-y-[-50%] active-container' : '!translate-x-[600px] !translate-y-[-50%]']"
       class='modal-container z-50'>
       <div class="relative modal-header">
         <h1>{{$t('FairnessInstruction.Title')}}</h1>

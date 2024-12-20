@@ -328,10 +328,11 @@ const autoBetDropBall = () => {
     resetAutoBetInterval();
     return;
   }
+
   if ((currentBallTypeIndex.value >= 0 || autoBetCount === Infinity) && autoBetData.value) {
     const { Amount, PayoutMultiplier ,Payout ,Balance} = autoBetData.value;
     const isWin = PayoutMultiplier > 1;
-    
+
     if (isWin) {
 
       if (winAdjustmentMode !== 'initial') {
@@ -351,17 +352,17 @@ const autoBetDropBall = () => {
         );
       }
     }
-    console.log(`output->autoBalance.value - Balance`,autoBalance.value - Balance)
-    if (
-      (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
-      (isCumulativeStopLoss && autoBalance.value - Balance >= setCumulativeStopLoss) ||
-      (isCumulativeStopWin && Balance - autoBalance.value >= setCumulativeStopWin)
+
+    if ((isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
+      (isCumulativeStopLoss && new Decimal(autoBalance.value).minus(new Decimal(Balance)).greaterThanOrEqualTo(setCumulativeStopLoss)) ||
+      (isCumulativeStopWin && new Decimal(Balance).minus(new Decimal(autoBalance.value)).greaterThanOrEqualTo(setCumulativeStopWin))
     ) {
 
       resetAutoBetInterval();
-      
+      return;
     }
   }
+
 
   const ballTypes = ballType;
   if (ballTypes.length === 1) {

@@ -181,7 +181,7 @@
   
   .slide-horizontal-enter-active,
   .slide-horizontal-leave-active {
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
   }
   .slide-horizontal-enter-from {
     transform: translateX(100%);
@@ -192,7 +192,7 @@
   
   .slide-vertical-enter-active,
   .slide-vertical-leave-active {
-    transition: transform 0.3s ease;
+    transition: transform 0.1s ease;
   }
   .slide-vertical-enter-from {
     transform: translateY(100%);

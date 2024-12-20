@@ -30,7 +30,7 @@
                 type="number"
                 v-model="formattedBetAmount"
                 :step="game.oneBetAmount"
-                class="input w-full"
+                class="input w-full no-step"
                 min="0"
               />
             </div>
@@ -132,7 +132,7 @@
               更多选择
               <!-- 更多选择 {{ isExpanded ? $t('Collapse') : $t('Expand') }} -->
               </button>
-            <div class="overflow-hidden transition-all" :style="{ maxHeight: isExpanded ? '500px' : '0px' }">
+            <div class="overflow-hidden" :style="{ maxHeight: isExpanded ? '500px' : '0px' }">
                 <div class="flex flex-col gap-4 my-3">
                   <div class="flex justify-between items-center">
                       <p class="text-xs">{{ $t('SingleBetProfitLimitAmount') }}</p>
@@ -148,7 +148,7 @@
                       v-model="formattedSingleBetProfitLimit"
                       :min="game.minBetAmount"
                       :max="game.maxBetAmount"
-                      class="input w-full"
+                      class="input w-full no-step"
                       placeholder="0.00"
                     />
                   </label>
@@ -167,7 +167,7 @@
                       :step="game.oneBetAmount"
                       v-model="formattedCumulativeStopLoss"
                       :min="game.minBetAmount"
-                      class="input w-full"
+                      class="input w-full no-step"
                       placeholder="0.00"
                     />
                   </label>
@@ -182,7 +182,7 @@
               <Switch v-model="form.isCumulativeStopWin" class="mr-8" />
               <input type="number" :disabled="!form.isCumulativeStopWin" :step="game.oneBetAmount"
               v-model="formattedCumulativeStopWin"
-              :min="game.minBetAmount" class="input w-full" placeholder="0.00" />
+              :min="game.minBetAmount" class="input w-full no-step" placeholder="0.00" />
             </label>
               </div>
           </div>
@@ -288,17 +288,19 @@ const selectWinAdjustmentMode = (mode: 'initial' | 'percentage') => {
     form.value.winAdjustmentPercentage = form.value.betAmount // 同步 betAmount 值
   }
 }
+
 // 提交設置
 const submitSettings = async () => {
   game.setAutoBetSetting({ ...form.value }) // 更新 store 中的設定
     // 立即執行一次 autoBetDropBall
     game.autoBalance = game.balance;
-    game.autoBetDropBall();
-    game.autoBetInterval = setInterval(
-    game.autoBetDropBall,
-    game.autoBetIntervalMs,
-  )
-
+    game.isAutoBet= true;
+  await game.autoBetDropBall();
+  
+      game.autoBetInterval = setInterval(
+      game.autoBetDropBall,
+      game.autoBetIntervalMs,
+    )
   game.setAutoSettingDialog(false) // 關閉對話框
 }
 </script>

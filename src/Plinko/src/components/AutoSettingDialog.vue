@@ -261,7 +261,7 @@ const formattedCumulativeStopWin = useFormattedNumber(
   (value) => (form.value.setCumulativeStopWin = value)
 );
 onMounted(()=>{
-  game.setAutoBetSetting(game.defaultAutoBetSetting)
+  game.setAutoBetSetting(JSON.parse(JSON.stringify(game.defaultAutoBetSetting)))
 })
 // 切換球類型的邏輯
 const toggleBallType = (type: string) => {
@@ -294,7 +294,7 @@ const submitSettings = async () => {
   game.setAutoBetSetting({ ...form.value }) // 更新 store 中的設定
     // 立即執行一次 autoBetDropBall
     game.autoBalance = game.balance;
-    game.isAutoBet= true;
+    
   await game.autoBetDropBall();
   
       game.autoBetInterval = setInterval(

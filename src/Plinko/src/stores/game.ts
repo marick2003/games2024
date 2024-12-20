@@ -16,6 +16,7 @@ import { interpolateRgbColors } from '../utils/colors';
 import { countValueOccurrences } from '../utils/numbers';
 import { serviceInit,serviceDoBet, serviceGetBalance } from '@/stores/service';
 import Decimal from 'decimal.js';
+import { cloneDeep } from 'lodash';
 export const useGameStore = defineStore('game', () => {
   //  const plinkoEngine  = ref<PlinkoEngine | null>(null);
     const amount =ref<number>(0)
@@ -297,7 +298,9 @@ const resetAutoBetInterval = () => {
       autoBetInterval.value = null;
       currentBallTypeIndex.value=0;
       autoBalance.value=0;
-      setAutoBetSetting(defaultAutoBetSetting.value)
+      autoBetData.value=null;
+      setAutoBetSetting(cloneDeep(defaultAutoBetSetting.value));
+    
   }
 };
 const autoBalance=ref(0);
@@ -323,12 +326,12 @@ const autoBetDropBall = () => {
     ballType,
     autoBetCount
   } = autoBetSetting.value;
-   
+   console.log(`output->autoBetSetting.value`,autoBetSetting.value)
   if ( isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
   }
-
+  console.log(`output->return`,'return')
   if ((currentBallTypeIndex.value >= 0 || autoBetCount === Infinity) && autoBetData.value) {
     const { Amount, PayoutMultiplier ,Payout ,Balance} = autoBetData.value;
     const isWin = PayoutMultiplier > 1;
@@ -352,12 +355,10 @@ const autoBetDropBall = () => {
         );
       }
     }
-
     if ((isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
       (isCumulativeStopLoss && new Decimal(autoBalance.value).minus(new Decimal(Balance)).greaterThanOrEqualTo(setCumulativeStopLoss)) ||
       (isCumulativeStopWin && new Decimal(Balance).minus(new Decimal(autoBalance.value)).greaterThanOrEqualTo(setCumulativeStopWin))
     ) {
-
       resetAutoBetInterval();
       return;
     }

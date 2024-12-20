@@ -79,13 +79,18 @@ const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
 }
 
 const showHistoryListPlaceholder = ref(true)
+const historyScrollbar = ref(null)
+const betDetailScrollbar = ref(null)
 const getBetHistory = async(index:number = 1) => {
   appStore.isLoading.getBetHistory = true
+
   if (index === 1){
+    historyScrollbar.value.ps.element.scrollTop = 0
+
     showHistoryListPlaceholder.value = true
   }
 
-    const response = await appStore.getBetHistory({PageIndex: index, PageSize: 10})
+    const response = await appStore.getBetHistory({PageIndex: index, PageSize: 2})
 
     if (response.IsSuccess) {
       appStore.isLoading.getBetHistory = false
@@ -158,12 +163,12 @@ const betRecordDetail = async(item:BetHistoryResponse) => {
 
     selectedBetDetail.value = item
     Object.assign(betDetailSeedData, Data)
-
+    betDetailScrollbar.value.ps.element.scrollTop = 0
   }
 }
 
 watch(()=> appStore.settingDialog.section,(val)=>{
-  betHistoryResult.value = []
+  betHistoryResult.value.splice(0)
   betHistoryResponseList.value = {}
   if (val === 'history'){
     pageIndex.value = 1
@@ -179,7 +184,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     seedType.value = generateRandom()
     getServerRefreshSeed()
   }
-  if (val === 'main'){
+  if (val === 'main' || val === ''){
     isShowBetDetail.value= false
     selectedBetDetail.value = null
   }
@@ -269,9 +274,9 @@ const copyFunction = (obj:string):void => {
           <div class="gradient-icon"><img src="@/assets/images/ico_limit.svg" /></div>
           {{$t('BetLimit')}}
         </button>
-        <button @click.prevent="appStore.settingDialog.section='game-rule'" :data-text="$t('GameRule')">
+        <button @click.prevent="appStore.settingDialog.section='game-rule'" :data-text="$t('GameInstruction')">
           <div class="gradient-icon"><img src="@/assets/images/ico_game_rules.svg" /></div>
-          {{$t('GameRule')}}
+          {{$t('GameInstruction')}}
         </button>
         <button @click.prevent="appStore.settingDialog.section='fairness'" :data-text="$t('Fairness')">
           <div class="gradient-icon"><img src="@/assets/images/ico_fairness.svg" /></div>
@@ -291,6 +296,7 @@ const copyFunction = (obj:string):void => {
 
       <div class='modal-content mx-auto text-left relative overflow-hidden h-[calc(100%-60px)]'>
         <PerfectScrollbar
+          ref="historyScrollbar"
           :options='{ minScrollbarLength: 20 }'
           class="pt-4 h-full overflow-y-auto !overflow-x-hidden">
           <div class="flex flex-col gap-3.5"  ref="root">
@@ -306,7 +312,9 @@ const copyFunction = (obj:string):void => {
                       <img src="/plinko.png" class="absolute w-full h-full" />
                     </div>
                     <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
-                      <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
+                      <h4 class="font-bold text-sm leading-tight">
+                        Crocodile Plinko
+                      </h4>
                       <div class="flex items-center text-xs leading-4" >
                         <img :src='returnCurrency(history.Currency)' class="w-[14px] mr-1" />
                         {{ new Decimal(history.Amount).toFixed(6) }}
@@ -600,7 +608,7 @@ const copyFunction = (obj:string):void => {
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
-        <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
+        <PerfectScrollbar ref="betDetailScrollbar" :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
           <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto my-[10px] rounded">
@@ -630,6 +638,12 @@ const copyFunction = (obj:string):void => {
             <template v-if="selectedBetDetail">
               <div class="flex justify-between relative">
                 <div>
+                  {{$t('BetTime')}}
+                </div>
+                <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail?.Time) }}</div>
+              </div>
+              <div class="flex justify-between relative">
+                <div>
                   {{$t('BetAmount')}}
                 </div>
 
@@ -641,10 +655,13 @@ const copyFunction = (obj:string):void => {
 
               <div class="flex justify-between relative">
                 <div>
-                  {{$t('BetTime')}}
+                  {{$t('Cashout')}}
                 </div>
-                <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail?.Time) }}</div>
+                <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
+                  {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(6) }}
+                </div>
               </div>
+
               <div class="flex justify-between relative">
                 <div>
                   {{$t('Multiplier')}}
@@ -656,14 +673,7 @@ const copyFunction = (obj:string):void => {
           </div>
 
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col" v-if="selectedBetDetail">
-            <div class="flex justify-between relative">
-              <div>
-                {{$t('Cashout')}}
-              </div>
-              <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
-                {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(6) }}
-              </div>
-            </div>
+
 
             <div class="flex justify-between relative">
               <div>

@@ -54,7 +54,7 @@ export const useAppStore = defineStore('App', () => {
     })
 
     const assets = {
-        //arrow:  new URL('@/assets/images/arrow.svg', import.meta.url).href,
+        bgm: new URL('/plinko.mp3', import.meta.url).href,
         loadingBg:  new URL('@/assets/images/loading.jpg', import.meta.url).href,
         auto_btn:  new URL('@/assets/images/auto_btn.png', import.meta.url).href,
         background:  new URL('@/assets/images/svg/background.svg', import.meta.url).href,

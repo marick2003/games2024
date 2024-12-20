@@ -274,9 +274,9 @@ const copyFunction = (obj:string):void => {
           <div class="gradient-icon"><img src="@/assets/images/ico_limit.svg" /></div>
           {{$t('BetLimit')}}
         </button>
-        <button @click.prevent="appStore.settingDialog.section='game-rule'" :data-text="$t('GameRule')">
+        <button @click.prevent="appStore.settingDialog.section='game-rule'" :data-text="$t('GameInstruction')">
           <div class="gradient-icon"><img src="@/assets/images/ico_game_rules.svg" /></div>
-          {{$t('GameRule')}}
+          {{$t('GameInstruction')}}
         </button>
         <button @click.prevent="appStore.settingDialog.section='fairness'" :data-text="$t('Fairness')">
           <div class="gradient-icon"><img src="@/assets/images/ico_fairness.svg" /></div>
@@ -638,6 +638,12 @@ const copyFunction = (obj:string):void => {
             <template v-if="selectedBetDetail">
               <div class="flex justify-between relative">
                 <div>
+                  {{$t('BetTime')}}
+                </div>
+                <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail?.Time) }}</div>
+              </div>
+              <div class="flex justify-between relative">
+                <div>
                   {{$t('BetAmount')}}
                 </div>
 
@@ -649,10 +655,13 @@ const copyFunction = (obj:string):void => {
 
               <div class="flex justify-between relative">
                 <div>
-                  {{$t('BetTime')}}
+                  {{$t('Cashout')}}
                 </div>
-                <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail?.Time) }}</div>
+                <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
+                  {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(6) }}
+                </div>
               </div>
+
               <div class="flex justify-between relative">
                 <div>
                   {{$t('Multiplier')}}
@@ -664,14 +673,7 @@ const copyFunction = (obj:string):void => {
           </div>
 
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col" v-if="selectedBetDetail">
-            <div class="flex justify-between relative">
-              <div>
-                {{$t('Cashout')}}
-              </div>
-              <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
-                {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(6) }}
-              </div>
-            </div>
+
 
             <div class="flex justify-between relative">
               <div>

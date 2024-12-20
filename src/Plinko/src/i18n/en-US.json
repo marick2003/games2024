@@ -89,7 +89,7 @@
   "Copied": "Copied",
   "RiskLevel": {
     "Swimming": "Closed",
-    "Small": "Small",
-    "Big": "Big"
+    "SmallMouth": "Small",
+    "BigMouth": "Big"
   }
 }

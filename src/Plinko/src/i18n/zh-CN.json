@@ -90,7 +90,7 @@
   "Copied": "已复制",
   "RiskLevel": {
     "Swimming": "Closed",
-    "Small": "Small",
-    "Big": "Big"
+    "SmallMouth": "Small",
+    "BigMouth": "Big"
   }
 }

@@ -79,13 +79,17 @@ const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
 }
 
 const showHistoryListPlaceholder = ref(true)
+const historyScrollbar = ref(null)
 const getBetHistory = async(index:number = 1) => {
   appStore.isLoading.getBetHistory = true
+
   if (index === 1){
+    historyScrollbar.value.ps.element.scrollTop = 0
+
     showHistoryListPlaceholder.value = true
   }
 
-    const response = await appStore.getBetHistory({PageIndex: index, PageSize: 10})
+    const response = await appStore.getBetHistory({PageIndex: index, PageSize: 2})
 
     if (response.IsSuccess) {
       appStore.isLoading.getBetHistory = false
@@ -163,8 +167,9 @@ const betRecordDetail = async(item:BetHistoryResponse) => {
 }
 
 watch(()=> appStore.settingDialog.section,(val)=>{
-  betHistoryResult.value = []
+  betHistoryResult.value.splice(0)
   betHistoryResponseList.value = {}
+
   if (val === 'history'){
     pageIndex.value = 1
     getBetHistory(1)
@@ -291,6 +296,7 @@ const copyFunction = (obj:string):void => {
 
       <div class='modal-content mx-auto text-left relative overflow-hidden h-[calc(100%-60px)]'>
         <PerfectScrollbar
+          ref="historyScrollbar"
           :options='{ minScrollbarLength: 20 }'
           class="pt-4 h-full overflow-y-auto !overflow-x-hidden">
           <div class="flex flex-col gap-3.5"  ref="root">
@@ -306,7 +312,9 @@ const copyFunction = (obj:string):void => {
                       <img src="/plinko.png" class="absolute w-full h-full" />
                     </div>
                     <div class="flex flex-col ml-2.5 flex-1  translate-y-[-1px]">
-                      <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
+                      <h4 class="font-bold text-sm leading-tight">
+                        Crocodile Plinko
+                      </h4>
                       <div class="flex items-center text-xs leading-4" >
                         <img :src='returnCurrency(history.Currency)' class="w-[14px] mr-1" />
                         {{ new Decimal(history.Amount).toFixed(6) }}

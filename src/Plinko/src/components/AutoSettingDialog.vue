@@ -11,7 +11,7 @@
     <PerfectScrollbar ref='scrollbar' class='px-3 pt-3' :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}'>
     <div class="modal-content flex flex-col px-3">
       <div class="flex items-center justify-center">
-        <h2 class="text-center text-lg font-bold">
+        <h2 class="text-center text-lg font-bold tracking-wider">
            {{ $t('AutomaticBettingSettings') }}
         </h2>
       </div>
@@ -31,7 +31,6 @@
                 v-model="formattedBetAmount"
                 :step="game.oneBetAmount"
                 class="input w-full"
-                placeholder="0.00001"
                 min="0"
               />
             </div>
@@ -41,7 +40,7 @@
         <div class="flex flex-col gap-2">
         
           <p class="text-xs">{{ $t('Ball') }}</p>
-          <div class="flex justify-start items-center my-1 gap-2">
+          <div class="flex justify-between items-center my-1 gap-2">
             <button
               type="button"
               class="selectBtn w-full"
@@ -63,7 +62,7 @@
 
         <div class="flex flex-wrap gap-2">
           <p class="text-xs">{{ $t('AutoBetCount') }}</p>
-          <div class="flex gap-2 flex-wrap my-1 gap-2">
+          <div class="flex gap-2 flex-wrap my-1 gap-2 justify-between">
             <button
               v-for="count in autoBetCounts"
               :key="count"
@@ -88,7 +87,7 @@
             {{ $t('InitialBet') }}
             </button>
             <button
-              class="selectBtn mx-3"
+              class="selectBtn mx-3 !text-sm"
               :class="{ active: form.loseAdjustmentMode === 'percentage' }"
               @click="selectLoseAdjustmentMode('percentage')"
             >
@@ -113,7 +112,7 @@
             {{ $t('InitialBet') }}
             </button>
             <button
-              class="selectBtn mx-3"
+              class="selectBtn mx-3 !text-sm"
               :class="{ active: form.winAdjustmentMode === 'percentage' }"
               @click="selectWinAdjustmentMode('percentage')"
             >
@@ -189,7 +188,7 @@
           </div>
           </div>
       </div>
-      <button type="submit" @click="submitSettings" class="startBtn  my-[22px]  mx-auto">
+      <button type="submit" @click="submitSettings" class="startBtn  my-[22px]  mx-auto  ">
               {{ $t('StartAutoBet') }}
           </button>
     </div>
@@ -210,7 +209,7 @@ import { useGameStore } from '../stores/game'
 import Switch from '@/components/UI/Switch.vue'
 import Percentage from '@/components/UI/Percentage.vue'
 import { useFormattedNumber } from '@/utils/numbers'
-
+import Decimal from 'decimal.js';
 const { t: $t } = useI18n()
 const game = useGameStore()
 const autoBetCounts = ref([5, 10, 20, 50, 100, 200, 500, 1000, Infinity]) // Store counts in an array
@@ -235,8 +234,9 @@ const toggleExpand = async () => {
 const form = computed(() => game.autoBetSetting)
 const formattedBetAmount = computed({
   get() {
-    const value = Number(game.betAmount.toFixed(6));
-    return value % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
+    const value = new Decimal(game.betAmount).toFixed(6);
+    // % 1 === 0 ? value.toString() : value.toString().replace(/(\.\d*?)0+$/, "$1");
+    return value 
   },
   set(newValue) {
     // 轉換輸入值並限制最小值為0
@@ -292,6 +292,7 @@ const selectWinAdjustmentMode = (mode: 'initial' | 'percentage') => {
 const submitSettings = async () => {
   game.setAutoBetSetting({ ...form.value }) // 更新 store 中的設定
     // 立即執行一次 autoBetDropBall
+    game.autoBalance = game.balance;
     game.autoBetDropBall();
     game.autoBetInterval = setInterval(
     game.autoBetDropBall,
@@ -313,9 +314,9 @@ const submitSettings = async () => {
   left: 50%; /* 水平置中 */
   transform: translateX(-50%); /* 只需水平居中 */
   transition: all 0.35s cubic-bezier(0, 0.86, 0.37, 1);
-  // backdrop-filter: blur(20px);
-  // background: #2c2c2cde;
-  background: rgb(65 65 65);
+  backdrop-filter: blur(20px);
+  background: #2c2c2cde;
+  // background: rgb(65 65 65);
   box-shadow: 0px 1px 0px 0 #747879 inset, 0px 0px 1px 0 #747879 inset, 0 15px 20px 0 #00000059, 0 0 15px 0 #00000026;
 }
 
@@ -344,6 +345,7 @@ button {
   font-weight: bolder;
   width: 170px;
   height: auto;
+  @apply tracking-wider;
 }
 
 .startBtn:hover {
@@ -357,12 +359,12 @@ button {
   min-width: 70px;
   border: none;
   border-radius: 15px;
+  font-size: xx-small;
   cursor: pointer;
-  font-size: 12px;
-  transform: scale(0.9); 
-  transform-origin: left; 
   word-break: keep-all;
-  letter-spacing: 1px;
+  @apply tracking-wider;
+  box-shadow: 0px 0px 5px 0px #00000059;
+
 }
 
 .selectBtn.active {
@@ -389,6 +391,7 @@ button {
   padding: 0.2rem;
   color: #fff;
   text-align: center;
+  @apply tracking-wider;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
   &:after{
@@ -403,9 +406,9 @@ button {
     top: 7px;
 
   }
-  &:hover {
-    background: linear-gradient(90deg, #6b6666 0%, #2d2d2d 100%);
-  }
+  // &:hover {
+  //   background: linear-gradient(90deg, #6b6666 0%, #2d2d2d 100%);
+  // }
   &.expanded{
     &:after{
     transform: rotate(180deg);
@@ -427,6 +430,7 @@ button {
   font-weight: 700;
   font-size: 14px;
   padding: 0.35rem;
+  @apply tracking-wider;
   transition: all .15s ease-out;
   &:active{
     transform: translateY(1px);

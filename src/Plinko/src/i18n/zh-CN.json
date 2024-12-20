@@ -46,7 +46,7 @@
   "WhatIsFairness": "什么是游戏公平性?",
   "InitialBetAmount": "初始下注金额",
   "BallType": "投注球类型",
-  "AutoBetCount": "自动投注次数",
+  "AutoBetCount": "投注次数",
   "LoseAdjustmentPercentage": "若输",
   "WinAdjustmentPercentage": "若赢",
   "SingleBetProfitLimitAmount": "单注止盈",

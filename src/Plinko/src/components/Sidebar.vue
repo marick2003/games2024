@@ -81,7 +81,7 @@
                     <div class="risk-item text-[#00F320] min-w-32  text-xs  font-bold">{{ currentItem.label }}</div>
                   </template>
                 </SlideSwitcher>
-                  <p class=" text-[#45698C] text-xs font-bold py-1">Mouth Size</p>
+                  <p class=" text-[#45698C] text-xs font-bold py-1">Crocodile Mouth Sizes</p>
               </div>
         </div>
         <button
@@ -93,7 +93,7 @@
             {{ 'Export to JSON' }}
         </button>
 
-        <div v-if="env === 'development'" class="mt-auto  hidden ">
+        <div v-if="env === 'development'" class="mt-auto hidden">
           <div class="flex items-center gap-4 border-t border-slate-600 pt-3 ">
             <div class="flex item-center">
               <div class="text-[16px] text-[white] pr-[2px]">{{ 'Open Simulation' }}</div>
@@ -136,7 +136,8 @@ const currentRiskLevel = ref<RiskLevel>(riskLevel);
 const currentBetAmount = computed<any>({
   get() {
     const value = new Decimal(game.betAmount).toFixed(6);
-    return value.includes('.') ? value.replace(/(\.\d*?)0+$/, "$1") : value;
+    // value.includes('.') ? value.replace(/(\.\d*?)0+$/, "$1") : 
+    return value;
   },
   set(newValue: number) {
     game.setBetAmount(new Decimal(newValue).toNumber());
@@ -176,9 +177,9 @@ const handleBetClick = (ballType:BallType) => {
 };
 
 const riskLevels = [
-    { value: RiskLevel.Swimming, label: 'Close Mouth' },
-    { value: RiskLevel.SmallMouth, label: 'Small Mouth' },
-    { value: RiskLevel.BigMouth, label: 'Big Mouth' },
+    { value: RiskLevel.Swimming, label: 'Closed' },
+    { value: RiskLevel.SmallMouth, label: 'Small' },
+    { value: RiskLevel.BigMouth, label: 'Big' },
 ];
 const rowCounts = rowCountOptions.map((value) => ({ value, label: value.toString() }));
 

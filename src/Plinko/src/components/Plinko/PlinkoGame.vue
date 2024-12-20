@@ -71,7 +71,7 @@ const canvasPaddingX = computed(() => {
   // create an engine
   const engine = Engine.create({
     timing: {
-      timeScale: 3, // 1 正常  3 加入3倍
+      timeScale: 2, // 1 正常  3 加入3倍
     },
     // gravity: {
     //   scale: 0.0007,
@@ -156,7 +156,6 @@ const canvasPaddingX = computed(() => {
       }
 
       if (ball.isExplosion &&  ball.collisionCount==0) {
-        console.log(`output->pinState`,pinState)
         const explosionX = pinState.x;
         const explosionY = pinState.y + 46;
    
@@ -176,7 +175,7 @@ const canvasPaddingX = computed(() => {
           // 在2秒後移除爆炸特效
           setTimeout(() => {
             explosionImg.remove();
-          }, 1000);
+          }, 500);
 
           game.updateWinRecords({
             id: uuidv4(),

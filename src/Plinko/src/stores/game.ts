@@ -296,9 +296,11 @@ const resetAutoBetInterval = () => {
       clearInterval(autoBetInterval.value);
       autoBetInterval.value = null;
       currentBallTypeIndex.value=0;
+      autoBalance.value=0;
       setAutoBetSetting(defaultAutoBetSetting.value)
   }
 };
+const autoBalance=ref(0);
 const autoBetData=ref(null);
 const isBetExceedBalance = computed(() => {
   return betAmount.value > balance.value;
@@ -321,7 +323,7 @@ const autoBetDropBall = () => {
     ballType,
     autoBetCount
   } = autoBetSetting.value;
-
+   
   if ( isBetExceedBalance.value) {
     resetAutoBetInterval();
     return;
@@ -331,10 +333,7 @@ const autoBetDropBall = () => {
     const isWin = PayoutMultiplier > 1;
     
     if (isWin) {
-      autoBetSetting.value.cumulativeStopWin = new Decimal(autoBetSetting.value.cumulativeStopWin)
-      .plus(new Decimal(Payout).minus(new Decimal(Amount)))
-      .toNumber();
-      console.log(`output->autoBetSetting.value.cumulativeStopWin`,autoBetSetting.value.cumulativeStopWin)
+
       if (winAdjustmentMode !== 'initial') {
         setBetAmount(
           new Decimal(betAmount.value)
@@ -343,10 +342,7 @@ const autoBetDropBall = () => {
         );
       }
     } else {
-      autoBetSetting.value.cumulativeStopLoss = new Decimal(autoBetSetting.value.cumulativeStopLoss)
-      .plus(new Decimal(Amount).minus(new Decimal(Payout)))
-      .toNumber();
-      console.log(`output->autoBetSetting.value.cumulativeStopLoss`,autoBetSetting.value.cumulativeStopLoss)
+   
       if (loseAdjustmentMode !== 'initial') {
         setBetAmount(
           new Decimal(betAmount.value)
@@ -355,11 +351,11 @@ const autoBetDropBall = () => {
         );
       }
     }
-    // TODO 止贏止損 待完成
+    console.log(`output->autoBalance.value - Balance`,autoBalance.value - Balance)
     if (
       (isSingleBetProfitLimit && Payout >= singleBetProfitLimit) ||
-      (isCumulativeStopLoss && autoBetSetting.value.cumulativeStopLoss - autoBetSetting.value.cumulativeStopWin >= setCumulativeStopLoss) ||
-      (isCumulativeStopWin && autoBetSetting.value.cumulativeStopWin - autoBetSetting.value.cumulativeStopLoss >= setCumulativeStopWin)
+      (isCumulativeStopLoss && autoBalance.value - Balance >= setCumulativeStopLoss) ||
+      (isCumulativeStopWin && Balance - autoBalance.value >= setCumulativeStopWin)
     ) {
 
       resetAutoBetInterval();
@@ -445,6 +441,7 @@ const getBalance= async()=>{
     defaultAutoBetSetting,
     isDoubleBet,
     isTestBetClick,
-    testBetPoint
+    testBetPoint,
+    autoBalance
    }
 })

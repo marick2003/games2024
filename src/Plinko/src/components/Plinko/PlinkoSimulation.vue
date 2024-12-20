@@ -68,7 +68,7 @@
   // create an engine
   const engine = Engine.create({
     timing: {
-      timeScale: 3,
+      timeScale: 2,
     },
     // gravity: {
     //   scale: 0.0007,
@@ -185,8 +185,8 @@
 
     const ball = Bodies.circle(
       getRandomBetween(
-        canvas.value!.width / 2 - 100,
-        canvas.value!.width / 2 + 100,
+        canvas.value!.width / 2 - 120,
+        canvas.value!.width / 2 + 130,
       ),
       0,
       ballRadius,

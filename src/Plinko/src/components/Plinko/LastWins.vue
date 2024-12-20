@@ -61,6 +61,8 @@ const getLatestItemStyle = () => {
   return {
     backgroundColor: 'rgba(173, 229, 255, 1)',
     boxShadow: '0 3px rgba(70, 167, 213, 1)',
+    board: '6px solid #FFFFFF',
+
   };
 };
 </script>

@@ -200,7 +200,7 @@ watch(
 }
 .fade-move-enter-active,
 .fade-move-leave-active {
-  transition: opacity 0.3s ease, transform 0.5s ease; /* 同時過渡透明度與位移 */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* 同時過渡透明度與位移 */
 }
 
 .fade-move-enter-from,

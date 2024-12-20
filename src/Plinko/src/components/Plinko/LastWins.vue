@@ -7,7 +7,7 @@
           class="flex z-[1] aspect-square items-center justify-center  font-bold shadow-[0_3px_var(--shadow-color)] text-[#575757] rounded-[20px] w-[32px] h-[17px] px-[3px]"
           :style="index === 0 ? getLatestItemStyle() : getItemStyle(item)"
         >
-          {{ item.payout.multiplier + (item.payout.multiplier < 100 && item.payout.multiplier > 0 ? '×' : '') }}
+          {{ item.payout.multiplier + ( item.payout.multiplier > 0 ? '×' : '') }}
         </div>
         <span
           v-if="item.ballType === BallType.COLOR && item.payout.colorMultiplier > 1 && item.payout.multiplier > 0"

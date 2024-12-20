@@ -85,5 +85,11 @@
   "Update": "Update",
   "Updating": "Updating",
   "UpdateSuccess": "Update Successfully",
-  "NoRecord": "No Record"
+  "NoRecord": "No Record",
+  "Copied": "Copied",
+  "RiskLevel": {
+    "Swimming": "Closed",
+    "SmallMouth": "Small",
+    "BigMouth": "Big"
+  }
 }

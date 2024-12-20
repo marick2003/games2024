@@ -72,6 +72,10 @@ input:focus {
   opacity: .5;
   top:-1px;
 }
+.ps__thumb-y{right:0!important}
+.ps__rail-y{width:6px!important;}
+.ps__rail-y:hover{opacity:0.2!important;}
+.ps__rail-y:hover .ps__thumb-y{width:6px!important;}
 
 /* 隱藏步進按鈕 */
 .no-step::-webkit-inner-spin-button,
@@ -81,4 +85,14 @@ input:focus {
 }
 .no-step {
   -moz-appearance: textfield; /* 對 Firefox 隱藏步進按鈕 */
+}
+
+.tippy-box{
+  position:absolute;
+  transform:translate(-90px, 0px);
+  padding:4px 20px;
+  background:#6C7F87E5!important;
+  color:#fff;
+  border-radius:60px!important;
+  pointer-events:none;
 }

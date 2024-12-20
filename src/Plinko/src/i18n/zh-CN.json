@@ -60,7 +60,7 @@
   "AutomaticBettingSettings":"自动下注设定",
   "InitialBet": "初始下注",
   "GameInstruction": "游戏说明",
-  "GameInstructionContent": "<ul>\n\t<li>\n\t\t<h2>如何游戏 ?</h2>\n\t\t<ul class='opacity-50'>\n\t\t  <li>选择层数与鳄鱼模式</li>\n\t\t  <li>点选红球或是彩色球，开始游戏</li>\n\t\t</ul>\n\t</li>\n\t\n\t<li>\n\t\t<h2>游戏说明</h2>\n\t\t<strong>游戏概述:</strong>\n\t\t<p class='opacity-50'>\n\t\t\t鳄鱼是一款下落球游戏，选择球从顶端落下，掉入底部决定返还倍率。\n\t\t</p>\n\t\t\n\t\t<strong>游戏选项:</strong>\n\t\t<p class='opacity-50'>\n\t\t\t玩家透过选择弹珠层数、球与鳄鱼模式改变游戏乘数与风险值。\n\t\t</p>\n\t\t\n\t\t<p>1）层数选择:\n\t\t\t<span class='opacity-50'>玩家可选择8层, 10层或12层。</span>\n\t\t\t\n\t\t</p>\n\t\t\n\t\t<p>\n\t\t\t2）球的种类:\n\t\t\t<ul>\n\t\t\t<li>红球(一般球): <span class='opacity-50'>红球落下后获得对应返还乘数。</span></li>\n\t\t\t<li>彩色球(特别球): <span class='opacity-50'>彩色球下落有20%机率乘数2x，有20%机率0x，其余60%机率维持1x。</span></li>\n\t\t\t</ul>\n\t\t</p>\n\t\t<p>\n\t\t\t3）鳄鱼模式：\n\t\t\t<ul>\n\t\t\t<li>一般模式: <span class='opacity-50'>球掉落底部决定返还倍率。</span></li>\n\t\t\t<li>开口模式: <span class='opacity-50'>底部新增鳄鱼嘴区域，若球掉入该区域倍率0x，其他区域乘数提高。</span></li>\n\t\t\t</ul>\n\t\t</p>\n\t\t\n\t\t<p>下注:</p>\n\t\t<p span class='opacity-50'>输\u200B\u200B入有效下注金额，选择红球或彩色球按下。</p>\n\t\t<p>RTP:</p>\n\t\t<p span class='opacity-50'>鳄鱼游戏中RTP至少为95.9%。</p>\n\t\t<p>断线说明:</p>\n\t\t<p span class='opacity-50'>如果游戏进行过程中出现断线，伺服器上的游戏状态将保持不变。一旦连线恢复，玩家就可以继续游戏。<br />若断线后下注，不会扣除任何资金，也不会发送请求到伺服器，游戏也不会继续进行。</p>\n\t</li>\n</ul>",
+  "GameInstructionContent": "<ul>\n\t<li>\n\t\t<h2>如何游戏 ?</h2>\n\t\t<ul class='opacity-50'>\n\t\t  <li>选择层数与鳄鱼模式</li>\n\t\t  <li>点选红球或是彩色球，开始游戏</li>\n\t\t</ul>\n\t</li>\n\t\n\t<li>\n\t\t<h2>游戏说明</h2>\n\t\t<strong>游戏概述:</strong>\n\t\t<p class='opacity-50'>\n\t\t\tCrocodile Plinko 是一款下落球游戏，选择球从顶端落下，掉入底部决定返还乘数。\n\t\t</p>\n\t\t\n\t\t<strong>游戏选项:</strong>\n\t\t<p class='opacity-50'>\n\t\t\t玩家透过选择弹珠层数、球与鳄鱼嘴模式改变游戏乘数。\n\t\t</p>\n\t\t\n\t\t<p>1）层数选择:\n\t\t\t<span class='opacity-50'>玩家可选择8层, 10层或12层。</span>\n\t\t\t\n\t\t</p>\n\t\t\n\t\t<p>\n\t\t\t2）球的种类:\n\t\t\t<ul>\n\t\t\t<li>红球(一般球): <span class='opacity-50'>红球落下后获得对应返还乘数。</span></li>\n\t\t\t<li>彩色球(特别球): <span class='opacity-50'>彩色球下落有20%机率乘数2x，有20%机率乘数0x，其馀60%机率维持乘数1x。</span></li>\n\t\t\t</ul>\n\t\t</p>\n\t\t<p>\n\t\t\t3）鳄鱼嘴模式：\n\t\t\t<ul>\n\t\t\t<li>一般模式 (Closed): <span class='opacity-50'>球掉落底部决定返还乘数。</span></li>\n\t\t\t<li>开口模式 (Small/Big): <span class='opacity-50'>底部新增鳄鱼嘴区域，若球掉入该区域乘数0x，其他区域乘数提高。</span></li>\n\t\t\t</ul>\n\t\t</p>\n\t\t\n\t\t<p>下注:</p>\n\t\t<p span class='opacity-50'>输\u200B\u200B入有效下注金额，选择红球或彩色球按下。</p>\n\t\t<p>RTP:</p>\n\t\t<p span class='opacity-50'>鳄鱼游戏中RTP至少为95.9%。</p>\n\t\t<p>断线说明:</p>\n\t\t<p span class='opacity-50'>如果游戏进行过程中出现断线，伺服器上的游戏状态将保持不变。一旦连线恢复，玩家就可以继续游戏。<br />若断线后下注，不会扣除任何资金，也不会发送请求到伺服器，游戏也不会继续进行。</p>\n\t</li>\n</ul>",
   "MaximumBetAmount": "最大下注额",
   "MinimumBetAmount": "最小下注额",
   "MaximumProfit": "单注最大获利",
@@ -68,7 +68,7 @@
   "BetTime": "下注时间",
   "Cashout": "兑现",
   "Row": "排数",
-  "Crocodile": "鳄鱼",
+  "Crocodile": "鳄鱼嘴",
   "Ball": "球",
   "ChangeSeed": "更换游戏种子",
   "FairnessInstruction": {
@@ -86,5 +86,11 @@
   "Update": "更新",
   "Updating": "更新中",
   "UpdateSuccess": "更新成功",
-  "NoRecord": "暂无资料"
+  "NoRecord": "暂无资料",
+  "Copied": "已复制",
+  "RiskLevel": {
+    "Swimming": "Closed",
+    "Small": "Small",
+    "Big": "Big"
+  }
 }

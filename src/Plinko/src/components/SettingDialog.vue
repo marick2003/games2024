@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, reactive, computed, watch, type Ref } from 'vue'
+import {ref, reactive, onMounted, watch, type Ref } from 'vue'
 import { useClipboard } from '@vueuse/core'
 import { vIntersectionObserver } from '@vueuse/components'
 import Decimal from 'decimal.js';
@@ -11,6 +11,7 @@ import type { CurrencyLimitType } from '@/types/game'
 import randomize from 'randomatic';
 import { useForm, Field, ErrorMessage, useField } from 'vee-validate';
 import * as yup from 'yup';
+import { useTippy } from "vue-tippy";
 
 const { t: $t  } = useI18n()
 
@@ -139,6 +140,17 @@ const onSubmit = handleSubmit(async(values)=> {
   submittingForm.value = false
 
 })
+
+const tooltip1 = ref();
+const tooltip2 = ref();
+const tooltip3 = ref();
+const tooltip4 = ref();
+const tooltip5 = ref();
+const tooltip6 = ref();
+const tooltip7 = ref();
+const tooltip8 = ref();
+const tooltip9 = ref();
+const tooltip10 = ref();
 const betRecordDetail = async(item:BetHistoryResponse) => {
   const { IsSuccess, Data } = await appStore.getBetRecordSeed({ Id: item.Id, Time: item.Time})
   if (IsSuccess){
@@ -146,6 +158,7 @@ const betRecordDetail = async(item:BetHistoryResponse) => {
 
     selectedBetDetail.value = item
     Object.assign(betDetailSeedData, Data)
+
   }
 }
 
@@ -208,9 +221,29 @@ const closeSettingDialog = ():void => {
   isShowBetDetail.value = false
   isShowGameFairness.value = false
 }
+
+const copyFunction = (obj:string):void => {
+  source.value = obj || ''
+  copy(source.value)
+}
+
+
+[tooltip1, tooltip2, tooltip3, tooltip4, tooltip5,tooltip6,tooltip7,tooltip8, tooltip9, tooltip10].forEach(tooltipRef=>{
+  useTippy(tooltipRef, {
+    trigger: 'click',
+    arrow:false,
+    content: $t('Copied'),
+    onShow: (instance)=>{
+      setTimeout(()=> instance.hide(), 1500)
+    }
+  })
+})
+
+
 </script>
 
 <template>
+
   <div
        :class="[appStore.settingDialog.visible ? 'pointer-events-auto' : 'pointer-events-none']"
        @click.self="appStore.settingDialog.visible = false; appStore.settingDialog.section = ''"
@@ -221,6 +254,7 @@ const closeSettingDialog = ():void => {
            appStore.settingDialog.section !== '' && appStore.settingDialog.section !== 'main' ? 'opacity-0 pointer-events-none' : 'opacity-1 pointer-events-auto !delay-200'
            ]"
          class='modal-container main-menu active-container flex flex-col z-50'>
+
       <div class="relative">
         <button class="absolute right-4 top-0" @click.prevent="appStore.settingDialog.visible = false; appStore.settingDialog.section = ''"><img src="@/assets/images/close-button.svg" /></button>
       </div>
@@ -425,15 +459,18 @@ const closeSettingDialog = ():void => {
             <div class="flex items-center gap-2">
               <img src="/serverseedhash.svg" alt="">
               {{ $t('ServerSeedHashing') }}
+
             </div>
-            <div class="input-bg">
+            <div class="input-bg" ref="toolTipTarget">
               <input type="text" readonly :value="seedData.ServerSeed"  />
-              <template v-if="isSupported && seedData.ServerSeed">
-                <button @click="()=>{ source = seedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ServerSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                </button>
-              </template>
+              <button
+                @click.prevent="copyFunction(seedData.ServerSeed)"
+                ref="tooltip1"
+                class="!p-0 absolute top-1 right-1 w-[12px]"
+                :class="[isSupported && seedData.ServerSeed ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+              >
+                <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+              </button>
             </div>
           </div>
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col my-3">
@@ -443,12 +480,14 @@ const closeSettingDialog = ():void => {
             </div>
             <div class="input-bg">
               <input type="text" readonly :value="seedData.ClientSeed"  />
-              <template v-if="isSupported && seedData.ClientSeed">
-                <button @click="()=>{ source = seedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.ClientSeed ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
+                <button
+                  @click.prevent="copyFunction(seedData.ClientSeed)"
+                  ref="tooltip2"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && seedData.ClientSeed ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
                 </button>
-              </template>
             </div>
           </div>
           <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
@@ -457,12 +496,14 @@ const closeSettingDialog = ():void => {
             </div>
             <div class="input-bg">
               <input type="text" readonly :value="seedData.Nonce"  />
-              <template v-if="isSupported && seedData.Nonce">
-                <button @click="()=>{ source = seedData.Nonce || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedData.Nonce && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                  <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedData.Nonce ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                </button>
-              </template>
+              <button
+                @click.prevent="copyFunction(seedData.Nonce)"
+                ref="tooltip3"
+                class="!p-0 absolute top-1 right-1 w-[12px]"
+                :class="[isSupported && (seedData.Nonce || seedData.Nonce===0) ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+              >
+                <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+              </button>
             </div>
           </div>
           <h1 class="text-center font-bold mt-4 mb-1">{{$t('UpdateSeed')}}</h1>
@@ -475,12 +516,14 @@ const closeSettingDialog = ():void => {
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="updateSeedData.NewServerSeedHash"  />
-                <template v-if="isSupported && updateSeedData.NewServerSeedHash">
-                  <button @click.prevent="()=>{ source = updateSeedData.NewServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === updateSeedData.NewServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== updateSeedData.NewServerSeedHash ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
+                <button
+                  @click.prevent="copyFunction(updateSeedData.NewServerSeedHash)"
+                  ref="tooltip4"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && updateSeedData.NewServerSeedHash ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
               </div>
             </div>
 
@@ -497,13 +540,14 @@ const closeSettingDialog = ():void => {
                     :disabled='submittingForm'
                     name='seedType'
                   />
-
-                  <template v-if="isSupported">
-                    <button @click.prevent="()=>{ source = seedType || ''; copy(source)}" class="!p-0 absolute top-1 right-2 w-[12px]">
-                      <span class='absolute right-0 top-0 transition-opacity' :class="[source === seedType && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                      <span class='absolute right-0 top-0 transition-opacity' :class="[source !== seedType ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                    </button>
-                  </template>
+                  <button
+                    @click.prevent="copyFunction(seedType)"
+                    ref="tooltip5"
+                    class="!p-0 absolute top-1 right-2 w-[12px]"
+                    :class="[isSupported && seedType ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                  >
+                    <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                  </button>
                 </div>
                 <button @click.prevent="seedType = generateRandom()" class="p-1 absolute top-[-2px] right-2 transition-all opacity-70 hover:opacity-100">
                   <img src="/generate-random.svg" />
@@ -553,7 +597,7 @@ const closeSettingDialog = ():void => {
 
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false"><img src="@/assets/images/back-button.svg" /></button>
       </div>
-      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]' v-if="selectedBetDetail">
+      <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
         <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
@@ -567,38 +611,46 @@ const closeSettingDialog = ():void => {
                 {{$t('BetID')}}
               </div>
               <div class="pr-[13px]">
-                {{selectedBetDetail.Id}}
+                {{selectedBetDetail?.Id}}
 
-                <template v-if="isSupported && selectedBetDetail.Id">
-                  <button @click="()=>{ source = selectedBetDetail?.Id || ''; copy(source)}" class="!p-0 absolute top-[1px] -right-0.5 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === selectedBetDetail.Id && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== selectedBetDetail.Id  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
-              </div>
-            </div>
-            <div class="flex justify-between relative">
-              <div>
-                {{$t('BetAmount')}}
-              </div>
-              <div class="flex gap-2 items-center"><img :src='returnCurrency(selectedBetDetail.Currency)' /> {{ selectedBetDetail.Amount === 0 ? '0' : new Decimal(selectedBetDetail.Amount).toFixed(8) }}</div>
-            </div>
-            <div class="flex justify-between relative">
-              <div>
-                {{$t('BetTime')}}
-              </div>
-              <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail.Time) }}</div>
-            </div>
+                <button
+                  @click.prevent="copyFunction(selectedBetDetail?.Id)"
+                  ref="tooltip6"
+                  class="!p-0 absolute top-[1px] -right-0.5 w-[12px]"
+                  :class="[isSupported && selectedBetDetail?.Id ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
 
-            <div class="flex justify-between relative">
-              <div>
-                {{$t('Multiplier')}}
+
               </div>
-              <div :class="returnColorNumber(selectedBetDetail.PayoutMultiplier)">{{ selectedBetDetail.PayoutMultiplier || '--' }}x</div>
             </div>
+            <template v-if="selectedBetDetail">
+              <div class="flex justify-between relative">
+                <div>
+                  {{$t('BetAmount')}}
+                </div>
+                <div class="flex gap-2 items-center">
+                  <img :src='returnCurrency(selectedBetDetail?.Currency)' />
+                  {{ selectedBetDetail?.Amount === 0 ? '0' : new Decimal(selectedBetDetail?.Amount).toFixed(8) }}</div>
+              </div>
+              <div class="flex justify-between relative">
+                <div>
+                  {{$t('BetTime')}}
+                </div>
+                <div class="datetime-font">{{ getCurrentDateTimeWithTimezone(selectedBetDetail?.Time) }}</div>
+              </div>
+              <div class="flex justify-between relative">
+                <div>
+                  {{$t('Multiplier')}}
+                </div>
+                <div :class="returnColorNumber(selectedBetDetail.PayoutMultiplier)">{{ selectedBetDetail?.PayoutMultiplier || '--' }}x</div>
+              </div>
+            </template>
+
           </div>
 
-          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
+          <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col" v-if="selectedBetDetail">
             <div class="flex justify-between relative">
               <div>
                 {{$t('Cashout')}}
@@ -619,7 +671,7 @@ const closeSettingDialog = ():void => {
               <div>
                 {{$t('Crocodile')}}
               </div>
-              <div>{{ selectedBetDetail.Risk}}</div>
+              <div>{{ $t('RiskLevel.'+selectedBetDetail.Risk)}}</div>
             </div>
 
             <div class="flex justify-between relative">
@@ -636,7 +688,7 @@ const closeSettingDialog = ():void => {
             </span>
             <img class='absolute right-3 transition-transform' :class="[isShowGameFairness ? 'rotate-180':'']" src="/arrow.svg" alt="">
           </button>
-          <div v-if="isShowGameFairness">
+          <div :class="isShowGameFairness ? 'h-full' : 'h-0'" class="overflow-hidden">
             <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col">
               <div class="flex items-center gap-2">
                 <img src="/serverseed.svg" alt="" class="py-1 px-0.5">
@@ -644,12 +696,15 @@ const closeSettingDialog = ():void => {
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="betDetailSeedData.ServerSeed !== '' ? betDetailSeedData.ServerSeed : $t('Unannounced')" :class="betDetailSeedData.ServerSeed ==='' ? 'text-center':''"  />
-                <template v-if="isSupported && betDetailSeedData.ServerSeed">
-                  <button @click="()=>{ source = betDetailSeedData.ServerSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ServerSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ServerSeed  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
+
+                <button
+                  @click.prevent="copyFunction(betDetailSeedData.ServerSeed)"
+                  ref="tooltip7"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && betDetailSeedData.ServerSeed ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
               </div>
             </div>
 
@@ -660,12 +715,14 @@ const closeSettingDialog = ():void => {
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="betDetailSeedData.ServerSeedHash !== '' ? betDetailSeedData.ServerSeedHash : ''"  />
-                <template v-if="isSupported && betDetailSeedData.ServerSeedHash">
-                  <button @click="()=>{ source = betDetailSeedData.ServerSeedHash || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ServerSeedHash && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ServerSeedHash  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
+                <button
+                  @click.prevent="copyFunction(betDetailSeedData.ServerSeedHash)"
+                  ref="tooltip8"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && betDetailSeedData.ServerSeedHash ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
               </div>
             </div>
 
@@ -683,12 +740,14 @@ const closeSettingDialog = ():void => {
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="betDetailSeedData.ClientSeed !== '' ? betDetailSeedData.ClientSeed : ''"  />
-                <template v-if="isSupported && betDetailSeedData.ClientSeed">
-                  <button @click="()=>{ source = betDetailSeedData.ClientSeed || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.ClientSeed && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.ClientSeed  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
+                <button
+                  @click.prevent="copyFunction(betDetailSeedData.ClientSeed)"
+                  ref="tooltip9"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && betDetailSeedData.ClientSeed ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
               </div>
             </div>
             <div class="card-row text-xs !px-3.5 !py-3 flex gap-3 flex-col mt-2 mb-0">
@@ -698,12 +757,15 @@ const closeSettingDialog = ():void => {
               </div>
               <div class="input-bg">
                 <input type="text" readonly :value="betDetailSeedData.Nonce !== '' ? betDetailSeedData.Nonce : ''"  />
-                <template v-if="isSupported && betDetailSeedData.Nonce">
-                  <button @click="()=>{ source = betDetailSeedData.Nonce || ''; copy(source)}" class="!p-0 absolute top-1 right-1 w-[12px]">
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source === betDetailSeedData.Nonce && source !=='' ? 'opacity-1':'opacity-0']"><img src="/tiny-copied.svg" /></span>
-                    <span class='absolute right-0 top-0 transition-opacity' :class="[source !== betDetailSeedData.Nonce  ? 'opacity-1':'opacity-0']"><img src="/tiny-copy.svg" /></span>
-                  </button>
-                </template>
+
+                <button
+                  @click.prevent="copyFunction(betDetailSeedData.Nonce)"
+                  ref="tooltip10"
+                  class="!p-0 absolute top-1 right-1 w-[12px]"
+                  :class="[isSupported && betDetailSeedData.Nonce ? 'opacity-100 pointer-events-auto':'opacity-0 pointer-events-none']"
+                >
+                  <span class='absolute right-0 top-0'><img src="/tiny-copied.svg" /></span>
+                </button>
               </div>
             </div>
 
@@ -1093,5 +1155,17 @@ form{
   -webkit-text-fill-color: transparent;
 }
 
+.copy-message{
+  position:absolute;
+  left:50%;
+  transform:translate(-50%, -48px);
+  padding:9px 26px;
+  background:#6C7F87E5;
+  color:#fff;
+  border-radius:60px;
+  pointer-events:none;
+  transition: opacity .25s ease-out;
+  opacity:0;
+}
 
 </style>

@@ -80,6 +80,7 @@ const getCurrentDateTimeWithTimezone = (datetime = ''):string => {
 
 const showHistoryListPlaceholder = ref(true)
 const historyScrollbar = ref(null)
+const betDetailScrollbar = ref(null)
 const getBetHistory = async(index:number = 1) => {
   appStore.isLoading.getBetHistory = true
 
@@ -162,14 +163,13 @@ const betRecordDetail = async(item:BetHistoryResponse) => {
 
     selectedBetDetail.value = item
     Object.assign(betDetailSeedData, Data)
-
+    betDetailScrollbar.value.ps.element.scrollTop = 0
   }
 }
 
 watch(()=> appStore.settingDialog.section,(val)=>{
   betHistoryResult.value.splice(0)
   betHistoryResponseList.value = {}
-
   if (val === 'history'){
     pageIndex.value = 1
     getBetHistory(1)
@@ -184,7 +184,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
     seedType.value = generateRandom()
     getServerRefreshSeed()
   }
-  if (val === 'main'){
+  if (val === 'main' || val === ''){
     isShowBetDetail.value= false
     selectedBetDetail.value = null
   }
@@ -608,7 +608,7 @@ const copyFunction = (obj:string):void => {
         <button class='absolute left-8 top-0 !pt-0' @click.prevent="isShowBetDetail = false; isShowGameFairness = false"><img src="@/assets/images/back-button.svg" /></button>
       </div>
       <div class='modal-content mx-auto text-left h-[calc(100%-60px)]'>
-        <PerfectScrollbar :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
+        <PerfectScrollbar ref="betDetailScrollbar" :options='{ minScrollbarLength: 20, maxScrollbarLength: 50}' class="h-[100%] overflow-y-auto pt-4">
           <h1 class="text-center font-bold">Crocodile Plinko</h1>
 
           <div class="bg-gray-600 aspect-square relative w-full max-w-[65px] mx-auto my-[10px] rounded">

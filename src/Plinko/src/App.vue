@@ -15,7 +15,9 @@ import { useIntervalFn } from '@vueuse/core';
 import Switch from '@/components/UI/Switch.vue'
 const simulation = useSimulationStore();
 const appStore = useAppStore()
-const game=useGameStore();
+const game= useGameStore();
+import { useAudioStore } from '@/stores/audioManager';
+const audioStore = useAudioStore();
 const showSetting = () => {
   appStore.settingDialog.visible = true
   appStore.settingDialog.section = 'main'
@@ -38,6 +40,12 @@ onMounted(async () => {
   game.setBalance(response.Data.Balance); // 更新餘額
   game.setCurrency(response.Data.Currency); // 更新幣別
   isDataLoaded.value = true; // 資料載入完成
+  audioStore.playSound('bgm')
+});
+
+audioStore.sounds.bgm.once('unlock', function() {
+  audioStore.sounds.bgm.play();
+  audioStore.isAudioPlaying()
 });
 
 // 自動每 10 秒更新餘額
@@ -50,7 +58,6 @@ useIntervalFn(async () => {
 }, 10000);
 const handleReload = (evt) => {
   console.log('page reload')
-  
 }
 window.addEventListener('beforeunload', handleReload)
 watch(
@@ -93,7 +100,9 @@ watch(
     }
   }
 );
-
+const toggleVolume = () => {
+  audioStore.toggleMute()
+}
 </script>
 
 <template>
@@ -124,9 +133,9 @@ watch(
       <div class="mx-auto w-[375px]  drop-shadow-xl">
 
         <div class="absolute left-[50%] translate-x-[90px] top-[50%] -translate-y-[335px] text-white z-10 flex gap-2">
-          <button @click="appStore.isMute = !appStore.isMute" class="active:translate-y-[1px] opacity-0 pointer-events-none">
-            <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="appStore.isMute" alt="">
-            <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="!appStore.isMute" alt="">
+          <button @click.prevent="toggleVolume" class="active:translate-y-[1px]">
+            <img src="@/assets/images/sound.svg" class="w-[40px]" v-show="!audioStore.isMuted" alt="">
+            <img src="@/assets/images/mute.svg" class="w-[40px]" v-show="audioStore.isMuted" alt="">
           </button>
           <button @click.prevent="showSetting" class="active:translate-y-[1px]">
             <img src="@/assets/images/setting.svg" class="w-[40px]" alt="">

@@ -25,6 +25,7 @@
     "axios": "^1.7.7",
     "decimal.js": "^10.4.3",
     "express": "^4.21.2",
+    "howler": "^2.2.4",
     "matter-js": "^0.20.0",
     "pinia": "^2.2.4",
     "query-string": "^9.1.1",

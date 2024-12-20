@@ -232,9 +232,10 @@ const copyFunction = (obj:string):void => {
   useTippy(tooltipRef, {
     trigger: 'click',
     arrow:false,
+    interactive:true,
     content: $t('Copied'),
     onShow: (instance)=>{
-      setTimeout(()=> instance.hide(), 1500)
+      setTimeout(()=> instance.hide(), 1000)
     }
   })
 })
@@ -307,12 +308,12 @@ const copyFunction = (obj:string):void => {
                       <h4 class="font-bold text-sm leading-tight">Crocodile Plinko</h4>
                       <div class="flex items-center text-xs leading-4" >
                         <img :src='returnCurrency(history.Currency)' class="w-[14px] mr-1" />
-                        {{ new Decimal(history.Amount).toFixed(8) }}
+                        {{ new Decimal(history.Amount).toFixed(6) }}
                       </div>
                     </div>
                   </div>
                   <div class="flex items-end text-xs" :class="history.Amount > 0 ? 'text-[#51C53F]' : ''">
-                    {{history.Amount !== 'undefined' ? '+' : '--'}}{{ history.Payout === 0 ? '0' : new Decimal(history.Payout).toFixed(8) }}
+                    {{history.Amount !== 'undefined' ? '+' : '--'}}{{ history.Payout === 0 ? '0' : new Decimal(history.Payout).toFixed(6) }}
                   </div>
                 </div>
                 <div class="flex flex-row justify-between text-xs mt-0.5">
@@ -390,7 +391,7 @@ const copyFunction = (obj:string):void => {
             {{$t('MaximumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
           <div class="flex-[3] text-right">
-            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MaxBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MaxBetAmount).toFixed(6) || new Decimal(0).toFixed(6)}}
           </div>
         </div>
         <div class="card-row my-3 text-xs flex flex-row justify-between">
@@ -398,7 +399,7 @@ const copyFunction = (obj:string):void => {
             {{$t('MinimumBetAmount')}} <img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
           <div class="flex-[3] text-right">
-            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MinBetAmount).toFixed(8) || new Decimal(0).toFixed(8)}}
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).MinBetAmount).toFixed(6) || new Decimal(0).toFixed(6)}}
           </div>
         </div>
         <div class="card-row text-xs flex flex-row justify-between">
@@ -406,7 +407,7 @@ const copyFunction = (obj:string):void => {
             {{$t('MaximumProfit')}}<img :src="returnCurrency(gameStore.currency)" class="w-[16px]" />
           </div>
           <div class="flex-[3] text-right">
-            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).AmountUnit).toFixed(8) || new Decimal(0).toFixed(8)}}
+            {{ new Decimal(returnCurrentLimitByCurrency(gameStore.currency).AmountUnit).toFixed(6) || new Decimal(0).toFixed(6)}}
           </div>
         </div>
       </div>
@@ -630,10 +631,13 @@ const copyFunction = (obj:string):void => {
                 <div>
                   {{$t('BetAmount')}}
                 </div>
+
                 <div class="flex gap-2 items-center">
-                  <img :src='returnCurrency(selectedBetDetail?.Currency)' />
-                  {{ selectedBetDetail?.Amount === 0 ? '0' : new Decimal(selectedBetDetail?.Amount).toFixed(8) }}</div>
+                  <img :src='returnCurrency(selectedBetDetail.Currency)' />
+                  {{ selectedBetDetail.Amount === 0 ? '0' : new Decimal(selectedBetDetail.Amount).toFixed(6) }}
+                </div>
               </div>
+
               <div class="flex justify-between relative">
                 <div>
                   {{$t('BetTime')}}
@@ -656,7 +660,7 @@ const copyFunction = (obj:string):void => {
                 {{$t('Cashout')}}
               </div>
               <div :class="selectedBetDetail.Payout > 0 ? 'text-[#51C53F]' : ''">
-                {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(8) }}
+                {{selectedBetDetail.Payout !== 'undefined' ? '+' : '--'}}{{ selectedBetDetail.Payout === 0 ? '0' : new Decimal(selectedBetDetail.Payout).toFixed(6) }}
               </div>
             </div>
 

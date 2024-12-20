@@ -72,7 +72,7 @@ watch(
         return false;
       }
       isAnimating.value = true;
-      payoutDelta.value = `+${payout.value.toFixed(8)}`;
+      payoutDelta.value = `+${payout.value.toFixed(6)}`;
       isWin.value = payout.multiplier > 1  ? true : false ;
         // 数字递增跳动效果
         const duration = 1000;
@@ -138,7 +138,7 @@ watch(
         <div class="absolute py-[12px] px-[10px] w-full left-0 text-white flex">
            <img src="@/assets/images/svg/icon_btc.svg"/>
             <!-- 顯示當前金額 -->
-          <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(8) }}</span>
+          <span v-if="isDataLoaded" class="mx-2">{{ game.balance.toFixed(6) }}</span>
            <!-- 顯示加減金額 -->
           <transition name="fade-move">
             <span v-if="isAnimating" class="mx-2  font-bold" :class="isWin ? 'text-orange-500' : 'text-orange-300'">
@@ -165,7 +165,7 @@ watch(
     </div>
 
       <SettingDialog />
-      <div class="flex item-center">
+      <div class="flex item-center fixed bottom-0">
 
       <Switch v-model="game.isTestBetClick" />
       <input type="number" class="mx-2" :disabled="!game.isTestBetClick" v-model="game.testBetPoint"  />

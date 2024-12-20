@@ -107,7 +107,7 @@ const canvasPaddingX = computed(() => {
 
     sensor.value = Bodies.rectangle(
       canvas.value.width / 2,
-      canvas.value.height + 80,
+      canvas.value.height ,
       canvas.value.width,
       1,
       {

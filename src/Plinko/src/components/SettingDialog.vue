@@ -186,6 +186,7 @@ watch(()=> appStore.settingDialog.section,(val)=>{
 })
 
 const returnColorNumber = (number):string => {
+  return 'text-[#FE862C]'
   if (number >= 10 && number < 100) {
     return "text-gradient-blue";
   } else if (number >= 100 && number < 1000) {
